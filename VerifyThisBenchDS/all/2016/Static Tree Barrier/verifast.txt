@@ -1,0 +1,7 @@
+struct Node {
+    struct Node* left;
+    struct Node* right;
+    struct Node* parent;
+    bool sense;
+    int version;
+};

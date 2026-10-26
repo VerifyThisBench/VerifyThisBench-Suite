@@ -1,0 +1,9 @@
+module PointCloud
+  use int.Int
+  
+  type point = {
+    x : int;
+    y : int;
+    z : int;
+  }
+end

@@ -1,0 +1,14 @@
+// VerCors Data Structure Definition for Rope
+class Rope {
+    Rope left;     // Left child rope (nullable)
+    Rope right;    // Right child rope (nullable)
+    byte[] value;  // String data as byte array
+    int weight;    // Weight of the node
+
+    Rope(Rope l, Rope r, byte[] v, int w) {
+        left = l;
+        right = r;
+        value = v;
+        weight = w;
+    }
+}

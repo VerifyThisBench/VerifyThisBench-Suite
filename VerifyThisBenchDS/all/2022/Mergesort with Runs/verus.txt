@@ -1,0 +1,4 @@
+struct Sr {
+    runs: Vec<usize>,
+    data: Vec<u32>,
+}

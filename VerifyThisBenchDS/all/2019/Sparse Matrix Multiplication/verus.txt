@@ -1,0 +1,5 @@
+pub struct Triplet {
+    pub row: usize,
+    pub col: usize,
+    pub value: i32,
+}

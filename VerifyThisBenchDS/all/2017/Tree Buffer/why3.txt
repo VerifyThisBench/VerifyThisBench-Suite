@@ -1,0 +1,6 @@
+type buffer = {
+    h: int;
+    xs: array int;
+    xs_len: int;
+    ys: array int;
+}

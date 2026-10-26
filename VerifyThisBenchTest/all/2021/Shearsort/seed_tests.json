@@ -1,0 +1,1165 @@
+{
+  "challenge": "Shearsort",
+  "description": "Sort an n x n integer matrix into snake-like order while preserving all elements.",
+  "function_signature": "shearsort(n, matrix) -> matrix",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "matrix is not null and has exactly n rows and n columns with n > 0",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "matrix is not null and has exactly n rows and n columns with n > 0",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "n": 1,
+        "matrix": [
+          [
+            5
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "matrix is not null and has exactly n rows and n columns with n > 0",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "n": 2,
+        "matrix": null
+      },
+      "condition": "pre",
+      "spec": "matrix is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "n": 0,
+        "matrix": []
+      },
+      "condition": "pre",
+      "spec": "n is positive",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "each row has exactly n columns",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "matrix has exactly n rows",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix is a permutation of the input matrix elements",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix is a permutation of the input matrix elements",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            2,
+            2
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix preserves multiplicities of duplicate elements",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix is a permutation of the input matrix elements",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            2,
+            2
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix preserves multiplicities of duplicate elements",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            0,
+            -1,
+            2
+          ],
+          [
+            3,
+            -4,
+            5
+          ],
+          [
+            6,
+            7,
+            -8
+          ]
+        ],
+        "result": [
+          [
+            -8,
+            -4,
+            -1
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            5,
+            6,
+            9
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result matrix is a permutation of the input matrix elements including negative values",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task3",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "rows are sorted in snake-like order: even rows ascending and odd rows descending",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "rows are sorted in snake-like order: even rows ascending and odd rows descending",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            5,
+            5,
+            5
+          ],
+          [
+            5,
+            5,
+            5
+          ],
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "result": [
+          [
+            5,
+            5,
+            5
+          ],
+          [
+            5,
+            5,
+            5
+          ],
+          [
+            5,
+            5,
+            5
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "rows are sorted in snake-like order even when all values are equal",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "odd rows must be sorted in descending order for snake-like ordering",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            0,
+            -1,
+            2
+          ],
+          [
+            3,
+            -4,
+            5
+          ],
+          [
+            6,
+            7,
+            -8
+          ]
+        ],
+        "result": [
+          [
+            -8,
+            -4,
+            -1
+          ],
+          [
+            0,
+            3,
+            2
+          ],
+          [
+            5,
+            6,
+            7
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "each even row is ascending and each odd row is descending",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "n": 1,
+        "matrix": [
+          [
+            42
+          ]
+        ],
+        "result": [
+          [
+            42
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "a 1 x 1 matrix is trivially in snake-like order",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "parallel shearsort result satisfies the same permutation and snake-like specification as sequential shearsort",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "parallel shearsort result satisfies the same permutation and snake-like specification as sequential shearsort",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "parallel shearsort must satisfy the same snake-like specification as sequential shearsort",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "shearsort and alternative-shearsort satisfy the same overall specification: permutation plus snake-like order",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            0,
+            -1,
+            2
+          ],
+          [
+            3,
+            -4,
+            5
+          ],
+          [
+            6,
+            7,
+            -8
+          ]
+        ],
+        "result": [
+          [
+            -8,
+            -4,
+            -1
+          ],
+          [
+            3,
+            2,
+            0
+          ],
+          [
+            5,
+            6,
+            7
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "shearsort and alternative-shearsort satisfy the same overall specification: permutation plus snake-like order",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task5",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            0,
+            -1,
+            2
+          ],
+          [
+            3,
+            -4,
+            5
+          ],
+          [
+            6,
+            7,
+            -8
+          ]
+        ],
+        "result": [
+          [
+            -8,
+            -4,
+            -1
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            5,
+            6,
+            7
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "alternative-shearsort must satisfy the same snake-like specification as shearsort",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "row": 0,
+        "ascending": true,
+        "result": [
+          [
+            1,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-row sorts the selected row in ascending order and leaves other rows unchanged",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "row": 1,
+        "ascending": false,
+        "result": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-row sorts the selected row in descending order and leaves other rows unchanged",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "column": 0,
+        "result": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-column sorts the selected column in ascending order and preserves the multiset of that column",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "result": [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "transpose swaps rows and columns",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "row": 0,
+        "ascending": true,
+        "result": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-row ascending must reorder the selected row if it is not already sorted",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task3",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "snake-like order requires row 0 ascending; here row 0 is [2,1] which is descending",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task3",
+      "input": {
+        "n": 3,
+        "matrix": [
+          [
+            9,
+            8,
+            7
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "result": [
+          [
+            7,
+            8,
+            9
+          ],
+          [
+            6,
+            5,
+            4
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "snake-like order requires the global flatten (row 0 ascending, row 1 descending, row 2 ascending) to be globally non-decreasing; here row 2 is descending leaving the matrix unsorted overall",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task4",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            2,
+            2
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "parallel shearsort must preserve element multiplicities; here value 2 occurs only once in the result but twice in the input",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task5",
+      "input": {
+        "n": 2,
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "result": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "alternative-shearsort must produce a sorted snake-like result; returning the unsorted input unchanged violates the spec",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "row": 0,
+        "ascending": true,
+        "result": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-row must leave non-selected rows unchanged; row 1 was [4,2] but result has [2,4]",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "column": 0,
+        "result": [
+          [
+            4,
+            1
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "sort-column ascending must place the smallest column value on top; here column 0 is [4,3] which is descending",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task6",
+      "input": {
+        "matrix": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "transpose must place input row i as result column i; here the elements have been re-flattened in row-major order rather than transposed",
+      "expected": false
+    }
+  ]
+}

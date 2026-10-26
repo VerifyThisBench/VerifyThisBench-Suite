@@ -1,0 +1,6 @@
+class DoublyLinkedList {
+	ghost var Repr: set<object>;
+	var prev: array<int>;
+	var next: array<int>;
+	var n: int;
+}

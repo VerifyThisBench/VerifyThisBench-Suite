@@ -1,0 +1,16 @@
+module DLLtoBST
+  use int.Int
+  use option.Option
+  
+  type node = {
+    data : int;
+    mutable prev : option node;
+    mutable next : option node;
+  }
+  
+  type dll_node = {
+    data : int;
+    mutable prev : option dll_node;
+    mutable next : option dll_node;
+  }
+end

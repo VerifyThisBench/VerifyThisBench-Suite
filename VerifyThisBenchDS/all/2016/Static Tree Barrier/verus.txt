@@ -1,0 +1,7 @@
+struct Node {
+    left: Option<Box<Node>>,
+    right: Option<Box<Node>>,
+    parent: Option<*mut Node>,  // Raw pointer to avoid cycles
+    sense: bool,
+    version: i32,
+}

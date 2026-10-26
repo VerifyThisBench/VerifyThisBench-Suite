@@ -1,0 +1,5 @@
+class NonblockingQueue {
+    var Q: array<int>     // Array of elements, -1 represents null
+    var Head: nat         // Head pointer (monotonically increasing)
+    var Tail: nat         // Tail pointer (monotonically increasing)
+}

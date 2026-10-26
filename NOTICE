@@ -1,0 +1,26 @@
+VerifyThisBench
+Copyright (c) 2025-2026 the VerifyThisBench authors
+
+This repository contains material from two sources.
+
+1. Original material created for VerifyThisBench, released under the MIT
+   License (see LICENSE): the evaluation scripts (scripts/), Docker
+   environments (envs/), prompts (prompts/), the per-task decomposition and
+   per-tool prompts in VerifyThisBenchDS/, the seed tests in
+   VerifyThisBenchTest/, the relaxed templates' TODO structure in
+   VerifyThisBenchXS/, and the dataset JSON files.
+
+2. Third-party material from the VerifyThis competition series
+   (https://www.pm.inf.ethz.ch/research/verifythis.html), 2011-2024:
+   - the natural-language challenge descriptions in VerifyThisBenchDS/ and
+     VerifyThisBenchXS/;
+   - the human-written reference solutions (solution.* files) in
+     VerifyThisBenchXS/, and the code they contain that is reused in the
+     partial templates.
+   This material was written by the VerifyThis organizers and competition
+   participants and remains their work. Original file headers, including
+   author and contact notes, are preserved. It is included for research
+   and evaluation purposes with attribution; the MIT License above does
+   not change its authorship or terms. If you are an author of any of this
+   material and would like it credited differently or removed, please open
+   an issue.

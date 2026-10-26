@@ -1,0 +1,1866 @@
+{
+  "challenge": "The Rope Data Structure",
+  "description": "Verify string conversion, length, concatenation, deletion, insertion, and safety properties of rope trees.",
+  "function_signature": "toStr(rope) -> string; strLen(rope) -> int; concat(left,right) -> rope; delete(rope,i,len) -> rope; insert(rope,i,toInsert) -> rope",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "pre",
+      "spec": "rope input is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              72,
+              101
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              108,
+              108,
+              111
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        }
+      },
+      "condition": "pre",
+      "spec": "rope input may be an internal node with two children",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "r": null
+      },
+      "condition": "pre",
+      "spec": "rope input is not null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [],
+          "weight": 0
+        },
+        "result": []
+      },
+      "condition": "post",
+      "spec": "toStr of an empty leaf equals its stored segment",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "result": [
+          97,
+          98,
+          99
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a leaf equals its stored segment",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100
+            ],
+            "weight": 2
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": [
+          97,
+          98,
+          99,
+          100
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a binary node is left string followed by right string",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              120,
+              121
+            ],
+            "weight": 2
+          },
+          "right": null,
+          "value": [],
+          "weight": 2
+        },
+        "result": [
+          120,
+          121
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a node with only a left child equals the left child string",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              122
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 0
+        },
+        "result": [
+          122
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a node with only a right child equals the right child string",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100
+            ],
+            "weight": 2
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": [
+          97,
+          99,
+          100
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr must preserve all characters from both subtrees in order",
+      "expected": false
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            65
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "pre",
+      "spec": "memory-safe termination proof assumes a finite non-null rope",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "r": null
+      },
+      "condition": "pre",
+      "spec": "memory-safe traversal cannot dereference a null rope input",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97
+            ],
+            "weight": 1
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              98
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 1
+        },
+        "result": [
+          97,
+          98
+        ]
+      },
+      "condition": "post",
+      "spec": "safe terminating toStr still returns the full represented string on a finite rope",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "pre",
+      "spec": "strLen requires a non-null rope",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task3",
+      "input": {
+        "r": null
+      },
+      "condition": "pre",
+      "spec": "strLen requires a non-null rope",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "strLen equals length(toStr(r)) for a leaf",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100,
+              101
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "strLen equals left weight plus right represented length on a binary node",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              120,
+              121
+            ],
+            "weight": 2
+          },
+          "right": null,
+          "value": [],
+          "weight": 2
+        },
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "strLen equals length(toStr(r)) for a node with only one child",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100,
+              101
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "strLen must equal the full represented string length, not an underestimated value",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task4",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            72,
+            105
+          ],
+          "weight": 2
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            33
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "pre",
+      "spec": "concat requires both input ropes to be non-null",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "left": null,
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            33
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "pre",
+      "spec": "concat requires both input ropes to be non-null",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            72,
+            105
+          ],
+          "weight": 2
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            33
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              72,
+              105
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              33
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "toStr(concat(left,right)) equals toStr(left) followed by toStr(right)",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [],
+          "weight": 0
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [],
+            "weight": 0
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              97
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 0
+        }
+      },
+      "condition": "post",
+      "spec": "concat preserves the represented string even when one side is empty",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            72,
+            105
+          ],
+          "weight": 2
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            33
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              33
+            ],
+            "weight": 1
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              72,
+              105
+            ],
+            "weight": 2
+          },
+          "value": [],
+          "weight": 1
+        }
+      },
+      "condition": "post",
+      "spec": "concat must preserve left-then-right order, not swap operands",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 1,
+        "len": 2
+      },
+      "condition": "pre",
+      "spec": "delete requires 0 <= i, 0 <= len, and i + len <= length(toStr(r))",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 5,
+        "len": 2
+      },
+      "condition": "pre",
+      "spec": "delete requires the removed slice to stay within bounds",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": -1,
+        "len": 1
+      },
+      "condition": "pre",
+      "spec": "delete requires a non-negative start index",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 1,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        }
+      },
+      "condition": "post",
+      "spec": "delete removes len characters starting at position i",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 0,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            99,
+            100
+          ],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "delete at the beginning keeps the suffix after the removed prefix",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 2,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "delete at the end keeps the prefix before the removed suffix",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "i": 1,
+        "len": 0,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "post",
+      "spec": "deleting zero characters leaves the represented string unchanged",
+      "expected": true
+    },
+    {
+      "id": "T031",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 1,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 5
+        }
+      },
+      "condition": "post",
+      "spec": "delete must remove exactly the requested substring, not just one character",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task6",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "i": 1,
+        "len": 1
+      },
+      "condition": "pre",
+      "spec": "memory-safe delete requires in-bounds indices on a non-null finite rope",
+      "expected": true
+    },
+    {
+      "id": "T033",
+      "task": "task6",
+      "input": {
+        "r": null,
+        "i": 0,
+        "len": 0
+      },
+      "condition": "pre",
+      "spec": "memory-safe delete cannot operate on a null rope input",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task6",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "i": 3,
+        "len": 1
+      },
+      "condition": "pre",
+      "spec": "memory-safe delete requires i + len not to exceed represented length",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task7",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            98
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "pre",
+      "spec": "optimized concat still requires both ropes to be non-null",
+      "expected": true
+    },
+    {
+      "id": "T036",
+      "task": "task7",
+      "input": {
+        "left": null,
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            98
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "pre",
+      "spec": "optimized concat still requires both ropes to be non-null",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task8",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            98
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "if both arguments are short leaves, optimized concat may return a single leaf whose string is their concatenation",
+      "expected": true
+    },
+    {
+      "id": "T038",
+      "task": "task8",
+      "input": {
+        "left": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97
+            ],
+            "weight": 1
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              98
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 1
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            99
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97
+            ],
+            "weight": 1
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              98,
+              99
+            ],
+            "weight": 2
+          },
+          "value": [],
+          "weight": 1
+        }
+      },
+      "condition": "post",
+      "spec": "optimized concat may merge a short right leaf of the left argument with a short right operand while preserving represented string",
+      "expected": true
+    },
+    {
+      "id": "T039",
+      "task": "task8",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            98
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            98,
+            97
+          ],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "optimized concat must preserve left-then-right string order even when flattening leaves",
+      "expected": false
+    },
+    {
+      "id": "T040",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 1,
+        "toInsert": [
+          105,
+          122
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert requires 0 <= i <= length(toStr(r)) and a non-null rope",
+      "expected": true
+    },
+    {
+      "id": "T041",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 5,
+        "toInsert": [
+          105,
+          122
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert position must be at most the represented string length",
+      "expected": false
+    },
+    {
+      "id": "T042",
+      "task": "task9",
+      "input": {
+        "r": null,
+        "i": 0,
+        "toInsert": [
+          97
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert requires a non-null rope",
+      "expected": false
+    },
+    {
+      "id": "T043",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 1,
+        "toInsert": [
+          105,
+          122
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        }
+      },
+      "condition": "post",
+      "spec": "insert adds the new string at the requested position",
+      "expected": true
+    },
+    {
+      "id": "T044",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": 0,
+        "toInsert": [
+          120
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            120,
+            97,
+            98
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "post",
+      "spec": "insert at position 0 prepends the inserted string",
+      "expected": true
+    },
+    {
+      "id": "T045",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": 2,
+        "toInsert": [
+          120
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            120
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "post",
+      "spec": "insert at the end appends the inserted string",
+      "expected": true
+    },
+    {
+      "id": "T046",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": 1,
+        "toInsert": [],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "inserting an empty string leaves the represented string unchanged",
+      "expected": true
+    },
+    {
+      "id": "T047",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 1,
+        "toInsert": [
+          105,
+          122
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            105,
+            122,
+            114,
+            100
+          ],
+          "weight": 6
+        }
+      },
+      "condition": "post",
+      "spec": "insert must place the new string exactly at index i, not after it",
+      "expected": false
+    },
+    {
+      "id": "T048",
+      "task": "task10",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": 1,
+        "toInsert": [
+          120
+        ]
+      },
+      "condition": "pre",
+      "spec": "memory-safe insert requires a non-null finite rope and an in-bounds insertion position",
+      "expected": true
+    },
+    {
+      "id": "T049",
+      "task": "task10",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": -1,
+        "toInsert": [
+          120
+        ]
+      },
+      "condition": "pre",
+      "spec": "memory-safe insert requires a non-negative insertion position",
+      "expected": false
+    },
+    {
+      "id": "T050",
+      "task": "task10",
+      "input": {
+        "r": null,
+        "i": 0,
+        "toInsert": [
+          120
+        ]
+      },
+      "condition": "pre",
+      "spec": "memory-safe insert cannot operate on a null rope input",
+      "expected": false
+    },
+    {
+      "id": "T051",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              72,
+              101
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              108,
+              108,
+              111
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": [
+          108,
+          108,
+          111,
+          72,
+          101
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr must concatenate left then right, not right then left",
+      "expected": false
+    },
+    {
+      "id": "T052",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100
+            ],
+            "weight": 2
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": [
+          97,
+          98,
+          99,
+          100,
+          99,
+          100
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a binary node must not duplicate the right subtree's characters",
+      "expected": false
+    },
+    {
+      "id": "T053",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              122
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 0
+        },
+        "result": []
+      },
+      "condition": "post",
+      "spec": "toStr of a node with only a right child must return the right subtree's string, not empty",
+      "expected": false
+    },
+    {
+      "id": "T054",
+      "task": "task1",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99
+          ],
+          "weight": 3
+        },
+        "result": [
+          97,
+          98
+        ]
+      },
+      "condition": "post",
+      "spec": "toStr of a leaf must include all characters in its segment, not drop the tail",
+      "expected": false
+    },
+    {
+      "id": "T055",
+      "task": "task2",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97
+            ],
+            "weight": 1
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              98
+            ],
+            "weight": 1
+          },
+          "value": [],
+          "weight": 1
+        },
+        "result": [
+          97
+        ]
+      },
+      "condition": "post",
+      "spec": "safe terminating toStr must still return the full represented string, not just the left child",
+      "expected": false
+    },
+    {
+      "id": "T056",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100,
+              101
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "strLen must equal the represented string length, not be inflated by an off-by-one overshoot",
+      "expected": false
+    },
+    {
+      "id": "T057",
+      "task": "task3",
+      "input": {
+        "r": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              97,
+              98
+            ],
+            "weight": 2
+          },
+          "right": {
+            "left": null,
+            "right": null,
+            "value": [
+              99,
+              100,
+              101
+            ],
+            "weight": 3
+          },
+          "value": [],
+          "weight": 2
+        },
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "strLen on a binary node must include the right subtree's length, not return only the left weight",
+      "expected": false
+    },
+    {
+      "id": "T058",
+      "task": "task4",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            72,
+            105
+          ],
+          "weight": 2
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            33
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": {
+            "left": null,
+            "right": null,
+            "value": [
+              72,
+              105
+            ],
+            "weight": 2
+          },
+          "right": null,
+          "value": [],
+          "weight": 2
+        }
+      },
+      "condition": "post",
+      "spec": "concat must include the right operand in the result; dropping it loses characters",
+      "expected": false
+    },
+    {
+      "id": "T059",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 1,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 5
+        }
+      },
+      "condition": "post",
+      "spec": "delete must remove characters starting at position i, not at position 0",
+      "expected": false
+    },
+    {
+      "id": "T060",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 0,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            99,
+            100
+          ],
+          "weight": 4
+        }
+      },
+      "condition": "post",
+      "spec": "delete must actually remove len characters, not return the input rope unchanged",
+      "expected": false
+    },
+    {
+      "id": "T061",
+      "task": "task5",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            122,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        },
+        "i": 1,
+        "len": 2,
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "post",
+      "spec": "delete must keep all characters outside [i,i+len), not drop additional trailing characters",
+      "expected": false
+    },
+    {
+      "id": "T062",
+      "task": "task8",
+      "input": {
+        "left": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        },
+        "right": {
+          "left": null,
+          "right": null,
+          "value": [
+            98
+          ],
+          "weight": 1
+        },
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97
+          ],
+          "weight": 1
+        }
+      },
+      "condition": "post",
+      "spec": "optimized concat result must represent left ++ right, not just the left operand",
+      "expected": false
+    },
+    {
+      "id": "T063",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 1,
+        "toInsert": [
+          105,
+          122
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            122,
+            105,
+            97,
+            114,
+            100
+          ],
+          "weight": 6
+        }
+      },
+      "condition": "post",
+      "spec": "insert must place toInsert in its original order, not reversed",
+      "expected": false
+    },
+    {
+      "id": "T064",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98
+          ],
+          "weight": 2
+        },
+        "i": 0,
+        "toInsert": [
+          120
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            97,
+            98,
+            120
+          ],
+          "weight": 3
+        }
+      },
+      "condition": "post",
+      "spec": "insert at position 0 must prepend toInsert, not append it",
+      "expected": false
+    },
+    {
+      "id": "T065",
+      "task": "task9",
+      "input": {
+        "r": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            97,
+            114,
+            100
+          ],
+          "weight": 4
+        },
+        "i": 1,
+        "toInsert": [
+          105,
+          122
+        ],
+        "result": {
+          "left": null,
+          "right": null,
+          "value": [
+            108,
+            105,
+            97,
+            114,
+            100
+          ],
+          "weight": 5
+        }
+      },
+      "condition": "post",
+      "spec": "insert must include every character of toInsert; missing characters violate the postcondition",
+      "expected": false
+    }
+  ]
+}

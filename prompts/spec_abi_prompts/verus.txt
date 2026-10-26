@@ -1,0 +1,35 @@
+Specification ABI requirements (must follow exactly):
+- Define exactly one executable entry function named `main_impl`.
+- Define `spec fn main_spec_pre(<input variables in order>) -> bool`.
+- Define `spec fn main_spec_post(<the same input variables in the same order>, <named return variable from main_impl>) -> bool`.
+- Define `main_impl` with a named return variable using Verus syntax:
+  - `fn main_impl(<input variables in order>) -> (<return_name>: ReturnType)`
+- In `main_impl`, use:
+  - `requires main_spec_pre(<input variables in order>)`
+  - `ensures main_spec_post(<the same input variables in the same order>, <return_name>)`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `main_spec_pre` or `main_spec_post`.
+- The named return variable in `fn main_impl(...) -> (<return_name>: T)` is part of the function signature and contract only.
+- In the function body, compute a local value and return it as the final expression; do not assign to `<return_name>` directly unless you explicitly introduce a local binding with that name.
+- Do not use an implicit `result` variable. The named return variable from `main_impl` must be used explicitly in `main_spec_post(...)`.
+
+Example skeleton:
+```rust
+verus! {
+
+spec fn main_spec_pre(a: &[i32]) -> bool {
+    a.len() > 0
+}
+
+spec fn main_spec_post(a: &[i32], idx: usize) -> bool {
+    idx < a.len() && forall|i: int| 0 <= i < a.len() ==> a[idx as int] >= a[i]
+}
+
+fn main_impl(a: &[i32]) -> (idx: usize)
+    requires main_spec_pre(a),
+    ensures main_spec_post(a, idx),
+{
+    // implementation here
+}
+
+} // verus!
+```

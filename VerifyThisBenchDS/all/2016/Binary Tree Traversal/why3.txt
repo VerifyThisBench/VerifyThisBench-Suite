@@ -1,0 +1,1 @@
+type tree = { left: tree option; right: tree option; parent: tree option; mark: bool }

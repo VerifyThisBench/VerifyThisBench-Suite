@@ -1,0 +1,3 @@
+struct ColoredTiles {
+    int count[51];
+};

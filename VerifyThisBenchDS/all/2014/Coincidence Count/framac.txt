@@ -1,0 +1,3 @@
+// Two integer arrays in strictly increasing order
+// int *array1, int length1
+// int *array2, int length2

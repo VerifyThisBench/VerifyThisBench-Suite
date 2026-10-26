@@ -1,0 +1,11 @@
+(* Why3 Data Structure Definition for Work-Stealing *)
+module WorkStealing
+  use int.Int
+  use array.Array
+  use list.List
+  
+  type task = int
+  type subtask_array = array (array task)  
+  type executed_array = array bool
+  type queue_array = array (list task)
+end

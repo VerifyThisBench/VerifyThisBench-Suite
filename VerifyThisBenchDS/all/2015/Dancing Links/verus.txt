@@ -1,0 +1,5 @@
+struct DoublyLinkedList {
+    prev: Vec<usize>,
+    next: Vec<usize>,
+    n: usize,
+}

@@ -1,0 +1,4 @@
+struct QueueLock {
+    bool *pass;
+    int next;
+};

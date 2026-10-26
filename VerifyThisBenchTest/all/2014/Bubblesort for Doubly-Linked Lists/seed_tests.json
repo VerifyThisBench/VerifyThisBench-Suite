@@ -1,0 +1,1457 @@
+{
+  "challenge": "Bubblesort for Doubly-Linked Lists",
+  "description": "Sort a doubly-linked list of integers in ascending order while preserving list structure and keeping nested pointers separate from linkage pointers.",
+  "function_signature": "gl_sort(list) -> result_list",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 3,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": null,
+                "nested_prev": null
+              },
+              "prev": null,
+              "nested_next": null,
+              "nested_prev": null
+            },
+            "prev": null,
+            "nested_next": null,
+            "nested_prev": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "input list is not null and has at least one node",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 5,
+            "next": null,
+            "prev": null,
+            "nested_next": null,
+            "nested_prev": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "single-node list is a valid input for sorting",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "list": null
+      },
+      "condition": "pre",
+      "spec": "input list object must not be null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": null
+        }
+      },
+      "condition": "pre",
+      "spec": "list must be non-empty because inspect assumes head is linked to at least one node",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 4,
+            "next": {
+              "value": 2,
+              "next": null,
+              "prev": null,
+              "nested_next": {
+                "value": 99,
+                "next": null,
+                "prev": null,
+                "nested_next": null,
+                "nested_prev": null
+              },
+              "nested_prev": null
+            },
+            "prev": null,
+            "nested_next": null,
+            "nested_prev": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "nested pointers of list nodes must not be used as list linkage and should remain separate/self-contained",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 3,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 3
+            },
+            "nested_prev": {
+              "value": 3
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "each node's nested pointers may be self-referential and independent from the sortable linkage",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 3,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 3
+            },
+            "nested_prev": {
+              "value": 3
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 3,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "result list values are sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 4,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 3,
+                "next": {
+                  "value": 2,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 2
+                  },
+                  "nested_prev": {
+                    "value": 2
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 4
+            },
+            "nested_prev": {
+              "value": 4
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 3,
+                "next": {
+                  "value": 4,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 4
+                  },
+                  "nested_prev": {
+                    "value": 4
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting correctly reorders a reverse-like unsorted list into ascending order",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 2,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 1,
+                "next": {
+                  "value": 1,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 1
+                  },
+                  "nested_prev": {
+                    "value": 1
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 1
+                },
+                "nested_prev": {
+                  "value": 1
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 2
+            },
+            "nested_prev": {
+              "value": 2
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": {
+                  "value": 2,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 2
+                  },
+                  "nested_prev": {
+                    "value": 2
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting preserves duplicates and places equal values together in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": -1,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 0,
+                "next": {
+                  "value": -2,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": -2
+                  },
+                  "nested_prev": {
+                    "value": -2
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 0
+                },
+                "nested_prev": {
+                  "value": 0
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 3
+              },
+              "nested_prev": {
+                "value": 3
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": -1
+            },
+            "nested_prev": {
+              "value": -1
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": -2,
+            "next": {
+              "value": -1,
+              "next": {
+                "value": 0,
+                "next": {
+                  "value": 3,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 3
+                  },
+                  "nested_prev": {
+                    "value": 3
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 0
+                },
+                "nested_prev": {
+                  "value": 0
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": -1
+              },
+              "nested_prev": {
+                "value": -1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": -2
+            },
+            "nested_prev": {
+              "value": -2
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting handles negative numbers and zero correctly",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 7,
+            "next": null,
+            "prev": null,
+            "nested_next": {
+              "value": 7
+            },
+            "nested_prev": {
+              "value": 7
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 7,
+            "next": null,
+            "prev": null,
+            "nested_next": {
+              "value": 7
+            },
+            "nested_prev": {
+              "value": 7
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting a single-element list leaves the value unchanged",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 5,
+            "next": {
+              "value": 5,
+              "next": {
+                "value": 5,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 5
+                },
+                "nested_prev": {
+                  "value": 5
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 5
+              },
+              "nested_prev": {
+                "value": 5
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 5
+            },
+            "nested_prev": {
+              "value": 5
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 5,
+            "next": {
+              "value": 5,
+              "next": {
+                "value": 5,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 5
+                },
+                "nested_prev": {
+                  "value": 5
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 5
+              },
+              "nested_prev": {
+                "value": 5
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 5
+            },
+            "nested_prev": {
+              "value": 5
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting an all-equal list preserves a valid sorted sequence",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 3,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 3
+            },
+            "nested_prev": {
+              "value": 3
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 3
+              },
+              "nested_prev": {
+                "value": 3
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "result must be fully sorted; a partially sorted list violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 4,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 3,
+                "next": {
+                  "value": 2,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 2
+                  },
+                  "nested_prev": {
+                    "value": 2
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 4
+            },
+            "nested_prev": {
+              "value": 4
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 4,
+                "next": {
+                  "value": 3,
+                  "next": null,
+                  "prev": null,
+                  "nested_next": {
+                    "value": 3
+                  },
+                  "nested_prev": {
+                    "value": 3
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 4
+                },
+                "nested_prev": {
+                  "value": 4
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "every adjacent pair in the result must be ordered ascending",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 2,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 2
+            },
+            "nested_prev": {
+              "value": 2
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "result values must be a permutation of input values; duplicates cannot be created or lost",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": -1,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 0,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 0
+                },
+                "nested_prev": {
+                  "value": 0
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 3
+              },
+              "nested_prev": {
+                "value": 3
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": -1
+            },
+            "nested_prev": {
+              "value": -1
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": -1,
+            "next": {
+              "value": 0,
+              "next": {
+                "value": 4,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 4
+                },
+                "nested_prev": {
+                  "value": 4
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 0
+              },
+              "nested_prev": {
+                "value": 0
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": -1
+            },
+            "nested_prev": {
+              "value": -1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorted output must contain exactly the original multiset of values",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 3,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 3
+            },
+            "nested_prev": {
+              "value": 3
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 3,
+                "next": null,
+                "prev": null,
+                "nested_next": null,
+                "nested_prev": {
+                  "value": 99
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting must not corrupt nested pointers; separation between nested structure and list linkage must be maintained",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 8,
+            "next": {
+              "value": 6,
+              "next": {
+                "value": 7,
+                "next": {
+                  "value": 5,
+                  "next": {
+                    "value": 3,
+                    "next": {
+                      "value": 0,
+                      "next": {
+                        "value": 9,
+                        "next": null,
+                        "prev": null,
+                        "nested_next": {
+                          "value": 9
+                        },
+                        "nested_prev": {
+                          "value": 9
+                        }
+                      },
+                      "prev": null,
+                      "nested_next": {
+                        "value": 0
+                      },
+                      "nested_prev": {
+                        "value": 0
+                      }
+                    },
+                    "prev": null,
+                    "nested_next": {
+                      "value": 3
+                    },
+                    "nested_prev": {
+                      "value": 3
+                    }
+                  },
+                  "prev": null,
+                  "nested_next": {
+                    "value": 5
+                  },
+                  "nested_prev": {
+                    "value": 5
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 7
+                },
+                "nested_prev": {
+                  "value": 7
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 6
+              },
+              "nested_prev": {
+                "value": 6
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 8
+            },
+            "nested_prev": {
+              "value": 8
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 0,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 5,
+                "next": {
+                  "value": 6,
+                  "next": {
+                    "value": 7,
+                    "next": {
+                      "value": 8,
+                      "next": {
+                        "value": 9,
+                        "next": null,
+                        "prev": null,
+                        "nested_next": {
+                          "value": 9
+                        },
+                        "nested_prev": {
+                          "value": 9
+                        }
+                      },
+                      "prev": null,
+                      "nested_next": {
+                        "value": 8
+                      },
+                      "nested_prev": {
+                        "value": 8
+                      }
+                    },
+                    "prev": null,
+                    "nested_next": {
+                      "value": 7
+                    },
+                    "nested_prev": {
+                      "value": 7
+                    }
+                  },
+                  "prev": null,
+                  "nested_next": {
+                    "value": 6
+                  },
+                  "nested_prev": {
+                    "value": 6
+                  }
+                },
+                "prev": null,
+                "nested_next": {
+                  "value": 5
+                },
+                "nested_prev": {
+                  "value": 5
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 3
+              },
+              "nested_prev": {
+                "value": 3
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 0
+            },
+            "nested_prev": {
+              "value": 0
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting works for a longer list and returns all elements in ascending order",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 3,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 3,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 3
+                },
+                "nested_prev": {
+                  "value": 3
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "an already sorted list remains sorted and unchanged in contents",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 2,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 2
+                },
+                "nested_prev": {
+                  "value": 2
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 3
+              },
+              "nested_prev": {
+                "value": 3
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 1,
+            "next": {
+              "value": 2,
+              "next": null,
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 1
+            },
+            "nested_prev": {
+              "value": 1
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "sorting must preserve list length and cannot drop nodes",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 5,
+            "next": {
+              "value": 1,
+              "next": {
+                "value": 4,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 4
+                },
+                "nested_prev": {
+                  "value": 4
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 1
+              },
+              "nested_prev": {
+                "value": 1
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 5
+            },
+            "nested_prev": {
+              "value": 5
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 5,
+            "next": {
+              "value": 4,
+              "next": {
+                "value": 1,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 1
+                },
+                "nested_prev": {
+                  "value": 1
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 4
+              },
+              "nested_prev": {
+                "value": 4
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 5
+            },
+            "nested_prev": {
+              "value": 5
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "result must be in ascending order; producing the values in descending order violates the sort postcondition",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "list": {
+          "head": {
+            "value": 4,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 1,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 1
+                },
+                "nested_prev": {
+                  "value": 1
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 4
+            },
+            "nested_prev": {
+              "value": 4
+            }
+          }
+        },
+        "result_list": {
+          "head": {
+            "value": 4,
+            "next": {
+              "value": 2,
+              "next": {
+                "value": 1,
+                "next": null,
+                "prev": null,
+                "nested_next": {
+                  "value": 1
+                },
+                "nested_prev": {
+                  "value": 1
+                }
+              },
+              "prev": null,
+              "nested_next": {
+                "value": 2
+              },
+              "nested_prev": {
+                "value": 2
+              }
+            },
+            "prev": null,
+            "nested_next": {
+              "value": 4
+            },
+            "nested_prev": {
+              "value": 4
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "returning the input list unchanged when it is not already sorted violates the sort postcondition",
+      "expected": false
+    }
+  ]
+}

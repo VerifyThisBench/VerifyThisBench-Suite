@@ -1,0 +1,7 @@
+struct dll_node {
+    int *prev;
+    int *next;
+    int n;
+};
+
+typedef struct dll_node *DLL;

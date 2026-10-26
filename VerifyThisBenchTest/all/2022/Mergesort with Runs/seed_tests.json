@@ -1,0 +1,1152 @@
+{
+  "challenge": "Mergesort with Runs",
+  "description": "Merge-sort an array segment into a sorted array while computing exclusive end indexes of runs of equal elements.",
+  "function_signature": "msort(array, l, h) -> sr and merge(sr1, sr2) -> sr",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          4,
+          5,
+          3,
+          9,
+          3
+        ],
+        "l": 0,
+        "h": 6
+      },
+      "condition": "pre",
+      "spec": "msort requires array is not null and 0 <= l <= h <= array length",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": [],
+        "l": 0,
+        "h": 0
+      },
+      "condition": "pre",
+      "spec": "msort allows empty range when l == h == array length",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "l": 2,
+        "h": 1
+      },
+      "condition": "pre",
+      "spec": "msort requires l <= h",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "l": 0,
+        "h": 4
+      },
+      "condition": "pre",
+      "spec": "msort requires h <= array length",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task2",
+      "input": {
+        "array": [
+          7,
+          2,
+          5,
+          2
+        ],
+        "l": 0,
+        "h": 4
+      },
+      "condition": "pre",
+      "spec": "memory safety for msort requires all recursive accesses stay within bounds, so 0 <= l <= h <= array length",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task2",
+      "input": {
+        "r1": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            1,
+            1,
+            4
+          ]
+        },
+        "r2": {
+          "runs": [
+            1,
+            3
+          ],
+          "data": [
+            2,
+            3,
+            3
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "memory safety for merge requires each runs array is increasing, positive, and its last element equals data length",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "r1": {
+          "runs": [
+            2,
+            2
+          ],
+          "data": [
+            1,
+            1,
+            4
+          ]
+        },
+        "r2": {
+          "runs": [
+            1
+          ],
+          "data": [
+            2
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "memory safety for merge requires run boundaries are strictly increasing",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "r1": {
+          "runs": [
+            2,
+            4
+          ],
+          "data": [
+            1,
+            1,
+            4
+          ]
+        },
+        "r2": {
+          "runs": [
+            1
+          ],
+          "data": [
+            2
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "memory safety for merge requires last run boundary does not exceed data length",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task3",
+      "input": {
+        "array": [
+          3,
+          1,
+          2,
+          4
+        ],
+        "l": 0,
+        "h": 4
+      },
+      "condition": "pre",
+      "spec": "termination of msort is guaranteed when recursive calls are on strictly smaller ranges with finite l and h satisfying 0 <= l <= h <= length",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task3",
+      "input": {
+        "array": [
+          9
+        ],
+        "l": 0,
+        "h": 1
+      },
+      "condition": "pre",
+      "spec": "termination includes the base case h - l == 1",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "l": 3,
+        "h": 2
+      },
+      "condition": "pre",
+      "spec": "termination argument assumes valid range with l <= h",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            1,
+            1,
+            4
+          ]
+        },
+        "r2": {
+          "runs": [
+            1,
+            3
+          ],
+          "data": [
+            2,
+            3,
+            3
+          ]
+        },
+        "result": {
+          "runs": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "data": [
+            1,
+            1,
+            2,
+            3,
+            3,
+            4
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge result data is sorted and is a permutation of both input data arrays combined",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            1,
+            3
+          ]
+        },
+        "r2": {
+          "runs": [
+            2
+          ],
+          "data": [
+            2,
+            2
+          ]
+        },
+        "result": {
+          "runs": [
+            1,
+            3,
+            4
+          ],
+          "data": [
+            1,
+            2,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge handles duplicates while preserving sortedness and permutation",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            1
+          ],
+          "data": [
+            -2
+          ]
+        },
+        "r2": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            -2,
+            5
+          ]
+        },
+        "result": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            -2,
+            -2,
+            5
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge correctly combines negative and equal values into a sorted permutation",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            1,
+            1,
+            4
+          ]
+        },
+        "r2": {
+          "runs": [
+            1,
+            3
+          ],
+          "data": [
+            2,
+            3,
+            3
+          ]
+        },
+        "result": {
+          "runs": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "data": [
+            1,
+            2,
+            1,
+            3,
+            3,
+            4
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge result must be globally sorted",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            1,
+            3
+          ]
+        },
+        "r2": {
+          "runs": [
+            2
+          ],
+          "data": [
+            2,
+            2
+          ]
+        },
+        "result": {
+          "runs": [
+            1,
+            3,
+            4
+          ],
+          "data": [
+            1,
+            2,
+            3,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge result must be a permutation of all input elements",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task5",
+      "input": {
+        "r1": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            1,
+            3
+          ]
+        },
+        "r2": {
+          "runs": [
+            2
+          ],
+          "data": [
+            2,
+            2
+          ]
+        },
+        "result": {
+          "runs": [
+            1,
+            3,
+            4
+          ],
+          "data": [
+            1,
+            2,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge returns run boundaries at the exclusive end of each maximal block of equal values from the sorted merged data",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task5",
+      "input": {
+        "r1": {
+          "runs": [
+            2
+          ],
+          "data": [
+            5,
+            5
+          ]
+        },
+        "r2": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            5,
+            7
+          ]
+        },
+        "result": {
+          "runs": [
+            3,
+            4
+          ],
+          "data": [
+            5,
+            5,
+            5,
+            7
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge merges adjacent equal runs across both inputs into one combined run boundary",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task5",
+      "input": {
+        "r1": {
+          "runs": [
+            1
+          ],
+          "data": [
+            1
+          ]
+        },
+        "r2": {
+          "runs": [
+            1
+          ],
+          "data": [
+            2
+          ]
+        },
+        "result": {
+          "runs": [
+            2
+          ],
+          "data": [
+            1,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge must place a run boundary after each maximal equal-value segment, so distinct consecutive values need separate boundaries",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task5",
+      "input": {
+        "r1": {
+          "runs": [
+            1,
+            2
+          ],
+          "data": [
+            1,
+            3
+          ]
+        },
+        "r2": {
+          "runs": [
+            2
+          ],
+          "data": [
+            2,
+            2
+          ]
+        },
+        "result": {
+          "runs": [
+            1,
+            2,
+            4
+          ],
+          "data": [
+            1,
+            2,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge run boundaries must match the equal-value groups in the result data",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task6",
+      "input": {
+        "array": [
+          5,
+          4,
+          5,
+          3,
+          9,
+          3
+        ],
+        "l": 0,
+        "h": 6,
+        "result": {
+          "runs": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "data": [
+            3,
+            3,
+            4,
+            5,
+            5,
+            9
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort result data is sorted and is a permutation of the input segment",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task6",
+      "input": {
+        "array": [
+          7
+        ],
+        "l": 0,
+        "h": 1,
+        "result": {
+          "runs": [
+            1
+          ],
+          "data": [
+            7
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort correctly sorts a single-element segment",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task6",
+      "input": {
+        "array": [
+          2,
+          2,
+          2
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "runs": [
+            3
+          ],
+          "data": [
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort preserves multiplicities for all-equal input and result remains sorted",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task6",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "runs": [
+            1,
+            2,
+            3
+          ],
+          "data": [
+            1,
+            3,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort result must be sorted",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task6",
+      "input": {
+        "array": [
+          -1,
+          0,
+          -1
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            -1,
+            0,
+            0
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort result must be a permutation of the input segment",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task7",
+      "input": {
+        "array": [
+          5,
+          4,
+          5,
+          3,
+          9,
+          3
+        ],
+        "l": 0,
+        "h": 6,
+        "result": {
+          "runs": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "data": [
+            3,
+            3,
+            4,
+            5,
+            5,
+            9
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort returns exclusive run end indexes for each maximal equal-value block in the sorted result",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task7",
+      "input": {
+        "array": [
+          2,
+          2,
+          2
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "runs": [
+            3
+          ],
+          "data": [
+            2,
+            2,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort returns one run for an all-equal segment",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task7",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "runs": [
+            2,
+            3
+          ],
+          "data": [
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort run boundaries must correspond exactly to changes in adjacent sorted values",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task8",
+      "input": {
+        "array": [
+          {
+            "key": 2,
+            "id": 0
+          },
+          {
+            "key": 1,
+            "id": 1
+          },
+          {
+            "key": 2,
+            "id": 2
+          },
+          {
+            "key": 1,
+            "id": 3
+          }
+        ],
+        "l": 0,
+        "h": 4,
+        "result": {
+          "data": [
+            {
+              "key": 1,
+              "id": 1
+            },
+            {
+              "key": 1,
+              "id": 3
+            },
+            {
+              "key": 2,
+              "id": 0
+            },
+            {
+              "key": 2,
+              "id": 2
+            }
+          ],
+          "runs": [
+            2,
+            4
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort is stable: elements with equal keys appear in the result in the same relative order as in the input",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task8",
+      "input": {
+        "array": [
+          {
+            "key": 2,
+            "id": 0
+          },
+          {
+            "key": 1,
+            "id": 1
+          },
+          {
+            "key": 2,
+            "id": 2
+          },
+          {
+            "key": 1,
+            "id": 3
+          }
+        ],
+        "l": 0,
+        "h": 4,
+        "result": {
+          "data": [
+            {
+              "key": 1,
+              "id": 3
+            },
+            {
+              "key": 1,
+              "id": 1
+            },
+            {
+              "key": 2,
+              "id": 0
+            },
+            {
+              "key": 2,
+              "id": 2
+            }
+          ],
+          "runs": [
+            2,
+            4
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "stability forbids reversing the relative order of equal-key elements",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task8",
+      "input": {
+        "array": [
+          {
+            "key": 1,
+            "id": 0
+          },
+          {
+            "key": 1,
+            "id": 1
+          },
+          {
+            "key": 1,
+            "id": 2
+          }
+        ],
+        "l": 0,
+        "h": 3,
+        "result": {
+          "data": [
+            {
+              "key": 1,
+              "id": 0
+            },
+            {
+              "key": 1,
+              "id": 1
+            },
+            {
+              "key": 1,
+              "id": 2
+            }
+          ],
+          "runs": [
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "stability is preserved when all keys are equal",
+      "expected": true
+    },
+    {
+      "id": "T032",
+      "task": "task9",
+      "input": {
+        "n": 1,
+        "time_bound": "O(n log n)",
+        "space_bound": "O(n log n)"
+      },
+      "condition": "post",
+      "spec": "complexity claim should include the base case n = 1 within O(n log n) time and O(n log n) space conventions",
+      "expected": true
+    },
+    {
+      "id": "T033",
+      "task": "task9",
+      "input": {
+        "n": 8,
+        "time_bound": "O(n log n)",
+        "space_bound": "O(n log n)"
+      },
+      "condition": "post",
+      "spec": "mergesort with recursive splitting and linear merge has O(n log n) time and O(n log n) total allocated space under the stated model",
+      "expected": true
+    },
+    {
+      "id": "T034",
+      "task": "task9",
+      "input": {
+        "n": 8,
+        "time_bound": "O(n^2)",
+        "space_bound": "O(n)"
+      },
+      "condition": "post",
+      "spec": "the verified complexity claim is not quadratic time with only linear total space in this specification",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task4",
+      "input": {
+        "r1": {
+          "runs": [
+            2
+          ],
+          "data": [
+            1,
+            2
+          ]
+        },
+        "r2": {
+          "runs": [
+            2
+          ],
+          "data": [
+            3,
+            4
+          ]
+        },
+        "result": {
+          "runs": [
+            1,
+            2,
+            3
+          ],
+          "data": [
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "merge result must contain all elements from both inputs; here element 4 is missing",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task6",
+      "input": {
+        "array": [
+          5,
+          4,
+          5,
+          3,
+          9,
+          3
+        ],
+        "l": 0,
+        "h": 6,
+        "result": {
+          "runs": [
+            2,
+            3,
+            5,
+            6
+          ],
+          "data": [
+            3,
+            3,
+            4,
+            5,
+            5,
+            9,
+            9
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort result data must be a permutation of the input segment; here the value 9 appears one extra time",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task7",
+      "input": {
+        "array": [
+          1,
+          1,
+          2,
+          2,
+          3
+        ],
+        "l": 0,
+        "h": 5,
+        "result": {
+          "runs": [
+            5
+          ],
+          "data": [
+            1,
+            1,
+            2,
+            2,
+            3
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "msort run boundaries must mark each maximal equal-value block separately, not collapse all into one",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task8",
+      "input": {
+        "array": [
+          {
+            "key": 5,
+            "id": 0
+          },
+          {
+            "key": 5,
+            "id": 1
+          }
+        ],
+        "l": 0,
+        "h": 2,
+        "result": {
+          "data": [
+            {
+              "key": 5,
+              "id": 0
+            }
+          ],
+          "runs": [
+            1
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "stable msort must preserve all input elements; dropping the second equal-key element violates both stability and permutation",
+      "expected": false
+    },
+    {
+      "id": "T039",
+      "task": "task9",
+      "input": {
+        "n": 16,
+        "time_bound": "O(n)",
+        "space_bound": "O(1)"
+      },
+      "condition": "post",
+      "spec": "mergesort cannot achieve linear time with constant space in the stated model; comparison-based sort lower bound is n log n",
+      "expected": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+struct Node {
+    data: i32,
+    prev: Option<Box<Node>>,  // Also used as left child in BST
+    next: Option<Box<Node>>,  // Also used as right child in BST
+}
+
+struct DLLNode {
+    data: i32,
+    prev: Option<Box<DLLNode>>,
+    next: Option<Box<DLLNode>>,
+}

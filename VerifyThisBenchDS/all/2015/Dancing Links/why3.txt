@@ -1,0 +1,1 @@
+type dll = { prev: array int; next: array int; ghost n: int }

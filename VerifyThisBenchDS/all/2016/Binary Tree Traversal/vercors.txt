@@ -1,0 +1,6 @@
+class Tree {
+    Tree left;
+    Tree right;
+    Tree parent;
+    boolean mark;
+}

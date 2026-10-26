@@ -1,0 +1,6 @@
+// VerCors Data Structure Definition for Work-Stealing
+class WorkStealing {
+    int[][] subtask;      // Maps task ID to child task IDs
+    boolean[] executed;   // Marks executed tasks
+    Deque[] q;           // Double-ended queue per worker
+}

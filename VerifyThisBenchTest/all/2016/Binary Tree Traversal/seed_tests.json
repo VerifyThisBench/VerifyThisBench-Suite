@@ -1,0 +1,810 @@
+{
+  "challenge": "Binary Tree Traversal",
+  "description": "Marks all nodes in a well-formed non-empty binary tree with parent pointers using constant extra space while preserving tree shape and visiting nodes in depth-first order",
+  "function_signature": "markTree(root) -> tree",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": null,
+          "right": null,
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "root is not null and a single-node tree with parent of root equal to null is well formed",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "non-empty full binary tree is allowed when every child parent pointer refers back to its parent and root parent is null",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "root": null
+      },
+      "condition": "pre",
+      "spec": "root must not be null because the tree has at least one node",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": null,
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "each node must have either 0 or 2 children, so a node with exactly one child is invalid",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "parent pointer of the root must be null",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            }
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "following a child pointer and then the parent pointer must return to the original node",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": null,
+          "right": null,
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": null,
+          "right": null,
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "upon termination all mark fields are true for a single-node tree and the shape is unchanged",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "all nodes become marked true in a three-node full tree",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": true,
+          "left": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "all nodes become marked true in a seven-node full tree regardless of initial mark values",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "every node must be marked true after termination, so leaving one node unmarked violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": null,
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "the tree shape must not change, so deleting a child violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": true,
+            "left": null,
+            "right": null,
+            "parent": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            }
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "the tree shape includes correct parent-child relationships, so changing a parent pointer violates shape preservation",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": true,
+          "left": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": true,
+            "left": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": true,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "if all nodes are already marked, the algorithm still preserves the full tree shape and leaves all marks true",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": null,
+          "right": null,
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "depth-first visitation proof assumes the same well-formed non-empty full-binary-tree precondition",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "root": null
+      },
+      "condition": "pre",
+      "spec": "root must not be null for the traversal order property",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": null,
+          "parent": null
+        }
+      },
+      "condition": "pre",
+      "spec": "depth-first order property is specified only for trees where every node has 0 or 2 children",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result_visit_order": [
+          "root",
+          "left",
+          "right"
+        ]
+      },
+      "condition": "post",
+      "spec": "nodes are visited in depth-first preorder on a three-node tree",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        },
+        "result_visit_order": [
+          "root",
+          "left",
+          "left.left",
+          "left.right",
+          "right",
+          "right.left",
+          "right.right"
+        ]
+      },
+      "condition": "post",
+      "spec": "nodes are visited in depth-first preorder on a seven-node full tree",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        },
+        "result_visit_order": [
+          "left",
+          "left.left",
+          "left.right",
+          "root",
+          "right",
+          "right.left",
+          "right.right"
+        ]
+      },
+      "condition": "post",
+      "spec": "depth-first order must begin with the root, so inorder-like visitation is incorrect",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result_visit_order": [
+          "root",
+          "right",
+          "left"
+        ]
+      },
+      "condition": "post",
+      "spec": "depth-first order explores the left subtree before the right subtree in this tree",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "right": {
+              "mark": false,
+              "left": null,
+              "right": null,
+              "parent": null
+            },
+            "parent": null
+          },
+          "parent": null
+        },
+        "result_visit_order": [
+          "root",
+          "left",
+          "left.left",
+          "right",
+          "left.right",
+          "right.left",
+          "right.right"
+        ]
+      },
+      "condition": "post",
+      "spec": "a depth-first preorder traversal must finish the entire left subtree before visiting the right subtree",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": null,
+          "right": null,
+          "parent": null
+        },
+        "result_visit_order": [
+          "root"
+        ]
+      },
+      "condition": "post",
+      "spec": "depth-first order on a single-node tree visits exactly that node once",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "root": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        },
+        "result": {
+          "mark": false,
+          "left": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "right": {
+            "mark": false,
+            "left": null,
+            "right": null,
+            "parent": null
+          },
+          "parent": null
+        }
+      },
+      "condition": "post",
+      "spec": "result is the input returned unchanged with all marks still false, violating the all-marks-true postcondition",
+      "expected": false
+    }
+  ]
+}

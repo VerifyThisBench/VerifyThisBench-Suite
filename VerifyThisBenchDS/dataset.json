@@ -1,0 +1,1272 @@
+{
+  "dataset": "VerifyThisBenchDS",
+  "total_challenges": 41,
+  "challenges": [
+    {
+      "year": "2011",
+      "name": "Finding Two Duplets in an Array",
+      "description": "An integer array a of length n + 2 with n ≥ 2. It is known that at least\ntwo values stored in the array appear twice (i.e., there are at least two duplets)",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implement and verify a program that find two such values. You may\nassume that the array contains values between 0 and n − 1."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "type int_array = array int",
+        "cbmc": "int array[];",
+        "framac": "int array[];",
+        "vercors": "int[] array;",
+        "verifast": "int *array;"
+      }
+    },
+    {
+      "year": "2011",
+      "name": "Finding the Maximum in a Tree",
+      "description": "Implement and verify a program that computes the maximum of the values in the tree.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implement and verify a program that computes the maximum of the values in the tree."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Tree {\n\tvar value: int;\n\tvar left: Tree;\n\tvar right: Tree;\n}",
+        "verus": "struct Tree {\n    val: i32,\n    left: Option<Box<Tree>>,\n    right: Option<Box<Tree>>,\n}",
+        "why3": "type tree = \n  | Empty \n  | Node tree int tree",
+        "cbmc": "typedef struct tree {\n    int value;\n    struct tree *left;\n    struct tree *right;\n} tree_t;",
+        "framac": "typedef struct tree {\n    int value;\n    struct tree *left;\n    struct tree *right;\n} tree_t;",
+        "vercors": "class Tree {\n    int value;\n    Tree left;\n    Tree right;\n}",
+        "verifast": "struct tree {\n    int value;\n    struct tree *left;\n    struct tree *right;\n};"
+      }
+    },
+    {
+      "year": "2011",
+      "name": "Finding the Maximum in an Array",
+      "description": "This challenge is an instance of Kaldewaij’s Search by Elimination [10], where an element with\na given property is located by eliminating elements that do not have that\nproperty. The challenge was selected\nas it involves a relatively simple but\ninteresting invariant, expressing that the maximal element is in the remaining\nsearch space rather than maintaining the maximal element found so far.\npublic static int max(int[] a) {\nint x = 0;\nint y = a.length-1;\nwhile (x != y) {\nif (a[x] <= a[y]) x++;\nelse y--;\n}\nreturn x;\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verify that the index returned by the method max() given points to an element maximal\nin the array"
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "[i32]",
+        "why3": "type int_array = array int",
+        "cbmc": "int array[];",
+        "framac": "int array[];",
+        "vercors": "int[] array;",
+        "verifast": "int *array;"
+      }
+    },
+    {
+      "year": "2012",
+      "name": "Longest Common Prefix",
+      "description": "Longest Common Prefix (LCP) - 45 minutes\n\nVERIFICATION TASK\n-----------------\n\nLongest Common Prefix (LCP) is an algorithm used for text querying. In\nthe following, we model text as an integer array. You may use other\nrepresentations (e.g., Java Strings), if your system supports them.\n\nLCP can be implemented with the pseudocode given below. Formalize and\n\n\nPseudocode:\n\n    int lcp(int[] a, int x, int y) {\n        int l = 0;\n        while (x+l<a.length && y+l<a.length && a[x+l]==a[y+l]) {\n            l++;\n        }\n        return l;\n    }",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "verify the following informal specification for LCP.\n\nInput:  an integer array a, and two indices x and y into this array\nOutput: length of the longest common prefix of the subarrays of a\n        starting at x and y respectively."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "array int",
+        "cbmc": "int *",
+        "framac": "int *",
+        "vercors": "int[]",
+        "verifast": "int *"
+      }
+    },
+    {
+      "year": "2012",
+      "name": "Longest Common Prefix Advanced",
+      "description": "BACKGROUND\n----------\n\nTogether with a suffix array, LCP can be used to solve interesting text\nproblems, such as finding the longest repeated substring (LRS) in a text.\n\nA suffix array (for a given text) is an array of all suffixes of the\ntext. For the text [7,8,8,6], the suffix array is\n[[7,8,8,6],\n   [8,8,6],\n     [8,6],\n       [6]]\n\nTypically, the suffixes are not stored explicitly as above but\nrepresented as pointers into the original text. The suffixes in a suffix\narray  are sorted in lexicographical order. This way, occurrences of\nrepeated substrings in the original text are neighbors in the suffix\narray. \n\nFor the above, example (assuming pointers are 0-based integers), the\nsorted suffix array is:\n\n[3,0,2,1]\n\n//LRS.java\npublic class LRS {\n\n    private static int solStart = 0;\n    private static int solLength = 0;\n    private static int[] a;\n\n    public static void main(String[] args) {\n        a = new int[args.length];\n        for (int i=0; i<args.length; i++) {\n            a[i]=Integer.parseInt(args[i]);\n        }\n        doLRS();\n        System.out.println(solStart+\"->\"+solLength);\n    }\n\n\n\n    public static void doLRS() {\n        SuffixArray sa = new SuffixArray(a);\n\n        for (int i=1; i < a.length; i++) {\n            int length = sa.lcp(i);\n            if (length > solLength) {\n                solStart = sa.select(i);\n                solLength = length;\n            }\n        }\n    }\n\n}\n\n\n//Based on code by Robert Sedgewick and Kevin Wayne.\n//SuffixArray.java\npublic class SuffixArray {\n\n    private final int[] a;\n    private final int[] suffixes;\n    private final int N;\n\n    public SuffixArray(int[] a) {\n        this.a = a;\n        N = a.length;\n        suffixes = new int[N];\n        for (int i = 0; i < N; i++) suffixes[i] = i;\n        sort(suffixes);\n    }\n\n\n    public int select(int i) { \n        return suffixes[i]; \n    }\n\n \n    private int lcp(int x, int y) {\n        int l = 0;\n        while (x+l<N && y+l<N && a[x+l]==a[y+l]) {\n            l++;\n        }\n        return l;\n    }\n\n\n    public int lcp(int i) {\n        return lcp(suffixes[i], suffixes[i-1]);\n    }\n\n\n    public int compare(int x, int y) {\n        if (x == y) return 0;\n        int l = 0;\n\n        while (x+l<N && y+l<N && a[x+l] == a[y+l]) {\n            l++;\n        }\n\n        if (x+l == N) return -1;\n        if (y+l == N) return 1;\n        if (a[x+l] < a[y+l]) return -1;\n        if (a[x+l] > a[y+l]) return 1;\n        \n        throw new RuntimeException();\n    }\n\n\n    public void sort(final int[] data) {\n        for(int i = 0; i < data.length + 0; i++) {\n            for(int j = i; j > 0 && compare(data[j - 1], data[j]) > 0; j--) {\n                final int b = j - 1;\n                final int t = data[j];\n                data[j] = data[b];\n                data[b] = t;\n            }\n        }\n    }\n\n\n    public static void main(String[] argv) {\n        int[] arr = {1,2,2,5};\n        SuffixArray sa = new SuffixArray(arr);\n        System.out.println(sa.lcp(1,2));\n        int[] brr = {1,2,3,5};\n        sa = new SuffixArray(brr);\n        System.out.println(sa.lcp(1,2));\n        int[] crr = {1,2,3,5};\n        sa = new SuffixArray(crr);\n        System.out.println(sa.lcp(2,3));\n        int[] drr = {1,2,3,3};\n        sa = new SuffixArray(drr);\n        System.out.println(sa.lcp(2,3));\n    }\n\n\n}\n\n\n\n//Based on code by Robert Sedgewick and Kevin Wayne.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "The attached Java code contains an implementation of a suffix array\n(SuffixArray.java), consisting essentially of a lexicographical\ncomparison on arrays, a sorting routine, and LCP.\n\nThe client code (LRS.java) uses these to solve the LRS problem. Verify\nthat it does so correctly."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "array int",
+        "cbmc": "int *",
+        "framac": "int *",
+        "vercors": "int[]",
+        "verifast": "int *"
+      }
+    },
+    {
+      "year": "2012",
+      "name": "Prefix-Sum",
+      "description": "BACKGROUND\n----------\n\nThe concept of a prefix sum is very simple. Given an integer array a,\nstore in each cell a[i] the value a[0]+...+a[i-1].\n\nExample. The prefix sum of the array\n\n[3, 1, 7, 0, 4, 1, 6, 3]\n\nis\n\n[0, 3, 4, 11, 11, 15, 16, 22].\n\n\nPrefix sums have important applications in parallel vector programming,\nwhere the workload of calculating the sum is distributed over several\nprocesses. We will verify a sequential version of such an algorithm.\n\nALGORITHM DESCRIPTION\n---------------------\n\nWe assume that the length of the array is a power of two. This allows us\nto identify the array initially with the leaves of a complete binary\ntree. The computation proceeds along this tree in two phases: upsweep\nand downsweep.\n\n\nDuring the upsweeep, which itself proceeds in phases, the sum of the\nchildren nodes is propagated to the parent nodes along the tree. A part\nof the array is overwritten with values stored in the inner nodes of the\ntree in this process (see diagram in the accompanying PDF). After the\nupsweep, the rightmost array cell is identified with the root of the\ntree.\n\n\nAs preparation for the downsweep, a zero is inserted in the rightmost\ncell.\n\nThen, in each step, each node at the current level passes to its left\nchild its own value, and it passes to its right child, the sum of the\nleft child from the upsweep phase and its own value.\n//PrefixSumIter.java\nimport java.util.Arrays;\n\nclass PrefixSumIter {\n\n    private int[] a;\n\n    PrefixSumIter(int [] a) {\n\tthis.a = a;\n    }\n\n\n    public int upsweep() {\n        int space = 1;\n        for (; space < a.length; space=space*2) {\n            int left = space - 1;\n            while (left < a.length) {\n                int right = left + space;\n                a[right] = a[left] + a[right];\n                left = left + space*2;\n            }\n        }\n        return space;\n    }\n    \n\n    public void downsweep(int space) {\n        a[a.length - 1] = 0;\n        space = space/2;\n        for (; space > 0; space=space/2) {\n            int right = space*2 - 1;\n            while (right < a.length) {\n                int left = right - space;\n                int temp = a[right];\n                a[right] = a[left] + a[right];\n                a[left] = temp;\n                right = right + space*2;\n            }\n        }\n    }\n \n\n    public static void main (String [] args) {\n        int [] a = {3,1,7,0,4,1,6,3};\n        PrefixSumIter p = new PrefixSumIter(a);\n        System.out.println(Arrays.toString(a));\n        int space = p.upsweep();\n        System.out.println(space);        \n        System.out.println(Arrays.toString(a));\n        p.downsweep(space);\n        System.out.println(Arrays.toString(a));\n    }\n\n}\n\n\n/*\n[3, 1, 7, 0, 4, 1, 6, 3]\n[3, 4, 7, 11, 4, 5, 6, 25]\n[0, 3, 4, 11, 11, 15, 16, 22]\n\n\n\n*/\n\n\n//PrefixSumRec.java\nimport java.util.Arrays;\n\nclass PrefixSumRec {\n\n    private int[] a;\n\n    PrefixSumRec(int [] a) {\n\tthis.a = a;\n    }\n\n\n    public void upsweep(int left, int right) {\n        if (right > left+1) {\n            int space = right - left;\n            upsweep(left-space/2,left);\n            upsweep(right-space/2,right);\n        }\n        a[right] = a[left]+a[right];\n    }\n    \n\n    public void downsweep(int left, int right) {\n        int tmp = a[right];\n        a[right] = a[right] + a[left];\n        a[left] = tmp;\n        if (right > left+1) {\n            int space = right - left;\n            downsweep(left-space/2,left);\n            downsweep(right-space/2,right);\n        }\n    \n    }\n\n       \n    public static void main (String [] args) {\n        int [] a = {3,1,7,0,4,1,6,3};\n        PrefixSumRec p = new PrefixSumRec(a);\n        System.out.println(Arrays.toString(a));\n        p.upsweep(3,7);\n        System.out.println(Arrays.toString(a));\n        a[7]=0;\n        p.downsweep(3,7);\n        System.out.println(Arrays.toString(a));\n    }\n\n}\n\n\n/*\n[3, 1, 7, 0, 4, 1, 6, 3]\n[3, 4, 7, 11, 4, 5, 6, 25]\n[0, 3, 4, 11, 11, 15, 16, 22]\n\n\n\n*/",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "1. Specify and verify the upsweep method. You can begin with a slightly\n   simpler requirement that the last array cell contains the sum of the\n   whole array in the post-state.\n2. Verify both upsweep AND downsweep - prove that the array cells\n   contain appropriate prefix sums in the post-state.\n\nIf a general specification is not possible with your tool, assume the\nlength of array is 8."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "array int",
+        "cbmc": "int *",
+        "framac": "int *",
+        "vercors": "int[]",
+        "verifast": "int *"
+      }
+    },
+    {
+      "year": "2012",
+      "name": "Tree Del",
+      "description": "Iterative deletion in a binary search tree\n\nGiven: a pointer t to the root of a non-empty binary search tree (not\nnecessarily balanced). Verify that the following procedure removes the\nnode with the minimal key from the tree. After removal, the data\nstructure should again be a binary search tree.\n\n\n(Tree, int) search_tree_delete_min (Tree t) {\n   Tree tt, pp, p;\n   int m;\n   p = t->left;\n   if (p == NULL) {\n       m = t->data; tt = t->right; dispose (t); t = tt;\n   } else {\n       pp = t; tt = p->left;\n       while (tt != NULL) {\n           pp = p; p = tt; tt = p->left;\n       }\n       m = p->data; tt = p->right; dispose(p); pp->left= tt;\n   }\n   return (t,m);\n}\n\nNote: When implementing in a garbage-collected language, the call to\ndispose() is superfluous.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verify that the following procedure removes the\nnode with the minimal key from the tree. After removal, the data\nstructure should again be a binary search tree."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Tree {\n\tvar data: int;\n\tvar left: Tree;\n\tvar right: Tree;\n}",
+        "verus": "struct Tree {\n    data: i32,\n    left: Option<Box<Tree>>,\n    right: Option<Box<Tree>>,\n}",
+        "why3": "type tree = Empty | Node tree int tree",
+        "cbmc": "struct tree {\n    struct tree *left;\n    int data;\n    struct tree *right;\n};\n\ntypedef struct tree *Tree;",
+        "framac": "struct tree {\n    struct tree *left;\n    int data;\n    struct tree *right;\n};\n\ntypedef struct tree *Tree;",
+        "vercors": "class Tree {\n    int data;\n    Tree left;\n    Tree right;\n}",
+        "verifast": "struct tree {\n    Tree left;\n    int data;\n    Tree right;\n};\n\ntypedef struct tree *Tree;"
+      }
+    },
+    {
+      "year": "2014",
+      "name": "Bubblesort for Doubly-Linked Lists",
+      "description": "The accompanying C file implements a doubly-linked list with integer\npayloads. The central function of the program (gl_sort) sorts the\nlist using a bubble sort-style algorithm in ascending order of payloads.\nThe datat structure also supports nesting, but this is not used for\nsorting. Separation between nesting pointers and list linkage pointers\nshould be maintained though.\nVerify the program w.r.t. this informal specification. Should you find\nbugs, please fix them and proceed to verify. If your tool does not\nsupport C, we ask you to reimplement the core data\nstructure/functionality in the language of your choice. Please try to\nstay as faitful to the original code as possible (but see below).\nThe program contains a basic correctness checker consisting of assert\nstatements (inspect function). The checker does not check the complete\nspecification given above.\n* For tools that do not need user-supplied invariants, checking that the\nassertions pass would be a starting point. Feel free to add assertions\nthat are meaningful w.r.t. the informal specification. If you can\nverify one of the included assertions, please comment it out to produce\na maximal set of assertions that you can verify.\n* For tools that use more expressive specification formalisms and\nuser-supplied invariants, we encourage you to prove a more complete\nfunctional specification rather than just checking the assertions.\nA partial and approximate overview of the data structure is below\n(please consider the text below as well).\n+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+\n| |\n| |\n| |\n| +–––––––––––––+ +–––––––––––––+ |\n| gl_list | value | | value | |\n| +––––––––––+ +–––––––––––––+ +–––––––––––––+ |\n+–––––> next +–––––––> next +–––––––––> next +––––––––––+\n +––––––––––+ +–––––––––––––+ +–––––––––––––+ linkage\n | prev | | prev | | prev |\n +––––––––––+ +–––––––––––––+ +–––––––––––––+\n | next | | next |\n |-------------| |-------------| nested\n | prev | | prev |\n | | | |\n | | | |\n | | | |\n +–––––––––––––+ +–––––––––––––+\nImplementation details:\nThe next and the prev pointers are contained in a substructure called\nlist_head. They point to the list_head of the neighboring nodes. From\nthis structure, the payload (i.e., value) is reached by means of pointer\narithmetic (this is an aspect that need not be modeled in other\nlanguages). \n\nextern void abort(void); \nvoid reach_error(){}\n\n/*\n * This source code is licensed under the GPL license, see License.GPLv2.txt\n * for details.  The list implementation is taken from the Linux kernel.\n */\n\n#include <stdbool.h>\n#include <stdlib.h>\n#include <stdio.h>\n\nextern int __VERIFIER_nondet_int(void);\n\nstatic void fail(void) {\nERROR: {reach_error();abort();}\n}\n\n#define ___SL_ASSERT(cond) do {     \\\n    if (!(cond))                    \\\n        fail();                     \\\n} while (0)\n\nstruct list_head {\n\tstruct list_head *next, *prev;\n};\n\n#define LIST_HEAD_INIT(name) { &(name), &(name) }\n\n#define LIST_HEAD(name) \\\n\tstruct list_head name = LIST_HEAD_INIT(name)\n\n#define INIT_LIST_HEAD(ptr) do { \\\n\t(ptr)->next = (ptr); (ptr)->prev = (ptr); \\\n} while (0)\n\n#define list_entry(ptr, type, member) \\\n\t((type *)((char *)(ptr)-(unsigned long)(&((type *)0)->member)))\n\nstruct node {\n    int                         value;\n    struct list_head            linkage;\n    struct list_head            nested;\n};\n\nLIST_HEAD(gl_list);\n\nstatic void inspect(const struct list_head *head)\n{\n    // check the head\n    ___SL_ASSERT(head);\n    ___SL_ASSERT(head->next != head);\n    ___SL_ASSERT(head->prev != head);\n\n    // go one step backward\n    head = head->prev;\n    ___SL_ASSERT(head);\n    ___SL_ASSERT(head->next != head);\n    ___SL_ASSERT(head->prev != head);\n\n    // resolve root\n    const struct node *node = list_entry(head, struct node, linkage);\n    ___SL_ASSERT(node);\n    ___SL_ASSERT(node->nested.next == &node->nested);\n    ___SL_ASSERT(node->nested.prev == &node->nested);\n    ___SL_ASSERT(node->nested.next != &node->linkage);\n    ___SL_ASSERT(node->nested.prev != &node->linkage);\n\n    // check some properties\n    ___SL_ASSERT(node != (const struct node *)head);\n    ___SL_ASSERT(node != (const struct node *)&node->linkage);\n    ___SL_ASSERT(node == (const struct node *)&node->value);\n    ___SL_ASSERT(head == node->linkage.next->prev);\n    ___SL_ASSERT(head == node->linkage.prev->next);\n\n    // check traversal\n    for (head = head->next; &node->linkage != head; head = head->next);\n    ___SL_ASSERT(list_entry(head, struct node, linkage) == node);\n}\n\nstatic inline void __list_add(struct list_head *new,\n\t\t\t      struct list_head *prev,\n\t\t\t      struct list_head *next)\n{\n\tnext->prev = new;\n\tnew->next = next;\n\tnew->prev = prev;\n\tprev->next = new;\n}\n\nstatic inline void __list_del(struct list_head *prev, struct list_head *next)\n{\n\tnext->prev = prev;\n\tprev->next = next;\n}\n\nstatic inline void list_add(struct list_head *new, struct list_head *head)\n{\n\t__list_add(new, head, head->next);\n}\n\nstatic inline void list_move(struct list_head *list, struct list_head *head)\n{\n        __list_del(list->prev, list->next);\n        list_add(list, head);\n}\n\nstatic void gl_insert(int value)\n{\n    struct node *node = malloc(sizeof *node);\n    if (!node)\n        abort();\n\n    node->value = value;\n    list_add(&node->linkage, &gl_list);\n    INIT_LIST_HEAD(&node->nested);\n}\n\nstatic void gl_read()\n{\n    do {\n        gl_insert(__VERIFIER_nondet_int());\n    }\n    while (__VERIFIER_nondet_int());\n}\n\nstatic void gl_destroy()\n{\n    struct list_head *next;\n    while (&gl_list != (next = gl_list.next)) {\n        gl_list.next = next->next;\n        free(list_entry(next, struct node, linkage));\n\t}\n}\n\nstatic int val_from_node(struct list_head *head) {\n    struct node *entry = list_entry(head, struct node, linkage);\n    return entry->value;\n}\n\nstatic bool gl_sort_pass()\n{\n    bool any_change = false;\n\n    struct list_head *pos0 = gl_list.next;\n    struct list_head *pos1;\n    while (&gl_list != (pos1 = pos0->next)) {\n        const int val0 = val_from_node(pos0);\n        const int val1 = val_from_node(pos1);\n        if (val0 <= val1) {\n            // jump to next\n            pos0 = pos1;\n            continue;\n        }\n\n        any_change = true;\n        list_move(pos0, pos1);\n    }\n\n    return any_change;\n}\n\nstatic void gl_sort()\n{\n    while (gl_sort_pass())\n        ;\n}\n\nint main()\n{\n    gl_read();\n    inspect(&gl_list);\n\n    gl_sort();\n    inspect(&gl_list);\n\n    gl_destroy();\n\n    return 0;\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verify the program w.r.t. this informal specification. Should you find\nbugs, please fix them and proceed to verify. If your tool does not\nsupport C, we ask you to reimplement the core data\nstructure/functionality in the language of your choice. Please try to\nstay as faitful to the original code as possible (but see below)."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Node {\n    var value: int\n    var next: Node?\n    var prev: Node?\n    var nested_next: Node?\n    var nested_prev: Node?\n    \n    ghost var in_list: bool\n    ghost var list_index: int\n    \n    constructor(v: int)\n    {\n        value := v;\n        next := null;\n        prev := null;\n        nested_next := this;\n        nested_prev := this;\n        in_list := false;\n        list_index := -1;\n    }\n}\n\nclass DoublyLinkedList {\n    var head: Node?\n    \n    ghost var contents: seq<int>\n    ghost var nodes: seq<Node>\n    \n    constructor()\n    {\n        head := null;\n        contents := [];\n        nodes := [];\n    }\n}",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub struct Node {\n    pub value: i32,\n    pub next: Option<Box<Node>>,\n    pub prev: Option<Box<Node>>,\n    pub nested_next: Option<Box<Node>>,\n    pub nested_prev: Option<Box<Node>>,\n}\n\npub struct DoublyLinkedList {\n    pub head: Option<Box<Node>>,\n    pub spec contents: Seq<i32>,\n    pub spec nodes: Seq<Node>,\n}\n\n} // verus!",
+        "why3": "type node = {\n  value: int;\n  mutable next: option node;\n  mutable prev: option node;\n  mutable nested_next: option node;\n  mutable nested_prev: option node;\n}\n\ntype doubly_linked_list = {\n  mutable head: option node;\n  ghost mutable contents: list int;\n  ghost mutable nodes: list node;\n}",
+        "cbmc": "struct list_head {\n    struct list_head *next;\n    struct list_head *prev;\n};\n\nstruct node {\n    int value;\n    struct list_head linkage;\n    struct list_head nested;\n};",
+        "framac": "struct list_head {\n    struct list_head *next;\n    struct list_head *prev;\n};\n\nstruct node {\n    int value;\n    struct list_head linkage;\n    struct list_head nested;\n};",
+        "vercors": "class Node {\n    int value;\n    Node next;\n    Node prev;\n    Node nested_next;\n    Node nested_prev;\n    \n    //@ resource state();\n    \n    Node(int v) {\n        value = v;\n        next = null;\n        prev = null;\n        nested_next = this;\n        nested_prev = this;\n    }\n}\n\nclass DoublyLinkedList {\n    Node head;\n    \n    //@ seq<int> contents;\n    //@ seq<Node> nodes;\n    \n    DoublyLinkedList() {\n        head = null;\n    }\n}",
+        "verifast": "struct list_head {\n    struct list_head *next;\n    struct list_head *prev;\n};\n\nstruct node {\n    int value;\n    struct list_head linkage;\n    struct list_head nested;\n};\n\ntypedef struct list_head* list_head_ptr;\ntypedef struct node* node_ptr;"
+      }
+    },
+    {
+      "year": "2014",
+      "name": "Coincidence Count",
+      "description": "Given 2 integer arrays in strictly increasing order, find the number of values occurring in both sequences (Coincidence Count, A Method of Programming, Dijkstra & Feijen)",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "implementation the function and verify that the behave in the way described above."
+        }
+      ],
+      "data_structures": {
+        "dafny": "// Two integer arrays in strictly increasing order\narray<int>\narray<int>",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\n// Two vectors in strictly increasing order\npub type SortedArray = Vec<i32>;\n\n} // verus!",
+        "why3": "use array.Array\n\n// Two arrays in strictly increasing order\ntype sorted_array = array int",
+        "cbmc": "// Two integer arrays in strictly increasing order\n// int *array1, int length1\n// int *array2, int length2",
+        "framac": "// Two integer arrays in strictly increasing order\n// int *array1, int length1\n// int *array2, int length2",
+        "vercors": "// Two integer arrays in strictly increasing order\nint[] array1;\nint[] array2;",
+        "verifast": "// Two integer arrays in strictly increasing order\n// int *array1, int length1\n// int *array2, int length2"
+      }
+    },
+    {
+      "year": "2015",
+      "name": "Dancing Links",
+      "description": "Dancing links is a technique introduced in 1979 by Hitotumatu and\nNoshita and later popularized by Knuth. The technique can be used to\nefficiently implement a search for all solutions of the exact cover\nproblem, which in its turn can be used to solve Tiling, Sudoku,\nN-Queens, and other problems.\n\nThe technique\n-------------\nSuppose x points to a node of a doubly linked list; let L[x] and R[x]\npoint to the predecessor and successor of that node. Then the operations\nL[R[x]] := L[x];\nR[L[x]] := R[x];\nremove x from the list. The subsequent operations\nL[R[x]] := x;\nR[L[x]] := x;\nwill put x back into the list again.\nA graphical illustration of the process is available at\nhttp://formal.iti.kit.edu/~klebanov/DLX.png",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implement the data structure with these operations, and specify and\nverify that they behave in the way described above."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class DoublyLinkedList {\n\tghost var Repr: set<object>;\n\tvar prev: array<int>;\n\tvar next: array<int>;\n\tvar n: int;\n}",
+        "verus": "struct DoublyLinkedList {\n    prev: Vec<usize>,\n    next: Vec<usize>,\n    n: usize,\n}",
+        "why3": "type dll = { prev: array int; next: array int; ghost n: int }",
+        "cbmc": "struct dll_node {\n    int *prev;\n    int *next;\n    int n;\n};",
+        "framac": "struct dll_node {\n    int *prev;\n    int *next;\n    int n;\n};",
+        "vercors": "class DoublyLinkedList {\n    int[] prev;\n    int[] next;\n    int n;\n}",
+        "verifast": "struct dll_node {\n    int *prev;\n    int *next;\n    int n;\n};\n\ntypedef struct dll_node *DLL;"
+      }
+    },
+    {
+      "year": "2015",
+      "name": "Parallel GCD",
+      "description": "Algorithm description\n---------------------\nVarious parallel GCD algorithms exist. In this challenge, we consider a\nsimple Euclid-like algorithm with two parallel threads. One thread\nsubtracts in one direction, the other thread subtracts in the other\ndirection, and eventually this procedure converges on GCD.\nImplementation\n--------------\nIn pseudocode, the algorithm is described as follows:\n(\nWHILE a != b DO\nIF a>b THEN a:=a-b ELSE SKIP FI\nOD\n||\nWHILE a != b DO\nIF b>a THEN b:=b-a ELSE SKIP FI\nOD\n);\nOUTPUT a",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Specify and verify the following behaviour of this parallel GCD algorithm:\nInput: two positive integers a and b\nOutput: a positive number that is the greatest common divisor of a and b\nFeel free to add synchronisation where appropriate, but try to avoid\nblocking of the parallel threads.\n\nSequentialization\n-----------------\nIf your tool does not support reasoning about parallel threads, you may\nverify the following pseudocode algorithm:\nWHILE a != b DO\nCHOOSE(\nIF a > b THEN a := a - b ELSE SKIP FI,\nIF b > a THEN b := b - a ELSE SKIP FI\n)\nOD;\nOUTPUT a"
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "array int",
+        "cbmc": "int *",
+        "framac": "int *",
+        "vercors": "int[]",
+        "verifast": "int *"
+      }
+    },
+    {
+      "year": "2015",
+      "name": "Relaxed Prefix",
+      "description": "Description\n-----------\nVerify a function isRelaxedPrefix determining if a list _pat_ (for\npattern) is a relaxed prefix of another list _a_.\nThe relaxed prefix property holds iff _pat_ is a prefix of _a_ after\nremoving at most one element from _pat_.\nExamples\n--------\npat = {1,3} is a relaxed prefix of a = {1,3,2,3} (standard prefix)\npat = {1,2,3} is a relaxed prefix of a = {1,3,2,3} (remove 2 from pat)\npat = {1,2,4} is not a relaxed prefix of a = {1,3,2,3}.\n\nImplementation notes\n--------------------\nYou can implement lists as arrays, e.g., of integers. A reference\nimplementation is given below. It may or may not contain errors.\npublic class Relaxed {\npublic static boolean isRelaxedPrefix(int[] pat, int[] a) {\nint shift = 0;\nfor(int i=0; i<pat.length; i++) {\nif (pat[i]!=a[i-shift])\nif (shift==0) shift=1;\nelse return false;\n}\nreturn true;\n}\npublic static void main(String[] argv) {\nint[] pat = {1,2,3};\nint[] a1 = {1,3,2,3};\nSystem.out.println(isRelaxedPrefix(pat, a1));\n}\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implement and verify a function relaxedContains(pat, a) returning\nwhether _a_ contains _pat_ in the above relaxed sense, i.e., whether\n_pat_ is a relaxed prefix of any suffix of _a_."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "Vec<i32>",
+        "why3": "array int",
+        "cbmc": "int *",
+        "framac": "int *",
+        "vercors": "int[]",
+        "verifast": "int *"
+      }
+    },
+    {
+      "year": "2016",
+      "name": "Binary Tree Traversal",
+      "description": "Consider a binary tree:\nclass Tree {\nTree left, right, parent;\nbool mark;\n}\nWe are given a binary tree with the following properties:\n● It is well formed, in the sense that following a child pointer (left or right) and then\nfollowing a parent pointer brings us to the original node. Moreover, the parent\npointer of the root is null.\n● It has at least one node, and each node has 0 or 2 children.\nWe do not know the initial value of the mark fields.\nOur goal is to set all mark fields to true. The algorithm below (Morris 1979) works in time linear\nin the number of nodes, as usual, but uses only a constant amount of extra space.\nvoid markTree(Tree root) {\nTree x, y;\nx = root;\ndo {\nx.mark = true;\nif (x.left == null && x.right == null) {\ny = x.parent;\n} else {\ny = x.left;\nx.left = x.right;\nx.right = x.parent;\nx.parent = y;\n}\nx = y;\n} while (x != null);\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Tasks. Prove that:\n1. upon termination of the algorithm, all mark fields are set\n2. the tree shape does not change\n3. the code does not crash, and\n4. the code terminates."
+        },
+        {
+          "id": "task2",
+          "content": "As a bonus, prove that the nodes are visited in depth-first order"
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Tree {\n\tvar left: Tree;\n\tvar right: Tree;\n\tvar parent: Tree;\n\tvar mark: bool;\n}",
+        "verus": "struct Tree {\n    left: Option<Box<Tree>>,\n    right: Option<Box<Tree>>,\n    parent: Option<Box<Tree>>,\n    mark: bool,\n}",
+        "why3": "type tree = { left: tree option; right: tree option; parent: tree option; mark: bool }",
+        "cbmc": "struct tree {\n    struct tree *left;\n    struct tree *right;\n    struct tree *parent;\n    int mark;\n};",
+        "framac": "struct tree {\n    struct tree *left;\n    struct tree *right;\n    struct tree *parent;\n    int mark;\n};",
+        "vercors": "class Tree {\n    Tree left;\n    Tree right;\n    Tree parent;\n    boolean mark;\n}",
+        "verifast": "struct tree {\n    struct tree *left;\n    struct tree *right;\n    struct tree *parent;\n    int mark;\n};\n\ntypedef struct tree *Tree;"
+      }
+    },
+    {
+      "year": "2016",
+      "name": "Matrix Multiplication",
+      "description": "Consider the following pseudocode algorithm, which is naive implementation of matrix\nmultiplication. For simplicity we assume that the matrices are square.\nint[][] matrixMultiply(int[][] A, int[][] B) {\nint n = A.length;\n// initialise C\nint[][] C = new int[n][n];\nfor (int i = 0; i < n; i++) {\nfor (int k = 0; k < n; k++) {\nfor (int j = 0; j < n; j++) {\nC[i][j] += A[i][k] * B[k][j];\n}\n}\n}\nreturn C;\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "1. Provide a specification to describe the behaviour of this algorithm, and prove that it\ncorrectly implements its specification"
+        },
+        {
+          "id": "task2",
+          "content": "2. Show that matrix multiplication is associative, i.e., the order in which matrices are\nmultiplied can be disregarded: A(BC) = (AB)C. To show this, you should write a program\nthat performs the two different computations, and then prove that the result of the two\ncomputations is always the same."
+        },
+        {
+          "id": "task3",
+          "content": "3. [Optional, if time permits] In the literature, there exist many proposals for more efficient\nmatrix multiplication algorithms. Strassen’s algorithm was one of the first. The key idea\nof the algorithm is to use a recurisive algorithm that reduces the number of\nmultiplications on submatrices (from 8 to 7), see\nhttps://en.wikipedia.org/wiki/Strassen_algorithm for an explanation. A relatively clean\nJava implementation (and Python and C++) can be found here:\nhttps://martin-thoma.com/strassen-algorithm-in-python-java-cpp/. Prove that the naive\nalgorithm above has the same behaviour as Strassen’s algorithm. Proving it for a\nrestricted case, like a 2x2 matrix should be straightforward, the challenge is to prove it\nfor arbitrary matrices with size 2^n."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array2<int>",
+        "verus": "Vec<Vec<i32>>",
+        "why3": "matrix = array (array int)",
+        "cbmc": "int **",
+        "framac": "int **",
+        "vercors": "int[][]",
+        "verifast": "int **"
+      }
+    },
+    {
+      "year": "2016",
+      "name": "Static Tree Barrier",
+      "description": "This challenge focuses on multi-threaded executions and targets verifiers for concurrent\nprograms. However, the problem can also be encoded as a transition system and verified by a\nverifier for sequential code.\nConsider a multi-threaded program execution. In each state with N threads, we assume we\nhave given a binary tree with N nodes. Each node corresponds to exactly one thread. In the\ncontext of this challenge, we do not consider thread creation and termination; the number of\nnodes and their position in the tree is assumed to be immutable. Each node has references to\nat most two children, and each node except for the root has a reference to its parent. Moreover,\neach node stores a boolean value sense and an integer version. Hence, we have the\nfollowing data structure:\n\nclass Node {\nfinal Node left, right;\nfinal Node parent;\nboolean sense;\nint version;\n// methods and constructors omitted\n}\n\n\nThe tree described above represents a tree barrier that can be used for thread synchronization.\nThis synchronization is performed by the following method of class Node:\nvoid barrier()\nrequires !sense\nensures  !sense\n{\n// synchronization phase\nif(left != null)\nwhile(!left.sense) { }\nif(right != null)\nwhile(!right.sense) { }\nsense = true; // assume this statement and the next to execute\nversion++; // simultaneously (that is, in one step)\n// wake-up phase\nif(parent == null)\nsense = false;\nwhile(sense) { }\nif(left != null)\nleft.sense = false\nif(right != null)\nright.sense = false\n}\nSynchronization is performed in two phases. In the synchronization phase, each thread that\ncalls barrier() on its node waits until all threads have called barrier. The sense field is used\nto propagate information about waiting threads up in the tree. When all threads have called\nbarrier(), the propagation reaches the root of the tree and initiates the wake-up phase,\nwhich proceeds top-down.\nAssume a state in which sense is false and version is zero in all nodes. Assume further that\nno thread is currently executing barrier() and that threads invoke barrier() only on\ntheir nodes. The number of threads (and, thus, the number of nodes in the tree) is constant, but\nunknown.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Tasks. Prove that:\n1. the following invariant holds in all states:\nIf n.sense is true for any node n then m.sense is true for all nodes m in the subtree\nrooted in n.\n2. for any call n.barrier(), if the call terminates then there was a state during the\nexecution of the method where all nodes had the same version.\nHint: The problem can be solved with a verifier for sequential programs by encoding it as a\nnon-deterministic transition system that represents threads and their states explicitly in each\nstate of the transition system."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Node {\n    var left: Node?\n    var right: Node?\n    var parent: Node?\n    var sense: bool\n    var version: int\n}",
+        "verus": "struct Node {\n    left: Option<Box<Node>>,\n    right: Option<Box<Node>>,\n    parent: Option<*mut Node>,  // Raw pointer to avoid cycles\n    sense: bool,\n    version: i32,\n}",
+        "why3": "module TreeBarrier\n  use int.Int\n  use option.Option\n  \n  type node = {\n    left : option node;\n    right : option node;\n    parent : option node;\n    mutable sense : bool;\n    mutable version : int;\n  }\nend",
+        "cbmc": "typedef struct Node {\n    struct Node* left;\n    struct Node* right;\n    struct Node* parent;\n    bool sense;\n    int version;\n} Node;",
+        "framac": "typedef struct Node {\n    struct Node* left;\n    struct Node* right;\n    struct Node* parent;\n    bool sense;\n    int version;\n} Node;",
+        "vercors": "class Node {\n    Node left;\n    Node right;\n    Node parent;\n    boolean sense;\n    int version;\n}",
+        "verifast": "struct Node {\n    struct Node* left;\n    struct Node* right;\n    struct Node* parent;\n    bool sense;\n    int version;\n};"
+      }
+    },
+    {
+      "year": "2017",
+      "name": "Maximum-sum Array (two-dimension)",
+      "description": "The maximum-sum subarray problem was first surveyed by Bentley in his “Programming Pearls”\ncolumn of CACM in 1984. The solution returns the sum of a contiguous subarray within a onedimensional array of numbers which has the largest sum.\nIn the two-dimensional case, the task is to find a submatrix such that the sum of its elements is\nmaximized. This problem is widely used in applications such as pattern recognition, image\nprocessing, biological sequence analysis and data mining.\nTwo-dimensional Case:\nFor the given two-dimensional array\n 0 -2 -7 0\n 9 2 -6 2\n-4 1 -4 1\n-1 8 0 -2\nthe maximum-sum submatrix is\n 9 2\n-4 1\n-1 8 .\nTo get an O(N³) algorithm, we create O(N²) one-dimensional subproblems by iterating over all\npossible contiguous sequences of row indices. We then apply Kadane's algorithm to each 1D\nsubproblem, with the maximum-sum subarray amongst these returning the solution to the 2D\nproblem.\nThe subproblems are arrays which contain accumulated sums of contiguous rows. Dynamic\nprogramming can be used to obtain these efficiently.\nIn the example above the contiguous sequences of row indices from which sums are formed\nare:\n[0], [0,1], [0,1,2], [0,1,2, 3], [1], [1,2], [1,2,3], [2], [2,3], [3].\nThe arrays holding the accumulated sums are:\n[0] 0 -2 -7 0\n[0,1] 9 0 -13 2\n[0,1,2] 5 1 -17 3\n[0,1,2, 3] 4 9 -17 1\n[1] 9 2 -6 2\n[1,2] 5 3 -10 3\n[1,2,3] 4 11 -10 1\n[2] -4 1 -4 1\n[2,3] -5 9 -4 -1\n[3] -1 8 0 -2\nWe apply Kadane’s algorithm to each of these arrays, keeping the maximum sum found across\nall arrays. For example, above, the maximum sum of 15 is found in row sequence [1,2,3].\nThe maximum-sum submatrix column bounds (0 and 1 here) are obtained from the bounds of\nthe maximum-sum subarray. The row bounds are obtained from the row sequence yielding the\nmaximum sum (1-3 in the example).",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Two-dimensional Verification Task (That is an advanced challenge!)\nImplement and verify a function that solves the maximum-sum submatrix problem.\nYou should verify that\n1. the function returns a value which is the sum of a submatrix within the input\nmatrix, and that"
+        },
+        {
+          "id": "task2",
+          "content": "2. the sum of every submatrix within the input matrix is not greater than the returned\nvalue."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array2<int>",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub type IntMatrix = Vec<Vec<i32>>;\n\n} // verus!",
+        "why3": "matrix int",
+        "cbmc": "// int **matrix, int rows, int cols",
+        "framac": "// int **matrix, int rows, int cols",
+        "vercors": "// int[][] matrix",
+        "verifast": "// int **matrix, int rows, int cols"
+      }
+    },
+    {
+      "year": "2017",
+      "name": "Maximum-sum Array (one-dimension)",
+      "description": "The maximum-sum subarray problem was first surveyed by Bentley in his “Programming Pearls”\ncolumn of CACM in 1984. The solution returns the sum of a contiguous subarray within a onedimensional array of numbers which has the largest sum.\nIn the two-dimensional case, the task is to find a submatrix such that the sum of its elements is\nmaximized. This problem is widely used in applications such as pattern recognition, image\nprocessing, biological sequence analysis and data mining.\nOne-dimensional Case:\nIn the array [-2, -3, 4, -1, -2, 1, 5, -3] the maximum-sum subarray is [4,-1,-2, 1, 5] with a sum of 7\n(4 + (-1) + (-2) + 1 + 5 = 7). A brute force solution checks all subarrays (which are quadratically\nmany), but the problem is solvable in linear-time using Kadane’s algorithm.\nKadane’s Algorithm for a one-dimensional array is given below as an implementation in C:\nint maxSubArraySum(int a[], int size)\n{\n int max_so_far = 0, max_ending_here = 0;\n for (int i = 0; i < size; i++)\n {\n max_ending_here = max_ending_here + a[i];\n if (max_ending_here < 0)\n max_ending_here = 0;\n else if (max_so_far < max_ending_here)\n max_so_far = max_ending_here;\n }\n return max_so_far;\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "The One-dimensional Verification Task: Verify that 1. Kadane’s Algorithm returns a value which is the sum of a contiguous subarray within array a, and"
+        },
+        {
+          "id": "task2",
+          "content": "2. the sum of every contiguous subarray within a is not greater than the returned value."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub type IntArray = Vec<i32>;\n\n} // verus!",
+        "why3": "array int",
+        "cbmc": "// int *a, int size",
+        "framac": "// int *a, int size",
+        "vercors": "// int[] a",
+        "verifast": "// int *a, int size"
+      }
+    },
+    {
+      "year": "2017",
+      "name": "Odd-even Transposition Sort",
+      "description": "This sorting algorithm, developed originally for use on parallel processors, compares all oddindexed list elements with their immediate successors in the list and, if a pair is in the wrong\norder (the first is larger than the second) swaps the elements. The next step repeats this for\neven-indexed list elements (and their successors). The algorithms iterates between these two\nsteps until the list is sorted.\nSingle Processor Solution\nThe single-processor algorithm is simple, but not very efficient (O(n²)). It can be considered a\nvariation of the bubble sort algorithm. Here a zero-based index is assumed:\nfunction oddEvenSort(list) {\n function swap(list, i, j) {\n var temp = list[i];\n list[i] = list[j];\n list[j] = temp;\n }\n var sorted = false;\n while(!sorted) {\n sorted = true;\n for(var i = 1; i < list.length-1; i += 2) {\n if(list[i] > list[i+1]) {\n swap(list, i, i+1);\n sorted = false;\n }\n }\n for(var i = 0; i < list.length-1; i += 2) {\n if(list[i] > list[i+1]) {\n swap(list, i, i+1);\n sorted = false;\n }\n }\n }\n}\nMulti Processor Solution\nOn parallel processors, with one value per processor and only local left–right neighbour\nconnections, the processors all concurrently do a compare–exchange operation with their\nneighbours, alternating between odd–even and even–odd pairings in each step. The algorithm\nhas linear runtime as comparisons can be performed in parallel.\nA pseudocode implementation that uses message passing for synchronisation is presented in\nthe following. The driver code spawns n processes, one for each array element and collects the\nresults after termination.\nprocess ODD-EVEN-PAR(n, id, myvalue)\n // n … the length of the array to sort\n // id … processors label (0 .. n-1)\n // myvalue … the value in this process\nbegin\n for i := 0 to n-1 do\n begin\n // alternate between left and right partner\n if i+id is even then\n if id has a right neighbour\n sendToRight(myvalue);\n othervalue = receiveFromRight();\n myvalue = min(myvalue, othervalue);\n else\n if id has a left neighbour\n sendToLeft(myvalue);\n othervalue = receiveFromLeft();\n myvalue = max(myvalue, othervalue);\n end for\nend ODD-EVEN-PAR\nfor i := 0 to array.length-1\n process[i] := new ODD-EVEN-PAR(n, i, array[i])\nend for\nstart processes and wait for them to finish\nfor i := 0 to array.length-1\n array[i] := process[i].myvalue\nend for\nConcurrency: This algorithm was developed originally for parallel use. You should aim to have a\nparallel solution also if your tool allows.\nSynchronisation: We have proposed a synchronisation scheme using messages between\nneighbouring processes. You are free to use a different scheme (semaphores, locks, …) if you\nwish.\nCaution: The implementations shown above are for demonstration purposes only, they have not\nbeen thoroughly tested, let alone formally verified. That’s your job!",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification Tasks:\n1. Specify and verify that the result of the even-odd sort algorithm is a sorted list."
+        },
+        {
+          "id": "task2",
+          "content": "2. Specify and verify that the result of the even-odd sort algorithm is a permutation of the\ninput list."
+        },
+        {
+          "id": "task3",
+          "content": "3. Prove that the code terminates."
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub type IntArray = Vec<i32>;\n\n} // verus!",
+        "why3": "array int",
+        "cbmc": "// int *a, int size",
+        "framac": "// int *a, int size",
+        "vercors": "// int[] a",
+        "verifast": "// int *a, int size"
+      }
+    },
+    {
+      "year": "2017",
+      "name": "Pair Insertion Sort",
+      "description": "Although it is an algorithm with O(n²) complexity, this sorting algorithm is used in modern library\nimplementations. When dealing with smaller numbers of elements, insertion sorts performs\nbetter than, e.g., quicksort due to a lower overhead. It can be implemented more efficiently if the\narray traversal (and rearrangement) is not repeated for every element individually.\nA Pair Insertion Sort in which two elements are handled at a time is used by Oracle's\nimplementation of the Java Development Kit (JDK) for sorting primitive values. In the following\ncode snippet a is the array to be sorted, and the integer variables left and right are valid\nindices into a that set the range to be sorted.\nfor (int k = left; ++left <= right; k = ++left) {\n int a1 = a[k], a2 = a[left];\n if (a1 < a2) {\n a2 = a1; a1 = a[left];\n }\n while (a1 < a[--k]) {\n a[k + 2] = a[k];\n }\n a[++k + 1] = a1;\n while (a2 < a[--k]) {\n a[k + 1] = a[k];\n }\n a[k + 1] = a2;\n}\nint last = a[right];\nwhile (last < a[--right]) {\n a[right + 1] = a[right];\n}\na[right + 1] = last;\n\n(in DualPivotQuicksort.java line 245ff, used for java.util.Arrays.sort(int[]) )\n(This is an optimised version which uses the borders a[left] and a[right] as sentinels.)\nWhile the problem is proposed here as a Java implementation, the challenge does not use\nspecific language features and can be formulated in other languages easily.\nA simplified variant of the algorithm in pseudo code for sorting an array A whose indices range\nfrom 0 to length(A)-1 is the following:\ni = 0  //i is running index (inc by 2 every iteration)\nwhile i < length(A)-1\n x = A[i] //let x and y hold the next to elements in A\n y = A[i+1]\n if x < y   then ensure that x is not smaller than y\n swap x and y\n j = i - 1 //j  is the index used to find the insertion point\n while j >= 0 and A[j] > x //find the insertion point for x\n A[j+2] = A[j] //shift existing content by 2\n j = j - 1\n end while\n A[j+2] = x //store x at its insertion place\nA[j+1] //is an available space now\n while j >= 0 and A[j] > y //find the insertion point for y\n A[j+1] = A[j] //shift existing content by 1\n j = j - 1\n end while\n A[j+1] = y //store y at its insertion place\n i = i+2\nend while\nif i = length(A)-1 //if length(A) is odd, an extra\n y = A[i] //single insertion is needed for\n j = i - 1 //the last element\n while j >= 0 and A[j] > y\n A[j+1] = A[j]\n j = j - 1\n end while\n A[j+1] = y\nend if",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification Tasks:\n1. Specify and verify that the result of the pair insertion sort algorithm is a sorted array.\n2. Specify and verify that the result of the pair insertion sort algorithm is a permutation of\nthe input array.\nGetting Started. To make the exercise more accessible, feel free to start with stripped down\nversions of the problem. A few possibilities for simplifications are:\n1. Absence of unexpected runtime exceptions\n2. Verify a single-step insertion sort algorithm in which every element is handled\nindividually.\n3. For permutations proofs, it may be simpler to not remember the values in temporary\nvariables (x and y in the pseudocode), but to swap repeatedly.\nChallenge. Try to get as close as possible to Oracle's implementation (outlined above) from the\nbeginning.\nVerification Bounds. In reality, pair insertion sort is used only for small problem instances: in\nJDK’s case, if the array has less than 47 elements. If it helps your efforts, you may assume a\nsuitable length restriction for the array"
+        }
+      ],
+      "data_structures": {
+        "dafny": "array<int>",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub type IntArray = Vec<i32>;\n\n} // verus!",
+        "why3": "array int",
+        "cbmc": "// int *a, int left, int right",
+        "framac": "// int *a, int left, int right",
+        "vercors": "// int[] a",
+        "verifast": "// int *a, int left, int right"
+      }
+    },
+    {
+      "year": "2017",
+      "name": "Tree Buffer",
+      "description": "The task is to verify a data structure called tree buffer. We start with a simple version, and then\nwe will introduce more requirements related to efficiency.\nConsider the OCaml interface\ntype 'a buf\nval empty : int -> 'a buf\nval add : 'a -> 'a buf -> 'a buf\nval get : 'a buf -> 'a list\nwith the following implementation\ntype 'a buf = { h : int; xs : 'a list }\nlet rec take n xs = match n, xs with\n | 0, _ | _, [] -> []\n | n, x :: xs -> x :: take (n-1) xs\nlet empty h = { h; xs = [] }\nlet add x { h; xs } = { h; xs = x :: xs }\nlet get { h; xs } = take h xs\nWhen we create a tree buffer, we fix a parameter h, and all invocations to get will return the last\nh elements added in the tree buffer. Incidentally, this is a tree in the sense that one can write\ncode like the following:\nlet e = empty 3;; (* e is a root *)\nlet t1 = add 1 e;; (* t1 has parent e *)\nlet t2 = add 2 t1;; (* t2 has parent t1 *)\nlet t3 = add 3 t1;; (* t3 has parent t1 *)\nOne problem with our current implementation is that it wastes memory. A possible solution is the\nfollowing caterpillar implementation:\ntype 'a buf = {h : int; xs : 'a list; xs_len : int; ys : 'a list}\nlet empty h = { h; xs = []; xs_len = 0; ys = [] }\nlet add x { h; xs; xs_len; ys } =\n if xs_len = h - 1\n then { h; xs = []; xs_len = 0; ys = x :: xs }\n else { h; xs = x :: xs; xs_len = xs_len + 1; ys }\nlet get { h; xs; xs_len; ys } = take h (xs @ ys)\nThe length of xs is always less that h because, whenever it would become h, its content is\nmoved into ys, and the old content of ys is thrown away.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification Tasks:\n1. Verify that the naive and the caterpillar implementations are functionally equivalent. You\nare encouraged to translate (a) the naive implementation into your favorite specification\nlanguage, and (b) the caterpillar implementation into your favorite imperative language.\nYour caterpillar implementation must use only constant time for add, ignoring time\npossibly spent in the garbage collector."
+        },
+        {
+          "id": "task2",
+          "content": "2. In this task we want to move to a real-time setting. This means, in particular, that we can\nno longer ignore the time spent in the garbage collector. But, we still want\n● a constant time add operation, and\n● memory use that is within a constant factor of the caterpillar's live-heap size.\nThe idea is to add reference counters to the caterpillar. In addition, we need to control\nthe rate at which objects are deleted by the reference counting scheme. We control the\nrate by holding some references in the queue to_delete. \n// g++ -std=c++14\n#include <memory>\n#include <queue>\nstruct List { virtual ~List() {} };\ntypedef std::shared_ptr<List> PL;\nstruct Nil : List {};\nstruct Cons : List {\n int head; PL tail;\n Cons(int head, PL tail) : head(head), tail(tail) {}\n virtual ~Cons();\n};\nstd::queue<PL> to_delete;\n// IMPORTANT: delay the deletion,\n// so that time per operation is constant\nCons::~Cons() { to_delete.push(tail); }\nstruct Buf {\n int h; PL xs; int xs_len; PL ys;\nBuf(int h, PL xs, int xs_len, PL ys) : h(h), xs(xs),\n xs_len(xs_len), ys(ys) {}\n virtual ~Buf(); // this is where our manual GC is triggered\n PL get(); // unimplemented here; would use xs and ys\nprivate:\n};\nvoid process_queue() {\n if (!to_delete.empty()) to_delete.pop();\n if (!to_delete.empty()) to_delete.pop();\n}\n// NOTE: This is called automatically by C++.\n// In the C implementation, there is a |deactivate|\n// function that plays the role of this destructor.\nBuf::~Buf() { process_queue(); }\nBuf empty(int h) {\n return Buf(h, PL(new Nil()), 0, PL(new Nil()));\n}\nBuf add(int x, Buf t) {\n process_queue();\n if (t.xs_len + 1 == t.h) {\n return Buf(t.h, PL(new Nil()), 0, PL(new Cons(x, t.xs)));\n } else {\n return Buf(t.h, PL(new Cons(x, t.xs)), 1 + t.xs_len, t.ys);\n }\n}\nint main() {\n Buf e = empty(3);\n Buf t1 = add(1, e);\n Buf t2 = add(2, t1);\n Buf t3 = add(3, t1);\n}\nYour tasks are:\n1. show that the real-time implementation is functionally equivalent to the naive\nimplementation, and\n2. prove bounds on the resources used, such as time spent in add, total memory used, and\nso on.\nWarning: The C++ implementation above has not been tested, so it probably has bugs. A C\nimplementation, which has been tested but has the drawback of verbosity, can be found on\nGitHub. There is also a (inefficient but pretty) javascript implementation in these slides (go to\n‘real-time…’).\nYou are free to verify whichever implementation you choose: the important part is to satisfy the\nsame, real-time performance characteristics. That does mean that you cannot use a language\nwith garbage collection, unless you can control the garbage collector, and you can verify\nresource bounds for the system including your program and the garbage collector."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype Buffer = Buffer(h: int, xs: seq<int>, xs_len: int, ys: seq<int>)",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub struct Buffer {\n    pub h: i32,\n    pub xs: Vec<i32>,\n    pub xs_len: usize,\n    pub ys: Vec<i32>,\n}\n\n} // verus!",
+        "why3": "type buffer = {\n    h: int;\n    xs: array int;\n    xs_len: int;\n    ys: array int;\n}",
+        "cbmc": "struct Buffer {\n    int h;\n    int *xs;\n    int xs_len;\n    int *ys;\n};",
+        "framac": "struct Buffer {\n    int h;\n    int *xs;\n    int xs_len;\n    int *ys;\n};",
+        "vercors": "class Buffer {\n    int h;\n    int[] xs;\n    int xs_len;\n    int[] ys;\n}",
+        "verifast": "struct Buffer {\n    int h;\n    int *xs;\n    int xs_len;\n    int *ys;\n};"
+      }
+    },
+    {
+      "year": "2018",
+      "name": "Array-Based Queuing Lock",
+      "description": "Array-Based Queuing Lock (ABQL) is a variation of the Ticket Lock algorithm with a bounded\nnumber of concurrent threads and improved scalability due to better cache behaviour.\nWe assume that there are N threads and we allocate a shared Boolean array pass[] of length N.\nWe also allocate a shared integer value next. In practice, next is an unsigned bounded integer that\nwraps to 0 on overflow, and we assume that the maximal value of next is of the form kN−1. Finally,\nwe assume at our disposal an atomic fetch_and_add instruction, such that fetch_and_add(next,1)\nincrements the value of next by 1 and returns the original value of next.\nThe elements of pass[] are spinlocks, assigned individually to each thread in the waiting queue.\nInitially, each element of pass[] is set to false, except pass[0] which is set to true, allowing the\nfirst coming thread to acquire the lock. Variable next contains the number of the first available place\nin the waiting queue and is initialized to 0.\nHere is an implementation of the locking algorithm in pseudocode:\nprocedure abql_init()\nfor i = 1 to N - 1 do\npass[i] := false\nend-for\npass[0] := true\nnext := 0\nend-procedure\nfunction abql_acquire()\nvar my_ticket := fetch_and_add(next,1) mod N\nwhile not pass[my_ticket] do\nend-while\nreturn my_ticket\nend-function\nprocedure abql_release(my_ticket)\npass[my_ticket] := false\npass[(my_ticket + 1) mod N] := true\nend-procedure\nEach thread that acquires the lock must eventually release it by calling abql_release(my_ticket),\nwhere my_ticket is the return value of the earlier call of abql_acquire(). We assume that no thread\ntries to re-acquire the lock while already holding it, neither it attempts to release the lock which it\ndoes not possess.\nNotice that the first assignment in abql_release() can be moved at the end of abql_acquire(). \nYou have liberty of adapting the implementation and specification of the concurrent setting as\nbest suited for your verification tool. In particular, solutions with a fixed value of N are acceptable.\nWe expect, however, that the general idea of the algorithm and the non-deterministic behaviour of\nthe scheduler shall be preserved.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification task 1. Verify the safety of ABQL under the given assumptions. Specifically, you should\nprove that no two threads can hold the lock at any given time."
+        },
+        {
+          "id": "task2",
+          "content": "Verification task 2. Verify the fairness, namely that the threads acquire the lock in order of request."
+        },
+        {
+          "id": "task3",
+          "content": "Verification task 3. Verify the liveness under a fair scheduler, namely that each thread requesting the lock will eventually acquire it."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype QueueLock = QueueLock(pass: seq<bool>, next: int)",
+        "verus": "pub struct QueueLock {\n    pub pass: Vec<bool>,\n    pub next: i32,\n}",
+        "why3": "type queuelock = {\n  pass: array bool;\n  next: int;\n}",
+        "cbmc": "struct QueueLock {\n    bool *pass;\n    int next;\n};",
+        "framac": "struct QueueLock {\n    bool *pass;\n    int next;\n};",
+        "vercors": "struct QueueLock {\n    bool *pass;\n    int next;\n};",
+        "verifast": "struct QueueLock {\n    bool *pass;\n    int next;\n};"
+      }
+    },
+    {
+      "year": "2018",
+      "name": "Colored Tiles",
+      "description": "This problem is based on Project Euler problem #114.\nAlice and Bob are decorating their kitchen, and they want to add a single row of fifty tiles on the\nedge of the kitchen counter. Tiles can be either red or black, and for aesthetic reasons, Alice and Bob\ninsist that red tiles come by blocks of at least three consecutive tiles. Before starting, they wish to\nknow how many ways there are of doing this. They come up with the following algorithm:\nvar count[51] // count[i] is the number of valid rows of size i\ncount[0] := 1 // []\ncount[1] := 1 // [B] - cannot have a single red tile\ncount[2] := 1 // [BB] - cannot have one or two red tiles\ncount[3] := 2 // [BBB] or [RRR]\nfor n = 4 to 50 do\ncount[n] := count[n-1] // either the row starts with a black tile\nfor k = 3 to n-1 do // or it starts with a block of k red tiles\ncount[n] := count[n] + count[n-k-1] // followed by a black one\nend-for\ncount[n] := count[n]+1 // or the entire row is red\nend-for",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification tasks. You should verify that at the end, count[50] will contain the right number.\nHint: Since the algorithm works by enumerating the valid colorings, we expect you to give a nice\nspecification of a valid coloring and to prove the following properties:\n1. Each coloring counted by the algorithm is valid.\n2. No coloring is counted twice.\n3. No valid coloring is missed."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype ColoredTiles = ColoredTiles(count: seq<int>)",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub struct ColoredTiles {\n    pub count: [i32; 51],\n}\n\n} // verus!",
+        "why3": "type coloredtiles = {\n  count: array int;\n}",
+        "cbmc": "struct ColoredTiles {\n    int count[51];\n};",
+        "framac": "struct ColoredTiles {\n    int count[51];\n};",
+        "vercors": "struct ColoredTiles {\n    int count[51];\n};",
+        "verifast": "struct ColoredTiles {\n    int count[51];\n};"
+      }
+    },
+    {
+      "year": "2018",
+      "name": "Gap Buffer",
+      "description": "A gap buffer is a data structure for the implementation of text editors, which can efficiently move the\ncursor, as well add and delete characters.\nThe idea is simple: the editor’s content is represented as a character array a of length n, which\nhas a gap of unused entries a[l],...,a[r −1], with respect to two indices l ≤ r. The data it represents\nis composed as a[0],...,a[l −1],a[r],...,a[n−1].\nThe current cursor position is at the left index l, and if we type a character, it is written to a[l]\nand l is increased. When the gap becomes empty, the array is enlarged and the data from r is shifted\nto the right.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the following four operations in the language of your tool: Procedures left() and right() move the cursor by one character; insert() places a character at the\nbeginning of the gap a[l]; delete() removes the character at a[l] from the range of text.\nprocedure left()\nif l != 0 then\nl := l - 1\nr := r - 1\na[r] := a[l]\nend-if\nend-procedure\nprocedure right()\n// your task: similar to left()\n// but pay attention to the\n// order of statements\nend-procedure\n\nprocedure insert(x: char)\nif l == r then\n// see extended task\ngrow()\nend-if\na[l] := x\nl := l + 1\nend-procedure\nprocedure delete()\nif l != 0 then\nl := l - 1\nend-if\nend-procedure"
+        },
+        {
+          "id": "task2",
+          "content": "Verification task. Specify the intended behavior of the buffer in terms of a contiguous representation of the editor content. This can for example be based on strings, functional arrays, sequences, or\nlists. Verify that the gap buffer implementation satisfies this specification, and that every access to\nthe array is within bounds.\nHint: For this task you may assume that insert() has the precondition l < r and remove the call\nto grow(). Alternatively, assume a contract for grow() that ensures that this call does not change the\nabstract representation."
+        },
+        {
+          "id": "task3",
+          "content": "Extended verification task. Implement the operation grow(), specify its behavior in a way that\nlets you verify insert() in a modular way (i.e. not by referring to the implementation of grow()),\nand verify that grow() satisfies this specification.\nHint: You may assume that the allocation of the new buffer always succeeds. If your tool/language supports copying array ranges (such as System.arraycopy() in Java), consider using these\nprimitives instead of the loops in the pseudo-code below."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype GapBuffer = GapBuffer(buffer: seq<char>, l: int, r: int)",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub struct GapBuffer {\n    pub buffer: Vec<char>,\n    pub l: i32,\n    pub r: i32,\n}\n\n} // verus!",
+        "why3": "type gapbuffer = {\n  buffer: array char;\n  l: int;\n  r: int;\n}",
+        "cbmc": "struct GapBuffer {\n    char *buffer;\n    int l;\n    int r;\n};",
+        "framac": "struct GapBuffer {\n    char *buffer;\n    int l;\n    int r;\n};",
+        "vercors": "struct GapBuffer {\n    char *buffer;\n    int l;\n    int r;\n};",
+        "verifast": "struct GapBuffer {\n    char *buffer;\n    int l;\n    int r;\n};"
+      }
+    },
+    {
+      "year": "2018",
+      "name": "Register Allocation",
+      "description": "Let us consider a procedure using N variables that we want to compile for a CPU with K physical\nregisters. Through liveness analysis, the compiler identified all pairs of variables that are in use at\nthe same time. Such variables are said to interfere with each other. We want to assign CPU registers\nto as many variables as possible, while ensuring that no two interfering variables are assigned the\nsame register. Any variable for which no register is allocated must be spilled into the main memory.\nSome of the variables get assigned fixed registers from the start, due to the calling conventions of the\ntarget architecture. This assignment cannot be changed. Finally, if a non-interfering pair of variables\noccurs in a trivial assignment u := v, it may be desirable to assign u and v the same register and\navoid a superfluous “move” instruction in the compiled code.\nThe Iterated Register Coalescing (IRC) algorithm for register allocation was proposed by George\nand Appel [TOPLAS 18(3), 1996] and verified in Coq by Blazy, Robillard, and Appel [ESOP 2010,\nLNCS 6012]. Below, we describe a simplified variant of the algorithm. The state of the algorithm is\nrepresented by two dictionaries, G and A:\n• Dictionary G represents the (symmetric and irreflexive) interference relation, and G[v] denotes\nthe set of variables that interfere with variable v. Procedure remove(v) removes v from the\ndomain of G and from every set G[w]. Procedure merge(v,u) replaces v with u in every set\nG[w], replaces G[u] with G[u]∪G[v], and removes v from the domain of G.\n• Dictionary A represents the register assignment, and for any variable v in the domain of A,\nA[v] is either a physical register or a special value spill. Given a set of variables S ⊆ dom A,\nfunction available(S) returns either some register that is not assigned to any variable in S,\nor spill, if there is no register available. At the beginning of the algorithm, A contains a\npre-assignment of physical registers to some of the variables in the domain of G.\nWe assume to have at our disposal two oracle functions that implement various heuristics of the\nGeorge-Appel algorithm:\n• pick() returns either some variable v such that v ∈ dom G and v ∈/ dom A, or a special value\nnone, if there is no such variable.\n• coalesce(v) returns either none or some variable u such that u 6= v, u ∈ dom G, and v ∈/ G(u).\nHere is a recursive implementation of the IRC algorithm in pseudo-code: \n\nprocedure IRC()\nvar v := pick()\nif v = none then return\nvar u := coalesce(v)\nif u = none then\nvar S := G[v]\nremove(v)\nIRC()\nA[v] := available(S)\nelse\nmerge(v,u)\nIRC()\nA[v] := A[u]\nend-if\nend-procedure",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the IRC procedure in your favorite language. The choice of data\ntypes for variables, registers, sets, and dictionaries is up to you. You may use iteration instead of recursion, or persistent data structures instead of mutable ones. You should implement the functionality\nof remove(), merge(), and available().\nYou may leave the oracle functions pick() and coalesce() without implementation. If you do\nprovide one, please note that the rest of the algorithm should not rely on any specific implementation\ndetails, beyond what is stated about pick() and coalesce() above."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks. You can assume that at the start of the procedure, dom A ⊆ dom G and no two\ninterfering variables are pre-assigned the same physical register. Verify the following properties:\n1. Every variable in the initial domain of G gets an assignment in A at the end of the procedure."
+        },
+        {
+          "id": "task3",
+          "content": "2. Verify that If a variable has a register pre-assigned to it, this assignment does not change at the end."
+        },
+        {
+          "id": "task4",
+          "content": "3. Verify that No two interfering variables (w.r.t. the initial value of G) are assigned the same register."
+        },
+        {
+          "id": "task5",
+          "content": "4. Verify that the procedure terminates."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype RegisterAllocation = RegisterAllocation(G: map<int, set<int>>, A: map<int, string>)",
+        "verus": "use vstd::prelude::*;\n\nverus! {\n\npub struct RegisterAllocation {\n    pub G: Map<i32, Set<i32>>,\n    pub A: Map<i32, String>,\n}\n\n} // verus!",
+        "why3": "type interferencenode = {\n  variable: int;\n  interfering_vars: array int;\n  count: int;\n}\n\ntype registerassignment = {\n  variable: int;\n  register_or_spill: string;\n}\n\ntype registerallocation = {\n  G: array interferencenode;\n  G_size: int;\n  A: array registerassignment;\n  A_size: int;\n}",
+        "cbmc": "struct InterferenceNode {\n    int variable;\n    int *interfering_vars;\n    int count;\n};\n\nstruct RegisterAssignment {\n    int variable;\n    char *register_or_spill;\n};\n\nstruct RegisterAllocation {\n    struct InterferenceNode *G;\n    int G_size;\n    struct RegisterAssignment *A;\n    int A_size;\n};",
+        "framac": "struct InterferenceNode {\n    int variable;\n    int *interfering_vars;\n    int count;\n};\n\nstruct RegisterAssignment {\n    int variable;\n    char *register_or_spill;\n};\n\nstruct RegisterAllocation {\n    struct InterferenceNode *G;\n    int G_size;\n    struct RegisterAssignment *A;\n    int A_size;\n};",
+        "vercors": "struct InterferenceNode {\n    int variable;\n    int *interfering_vars;\n    int count;\n};\n\nstruct RegisterAssignment {\n    int variable;\n    char *register_or_spill;\n};\n\nstruct RegisterAllocation {\n    struct InterferenceNode *G;\n    int G_size;\n    struct RegisterAssignment *A;\n    int A_size;\n};",
+        "verifast": "struct InterferenceNode {\n    int variable;\n    int *interfering_vars;\n    int count;\n};\n\nstruct RegisterAssignment {\n    int variable;\n    char *register_or_spill;\n};\n\nstruct RegisterAllocation {\n    struct InterferenceNode *G;\n    int G_size;\n    struct RegisterAssignment *A;\n    int A_size;\n};"
+      }
+    },
+    {
+      "year": "2019",
+      "name": "All Nearest Smaller Values",
+      "description": "For each position in a sequence of values, we define the nearest smaller value\nto the left, or left neighbor, as the last position among the previous positions\nthat contains a smaller value. More precisely, for each position x in an input\nsequence s, we define the left neighbor of x in s to be a position y such that:\n• y < x,\n• the element stored at position y in s, written s[y] is smaller than the element stored at position x in s,\n• there are no other values smaller than s[x] between y and x.\nThere are positions which do not have a left neighbor (the first element, or the\nsmallest element in the sequence for example).\nWe consider here an algorithm which constructs the sequence of the left\nneighbors of all the elements of a sequence. It works using a stack. At the beginning, the stack is empty. Then, for each position x in the sequence, pop from\nthe stack all the positions until a position y if found such that s[y] is smaller\nthan s[x]. If such a position exists, it is the left neighbor of x, otherwise, x does\nnot have a left neighbor. Then, push x on the stack and go to the next position.\nHere is the algorithm in pseudo-code:\nfor every position x in s do\nwhile not my_stack.is_empty && s[my_stack.peek] >= s[y] do\nmy_stack.pop\ndone\nif my_stack.is_empty\nleft[i] <- 0\nelse\nleft[i] <- my_stack.peek\nfi\nmy_stack.push (x)\ndone\nNote that the algorithm above assumes that indexes start from 1, and hence it\nuses 0 to denote that a position has no left neighbor.\nAs an example, let us consider the sequence s = [4, 7, 8, 1, 2, 3, 9, 5, 6]. Here\nis the sequence of the left neighbors of s using indexes that start from 1: left =\n[0, 1, 2, 0, 4, 5, 6, 6, 8]. The left neighbor of the first element of s is 0 (denoting no\nvalid index), since, as it is the first element of the list, it has no smaller element\nat its left. It is the same for the fourth element (1), as it is the minimum of the\nlist.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the algorithm to compute the sequence of\nleft neighbors from an input sequence. You can use an existing implementation\nof stacks or use directly a sequence for the stack."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks.\n1. Verify that, for each index i in the input sequence s, the left neighbor of i\nin s is smaller than i, that is left[i] < i."
+        },
+        {
+          "id": "task3",
+          "content": "2. Verify that, for each index i in the input sequence s, if i has a left neighbor\nin s, then the value stored in s at the position of the left neighbor is smaller\nthan the value stored at position i, namely, if left[i] is a valid index of s\nthen s[left[i]] < s[i]."
+        },
+        {
+          "id": "task4",
+          "content": "3. Verify that, for each index i in the input sequence s, there are no values\nsmaller than s[i] between left[i] + 1 and i."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Stack<T> {\n    var data: array<T>\n    var size: int\n}",
+        "verus": "pub struct Stack<T> {\n    pub data: Vec<T>,\n}",
+        "why3": "module Stack\n  use int.Int\n  use array.Array\n  \n  type stack = {\n    mutable data: array int;\n    mutable size: int;\n  }\nend",
+        "cbmc": "typedef struct {\n    int* data;\n    int size;\n} Stack;",
+        "framac": "typedef struct {\n    int* data;\n    int size;\n} Stack;",
+        "vercors": "class Stack {\n    int[] data;\n    int size;\n}",
+        "verifast": "struct stack {\n    int *data;\n    int size;\n};"
+      }
+    },
+    {
+      "year": "2019",
+      "name": "Construction of a Cartesian Tree",
+      "description": "To a sequence of distinct numbers, we associate a unique Cartesian tree. It is a\ntree constructed so that:\n1. The tree contains exactly one node per element in the sequence.\n2. The elements are encountered in the order of the sequence when traversing the tree in-order, that is, using a symmetric traversal (first traverse\nthe left subtree, then the node itself, and finally the right subtree).\n3. The tree has the heap property, that is, each node in the tree contains a\nvalue (not an index) bigger than its parent.\nThere are several algorithms to construct a Cartesian tree in linear time from\nits input sequence. The one we consider here is based on the all nearest smaller\nvalues problem (part A of this challenge). Let’s consider a sequence of distinct\nnumbers s. First, we construct the sequence of left neighbors for the elements\nof s using the algorithm described above. Then, we construct the sequence of\nright neighbors using the same algorithm, but starting from the end of the list.\nThen, for every position x in the sequence, the parent of x is either:\n• The left neighbor of x if x has no right neighbor.\n• The right neighbor of x if x has no left neighbor.\n• If x has both a left neighbor and a right neighbor, then it is the one which\nhas the larger value.\n• If x has no neighbor, then it is the root.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the algorithm for the construction of the\nCartesian tree. You can implement the tree structure as you prefer, using for\nexample a recursive data-type, a pointer based structure, or a bounded structure inside an array depending on your input language."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks.\n1. Verify that your algorithm returns a well formed binary tree, with one\nnode per element (or per position) in the sequence."
+        },
+        {
+          "id": "task3",
+          "content": "2. Verify that the resulting tree has the heap property, that is, each non-root\nnode contains a value larger than its parent."
+        },
+        {
+          "id": "task4",
+          "content": "3. Optional task (advanced): Verify that an in-order traversal of the tree\ntraverses elements in the same order as in the sequence."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class TreeNode {\n    var value: int\n    var left: TreeNode?\n    var right: TreeNode?\n    var parent: TreeNode?\n    \n    constructor(val: int)\n        ensures value == val\n        ensures left == null && right == null && parent == null\n    {\n        value := val;\n        left := null;\n        right := null;\n        parent := null;\n    }\n}\n\npredicate ValidCartesianTree(root: TreeNode?, sequence: seq<int>)\n    reads if root != null then {root} + root.left + root.right else {}\n{\n    if root == null then\n        |sequence| == 0\n    else\n        // Root has minimum value in sequence\n        (forall i :: 0 <= i < |sequence| ==> root.value <= sequence[i]) &&\n        // Left subtree contains elements before root in sequence\n        (exists k :: 0 <= k < |sequence| && sequence[k] == root.value &&\n         ValidCartesianTree(root.left, sequence[0..k]) &&\n         ValidCartesianTree(root.right, sequence[k+1..]))\n}\n\nmethod ConstructCartesianTree(sequence: array<int>) returns (root: TreeNode?)\n    requires sequence.Length > 0\n    requires forall i, j :: 0 <= i < j < sequence.Length ==> sequence[i] != sequence[j] // distinct values\n    ensures ValidCartesianTree(root, sequence[..])\n{\n    if sequence.Length == 0 {\n        return null;\n    }\n    \n    // Find minimum element\n    var minIdx := 0;\n    for i := 1 to sequence.Length\n        invariant 0 <= minIdx < i\n        invariant forall j :: 0 <= j < i ==> sequence[minIdx] <= sequence[j]\n    {\n        if sequence[i] < sequence[minIdx] {\n            minIdx := i;\n        }\n    }\n    \n    root := new TreeNode(sequence[minIdx]);\n    \n    if minIdx > 0 {\n        var leftSubarray := sequence[0..minIdx];\n        root.left := ConstructCartesianTree(leftSubarray);\n        if root.left != null {\n            root.left.parent := root;\n        }\n    }\n    \n    if minIdx < sequence.Length - 1 {\n        var rightSubarray := sequence[minIdx+1..];\n        root.right := ConstructCartesianTree(rightSubarray);\n        if root.right != null {\n            root.right.parent := root;\n        }\n    }\n}",
+        "verus": "struct CartesianNode {\n    value: i32,\n    left: Option<Box<CartesianNode>>,\n    right: Option<Box<CartesianNode>>,\n}",
+        "why3": "module TreeNode\n  use int.Int\n  \n  type tree_node = {\n    value: int;\n    mutable left: tree_node option;\n    mutable right: tree_node option;\n    mutable parent: tree_node option;\n  }\n  \n  function create_node (value: int) : tree_node =\n    { value = value; left = None; right = None; parent = None }\nend\n\nmodule CartesianTree\n  use int.Int\n  use array.Array\n  use TreeNode\n  \n  predicate is_cartesian_tree (root: tree_node option) (sequence: array int) (start: int) (end_: int) =\n    match root with\n    | None -> start >= end_\n    | Some node ->\n        start < end_ /\\\n        start <= node.value < end_ /\\ (* node.value is actually an index *)\n        (forall i. start <= i < end_ -> sequence[node.value] <= sequence[i]) /\\\n        (exists k. start <= k < end_ /\\ k = node.value /\\\n         is_cartesian_tree node.left sequence start k /\\\n         is_cartesian_tree node.right sequence (k+1) end_)\n    end\n  \n  let rec find_min_index (sequence: array int) (start: int) (end_: int) : int\n    requires { start < end_ }\n    requires { 0 <= start /\\ end_ <= Array.length sequence }\n    ensures { start <= result < end_ }\n    ensures { forall i. start <= i < end_ -> sequence[result] <= sequence[i] }\n    variant { end_ - start }\n  =\n    if start + 1 = end_ then start\n    else\n      let mid_min = find_min_index sequence (start + 1) end_ in\n      if sequence[start] <= sequence[mid_min] then start\n      else mid_min\n  \n  let rec construct_cartesian_tree (sequence: array int) (start: int) (end_: int) : tree_node option\n    requires { 0 <= start <= end_ <= Array.length sequence }\n    requires { forall i j. start <= i < j < end_ -> sequence[i] <> sequence[j] } (* distinct values *)\n    ensures { is_cartesian_tree result sequence start end_ }\n    variant { end_ - start }\n  =\n    if start >= end_ then None\n    else if start + 1 = end_ then\n      Some (create_node start) (* store index, not value *)\n    else\n      let min_idx = find_min_index sequence start end_ in\n      let root = create_node min_idx in\n      \n      let left_subtree = construct_cartesian_tree sequence start min_idx in\n      root.left <- left_subtree;\n      (match left_subtree with\n       | None -> ()\n       | Some left_node -> left_node.parent <- Some root);\n      \n      let right_subtree = construct_cartesian_tree sequence (min_idx + 1) end_ in\n      root.right <- right_subtree;\n      (match right_subtree with\n       | None -> ()\n       | Some right_node -> right_node.parent <- Some root);\n      \n      Some root\n  \n  let construct_cartesian_tree_main (sequence: array int) : tree_node option\n    requires { Array.length sequence > 0 }\n    requires { forall i j. 0 <= i < j < Array.length sequence -> sequence[i] <> sequence[j] }\n    ensures { is_cartesian_tree result sequence 0 (Array.length sequence) }\n  =\n    construct_cartesian_tree sequence 0 (Array.length sequence)\nend",
+        "cbmc": "#include <stdlib.h>\n#include <assert.h>\n\ntypedef struct TreeNode {\n    int value;\n    struct TreeNode* left;\n    struct TreeNode* right;\n    struct TreeNode* parent;\n} TreeNode;\n\nTreeNode* create_node(int value) {\n    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));\n    assert(node != NULL);\n    \n    node->value = value;\n    node->left = NULL;\n    node->right = NULL;\n    node->parent = NULL;\n    \n    return node;\n}\n\nint find_min_index(int* sequence, int length) {\n    assert(sequence != NULL);\n    assert(length > 0);\n    \n    int min_idx = 0;\n    for (int i = 1; i < length; i++) {\n        if (sequence[i] < sequence[min_idx]) {\n            min_idx = i;\n        }\n    }\n    return min_idx;\n}\n\nTreeNode* construct_cartesian_tree(int* sequence, int length) {\n    assert(sequence != NULL);\n    assert(length >= 0);\n    \n    if (length == 0) {\n        return NULL;\n    }\n    \n    if (length == 1) {\n        return create_node(sequence[0]);\n    }\n    \n    // Find minimum element index\n    int min_idx = find_min_index(sequence, length);\n    TreeNode* root = create_node(sequence[min_idx]);\n    \n    // Construct left subtree\n    if (min_idx > 0) {\n        root->left = construct_cartesian_tree(sequence, min_idx);\n        if (root->left != NULL) {\n            root->left->parent = root;\n        }\n    }\n    \n    // Construct right subtree\n    if (min_idx < length - 1) {\n        root->right = construct_cartesian_tree(sequence + min_idx + 1, length - min_idx - 1);\n        if (root->right != NULL) {\n            root->right->parent = root;\n        }\n    }\n    \n    return root;\n}\n\nvoid verify_distinct_values(int* sequence, int length) {\n    for (int i = 0; i < length; i++) {\n        for (int j = i + 1; j < length; j++) {\n            assert(sequence[i] != sequence[j]);\n        }\n    }\n}",
+        "framac": "typedef struct TreeNode {\n    int value;\n    struct TreeNode* left;\n    struct TreeNode* right;\n    struct TreeNode* parent;\n} TreeNode;\n\n/*@\n  predicate valid_tree_node(TreeNode* node) =\n    \\valid(node) && \n    (node->left == \\null || (\\valid(node->left) && node->left->parent == node)) &&\n    (node->right == \\null || (\\valid(node->right) && node->right->parent == node));\n\n  predicate is_cartesian_tree(TreeNode* root, int* sequence, integer start, integer end) =\n    (root == \\null && start >= end) ||\n    (root != \\null && valid_tree_node(root) && start < end &&\n     \\exists integer k; start <= k < end && sequence[k] == root->value &&\n     (\\forall integer i; start <= i < end ==> sequence[k] <= sequence[i]) &&\n     is_cartesian_tree(root->left, sequence, start, k) &&\n     is_cartesian_tree(root->right, sequence, k+1, end));\n@*/\n\n/*@\n  requires \\valid(sequence + (0..length-1));\n  requires length > 0;\n  requires \\forall integer i, j; 0 <= i < j < length ==> sequence[i] != sequence[j];\n  assigns \\nothing;\n  ensures is_cartesian_tree(\\result, sequence, 0, length);\n*/\nTreeNode* construct_cartesian_tree(int* sequence, int length) {\n    if (length == 0) {\n        return NULL;\n    }\n    \n    // Find minimum element\n    int min_idx = 0;\n    /*@\n      loop invariant 0 <= i <= length;\n      loop invariant 0 <= min_idx < length;\n      loop invariant \\forall integer j; 0 <= j < i ==> sequence[min_idx] <= sequence[j];\n      loop assigns i, min_idx;\n    */\n    for (int i = 1; i < length; i++) {\n        if (sequence[i] < sequence[min_idx]) {\n            min_idx = i;\n        }\n    }\n    \n    TreeNode* root = (TreeNode*)malloc(sizeof(TreeNode));\n    if (!root) return NULL;\n    \n    root->value = sequence[min_idx];\n    root->left = NULL;\n    root->right = NULL;\n    root->parent = NULL;\n    \n    // Construct left subtree\n    if (min_idx > 0) {\n        root->left = construct_cartesian_tree(sequence, min_idx);\n        if (root->left) {\n            root->left->parent = root;\n        }\n    }\n    \n    // Construct right subtree\n    if (min_idx < length - 1) {\n        root->right = construct_cartesian_tree(sequence + min_idx + 1, length - min_idx - 1);\n        if (root->right) {\n            root->right->parent = root;\n        }\n    }\n    \n    return root;\n}",
+        "vercors": "class TreeNode {\n    int value;\n    TreeNode left;\n    TreeNode right;\n    TreeNode parent;\n    \n    /*@\n      resource state(int val) = \n        Perm(value, 1) ** value == val **\n        Perm(left, 1) ** Perm(right, 1) ** Perm(parent, 1);\n    @*/\n    \n    constructor(int val)\n        ensures state(val);\n        ensures left == null && right == null && parent == null;\n    {\n        value = val;\n        left = null;\n        right = null;\n        parent = null;\n        //@ fold state(val);\n    }\n}\n\n/*@\n  requires sequence != null && sequence.length > 0;\n  requires (\\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));\n  requires (\\forall int i, j; 0 <= i && i < sequence.length && 0 <= j && j < sequence.length && i != j; sequence[i] != sequence[j]);\n  ensures \\result == null || \\result.state(?rootValue);\n  ensures (\\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));\n@*/\nTreeNode constructCartesianTree(int[] sequence, int start, int end) {\n    if (start >= end) {\n        return null;\n    }\n    \n    if (start + 1 == end) {\n        TreeNode node = new TreeNode(sequence[start]);\n        return node;\n    }\n    \n    // Find minimum element index\n    int minIdx = start;\n    /*@\n      loop_invariant start <= i && i <= end;\n      loop_invariant start <= minIdx && minIdx < end;\n      loop_invariant (\\forall int j; start <= j && j < i; sequence[minIdx] <= sequence[j]);\n    @*/\n    for (int i = start + 1; i < end; i++) {\n        if (sequence[i] < sequence[minIdx]) {\n            minIdx = i;\n        }\n    }\n    \n    TreeNode root = new TreeNode(sequence[minIdx]);\n    \n    //@ unfold root.state(sequence[minIdx]);\n    \n    // Construct left subtree\n    if (minIdx > start) {\n        root.left = constructCartesianTree(sequence, start, minIdx);\n        if (root.left != null) {\n            //@ unfold root.left.state(?leftValue);\n            root.left.parent = root;\n            //@ fold root.left.state(leftValue);\n        }\n    }\n    \n    // Construct right subtree\n    if (minIdx + 1 < end) {\n        root.right = constructCartesianTree(sequence, minIdx + 1, end);\n        if (root.right != null) {\n            //@ unfold root.right.state(?rightValue);\n            root.right.parent = root;\n            //@ fold root.right.state(rightValue);\n        }\n    }\n    \n    //@ fold root.state(sequence[minIdx]);\n    return root;\n}\n\n/*@\n  requires sequence != null && sequence.length > 0;\n  requires (\\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));\n  requires (\\forall int i, j; 0 <= i && i < sequence.length && 0 <= j && j < sequence.length && i != j; sequence[i] != sequence[j]);\n  ensures \\result == null || \\result.state(?rootValue);\n  ensures (\\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));\n@*/\nTreeNode constructCartesianTree(int[] sequence) {\n    return constructCartesianTree(sequence, 0, sequence.length);\n}",
+        "verifast": "#include \"stdlib.h\"\n\nstruct TreeNode {\n    int value;\n    struct TreeNode* left;\n    struct TreeNode* right;\n    struct TreeNode* parent;\n};\n\n/*@\npredicate tree_node(struct TreeNode* node, int value, struct TreeNode* left, struct TreeNode* right, struct TreeNode* parent) =\n    node->value |-> value &*& node->left |-> left &*& node->right |-> right &*& node->parent |-> parent;\n\npredicate tree(struct TreeNode* root) = \n    root == 0 ? true : \n    tree_node(root, ?value, ?left, ?right, ?parent) &*& tree(left) &*& tree(right);\n\npredicate cartesian_tree(struct TreeNode* root, list<int> sequence) =\n    root == 0 ? \n        sequence == nil :\n        tree_node(root, ?value, ?left, ?right, ?parent) &*&\n        mem(value, sequence) &*& \n        cartesian_tree(left, ?left_seq) &*& \n        cartesian_tree(right, ?right_seq) &*&\n        append(left_seq, cons(value, right_seq)) == sequence;\n@*/\n\nstruct TreeNode* create_node(int value)\n    //@ requires true;\n    //@ ensures tree_node(result, value, 0, 0, 0);\n{\n    struct TreeNode* node = malloc(sizeof(struct TreeNode));\n    if (node == 0) abort();\n    \n    node->value = value;\n    node->left = 0;\n    node->right = 0;\n    node->parent = 0;\n    \n    //@ close tree_node(node, value, 0, 0, 0);\n    return node;\n}\n\nint find_min_index(int* sequence, int length)\n    //@ requires ints(sequence, length, ?values) &*& length > 0;\n    //@ ensures ints(sequence, length, values) &*& 0 <= result &*& result < length;\n{\n    int min_idx = 0;\n    \n    //@ assert ints(sequence, length, values);\n    for (int i = 1; i < length; i++)\n        //@ invariant 1 <= i &*& i <= length &*& 0 <= min_idx &*& min_idx < length;\n        //@ invariant ints(sequence, length, values);\n    {\n        if (sequence[i] < sequence[min_idx]) {\n            min_idx = i;\n        }\n    }\n    \n    return min_idx;\n}\n\nstruct TreeNode* construct_cartesian_tree(int* sequence, int length)\n    //@ requires ints(sequence, length, ?values) &*& length >= 0;\n    //@ ensures ints(sequence, length, values) &*& tree(result);\n{\n    if (length == 0) {\n        return 0;\n    }\n    \n    if (length == 1) {\n        //@ open ints(sequence, 1, values);\n        struct TreeNode* node = create_node(sequence[0]);\n        //@ open tree_node(node, sequence[0], 0, 0, 0);\n        //@ close tree(0);\n        //@ close tree_node(node, sequence[0], 0, 0, 0);\n        //@ close tree(node);\n        //@ close ints(sequence, 1, values);\n        return node;\n    }\n    \n    int min_idx = find_min_index(sequence, length);\n    struct TreeNode* root = create_node(sequence[min_idx]);\n    \n    //@ open tree_node(root, sequence[min_idx], 0, 0, 0);\n    \n    // Construct left subtree\n    if (min_idx > 0) {\n        root->left = construct_cartesian_tree(sequence, min_idx);\n        if (root->left != 0) {\n            //@ open tree(root->left);\n            //@ open tree_node(root->left, ?left_value, ?left_left, ?left_right, ?left_parent);\n            root->left->parent = root;\n            //@ close tree_node(root->left, left_value, left_left, left_right, root);\n            //@ close tree(root->left);\n        }\n    }\n    \n    // Construct right subtree  \n    if (min_idx < length - 1) {\n        root->right = construct_cartesian_tree(sequence + min_idx + 1, length - min_idx - 1);\n        if (root->right != 0) {\n            //@ open tree(root->right);\n            //@ open tree_node(root->right, ?right_value, ?right_left, ?right_right, ?right_parent);\n            root->right->parent = root;\n            //@ close tree_node(root->right, right_value, right_left, right_right, root);\n            //@ close tree(root->right);\n        }\n    }\n    \n    //@ close tree_node(root, sequence[min_idx], root->left, root->right, 0);\n    //@ close tree(root);\n    return root;\n}"
+      }
+    },
+    {
+      "year": "2019",
+      "name": "GHC Sort",
+      "description": "The GHC Haskell compiler’s standard library includes an implementation of a\ngeneric sorting method which is a form of patience sorting (Named after the patience card game https://en.wikipedia.org/wiki/Patience_sorting.\n).\nTo sort a sequence s,\nGHC sort works as follows:\n1. Split s into monotonic segments σ1, σ2, . . . , σm−1\n2. Reverse every segment that is decreasing\n3. Merge the segments pairwise in a way that preserves the order\n4. If all segments have been merged into one, that is an ordered copy of s;\nthen terminate. Otherwise, go to step 3\nMerging in step 3 works like merging in Merge Sort:\n# merge ordered segments s and t\nmerged := []\nx, y := 0, 0\nwhile x < length(s) and y < length(t):\nif s[x] < t[y]:\nmerged.extend(s[x])\nx := x + 1\nelse:\nmerged.extend(t[y])\ny := y + 1\n# append any remaining tail of s or t\nwhile x < length(s):\nmerged.extend(s[x])\nx := x + 1\nwhile y < length(t):\nmerged.extend(t[y])\ny := y + 1\nFor example, GHC sort applied to the sequence s = 3 2 8 9 3 4 5 goes\nthrough the following steps:\n• monotonic segments: 3 2 | 8 9 | 3 4 5\n• reverse decreasing segments: 2 3 | 8 9 | 3 4 5\n• merge segments pairwise: 2 3 8 9 | 3 4 5\n• merge segments pairwise again: 2 3 3 4 5 8 9, which is s sorted",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement GHC sort in your programming language\nof choice. Again, you can represent the sequences of ordered segments using\nany data structure or abstract representation that works well with your tool.\nTo compute the monotonic segments of the input you can rely on the algorithm developed in part 1 of this challenge. If you find it preferable, you\ncan add the reversal (step 2) to the same pass that constructs the monotonic\nsegments in step 1."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks.\n1. Write functional specifications of all procedures/functions/main steps of\nyour implementation."
+        },
+        {
+          "id": "task3",
+          "content": "2.Verify that the implementation of merge returns a sequence merged that is\nsorted."
+        },
+        {
+          "id": "task4",
+          "content": "3.Verify that the overall sorting algorithm returns an output that is sorted."
+        },
+        {
+          "id": "task5",
+          "content": "4.Verify that the overall sorting algorithm returns an output that is a permutation of the input."
+        }
+      ],
+      "data_structures": {
+        "dafny": "type GHCArray = array<int>",
+        "verus": "Vec<i32>",
+        "why3": "module GHCSort\n  use int.Int\n  use array.Array\n  \n  type ghc_array = array int\nend",
+        "cbmc": "int* array;",
+        "framac": "int* array;",
+        "vercors": "int[] array;",
+        "verifast": "int* array;"
+      }
+    },
+    {
+      "year": "2019",
+      "name": "Monotonic Segments",
+      "description": "Given a sequence s, s = s[0]s[1] . . . s[n − 1] n ≥ 0, of elements over a totally sorted domain (for example, the integers), we call\nmonotonic cutpoints any indexes that cut s into segments that are monotonic:\neach segment’s elements are all increasing or all decreasing. Here are some\nexamples of sequences with monotonic cutpoints:\nSEQUENCE s MONOTONIC CUTPOINTS MONOTONIC SEGMENTS\n1 2 3 4 5 7   0 6   1 2 3 4 5 7\n1 4 7 3 3 5 9   0 3 5 7   1 4 7 | 3 3 | 5 9\n6 3 4 2 5 3 7   0 2 4 6 7   6 3 | 4 2 | 5 3 | 7\nFormally, given a sequence s as above, we call monotonic cutpoints any\ninteger sequence\ncut = c0 c1 . . . cm−1\nsuch that the following four properties hold: \nnon-empty: m > 0\nbegin-to-end: c0 = 0 and cm−1 = n\nwithin bounds: for every element ck ∈ cut: 0 ≤ ck ≤ n\nmonotonic: for every pair of consecutive elements ck\n, ck+1 ∈ cut, the segment\ns[ck..ck+1) = s[ck]s[ck + 1] . . . s[ck+1 − 1] of s, which starts at index ck\nincluded and ends at index ck+1 excluded, is\nmonotonic, that is:\n1. either s[ck] < s[ck + 1] < · · · < s[ck+1 − 1]\n2. or s[ck] ≥ s[ck + 1] ≥ · · · ≥ s[ck+1 − 1]\n(If you prefer, you can change the definition of monotonic so that segments of equal values can be indifferently included in increasing or in\ndecreasing segments. If you choose to do so, you may have to change the\nalgorithm given below to match your definition of monotonic segment.)\nIn this challenge we focus on maximal monotonic cutpoints, that is such that,\nif we extend any segment by one element, the extended segment is not monotonic anymore.\nGiven a sequence s, for example stored in an array, maximal monotonic\ncutpoints can be computed by scanning s once while storing every index that\ncorresponds to a change in monotonicity (from increasing to decreasing, or vice\nversa), as shown in the following algorithm.\ncut := [0] # singleton sequence with element 0\nx, y := 0, 1\nwhile y < n: # n is the length of sequence s\nincreasing := s[x] < s[y] # currently in increasing segment?\nwhile y < n and (s[y-1] < s[y]) == increasing:\ny := y + 1\ncut.extend(y) # extend cut by adding y to its end\nx := y\ny := x + 1\nif x < n:\ncut.extend(n)",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the algorithm shown above to compute\nmonotonic cutpoints of an input sequence. Choose any representation of input\nsequence and cutpoints sequence that is manageable using your programming\nlanguage of choice: arrays, mathematical sequences, dynamic lists, . . . . If you\nare using a functional programming language, you can use recursion instead\nof looping to implement the general idea behind the algorithm."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks.\n1. Verify that the output sequence satisfies properties non-empty, begin-toend, and within bounds above."
+        },
+        {
+          "id": "task3",
+          "content": "2. Verify that the output sequence satisfies property monotonic given above\n(without the maximality requirement)."
+        },
+        {
+          "id": "task4",
+          "content": "3. Optional task (advanced): Strengthen the definition of monotonic cutpoints so that it requires maximal monotonic cutpoints, and prove that\nyour algorithm implementation computes maximal cutpoints according\nto the strengthened definition."
+        }
+      ],
+      "data_structures": {
+        "dafny": "type MonoArray = array<int>",
+        "verus": "Vec<i32>",
+        "why3": "module MonotonicSegments\n  use int.Int\n  use array.Array\n  \n  type mono_array = array int\nend",
+        "cbmc": "int* array;",
+        "framac": "int* array;",
+        "vercors": "int[] array;",
+        "verifast": "int* array;"
+      }
+    },
+    {
+      "year": "2019",
+      "name": "Sparse Matrix Multiplication",
+      "description": "We represent sparse matrices using the coordinate list (COO) format. In this\nformat, the non-zero values of the matrix are stored in a sequence of triplets\ncontaining the row, the column, and the corresponding value. The sequence is\nsorted, first by row index and then by column index, for faster lookup. Here is\nan example. The matrix:\n0 0 1 0\n5 8 0 0\n0 0 0 0\n0 3 0 0\nis encoded into the following sequence (using row and column indexes that\nstart from 1):\n[(1, 3, 1),(2, 1, 5),(2, 2, 8),(4, 2, 3)]\nWe now consider an algorithm which computes the multiplication of a vector of values (encoded as a sequence) with a sparse matrix. It iterates over the\nvalues present inside the matrix, multiplies each of them by the appropriate\nelement in the input vector, and stores the result at the appropriate position in\nthe output vector. Here is the algorithm in pseudo-code, which multiplies a\nsparse matrix m with an input vector x and stores it in an output vector y:\ny <- (0, ..., 0)\nfor every element (r, c, v) of m do\ny (c) <- y (c) + x (r) * v\ndone",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation tasks.\n1. Implement the algorithm to multiply a vector with a sparse matrix in\nyour language of choice."
+        },
+        {
+          "id": "task2",
+          "content": "2. We want to execute this algorithm in parallel, so that each computation\nis done by a different process/thread/task. Add the necessary synchronization steps in your sequential program, using the synchronisation feature of your choice (lock, atomic block, . . . ).\nYou can choose how to allocate work to processes. For example:\n• each process computes exactly one iteration of the for loop,\n• there is a fixed number of processes, each taking an equal share of\nthe total number of for loop iterations,\n• work is assigned to processes dynamically (for example using a work\nstealing algorithm)."
+        },
+        {
+          "id": "task3",
+          "content": "Verification tasks.\n1. Verify that the sequential muplitplication algorithm indeed performs standard matrix multiplication (that is, it computes yi = ∑k xk × mk,i)."
+        },
+        {
+          "id": "task4",
+          "content": "2. Verify that the concurrent algorithm does not exhibit concurrency issues\n(data-races, deadlocks, . . . )."
+        },
+        {
+          "id": "task5",
+          "content": "3. Verify that the concurrent algorithm still performs the same computation\nas the sequential algorithm. If time permits, you can also experiment\nwith different work allocation policies and verify that they all behave\ncorrectly."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype Triplet = Triplet(row: nat, col: nat, value: int)",
+        "verus": "pub struct Triplet {\n    pub row: usize,\n    pub col: usize,\n    pub value: i32,\n}",
+        "why3": "module Triplet\n  use int.Int\n  \n  type triplet = {\n    row: int;\n    col: int;\n    value: int;\n  }\nend",
+        "cbmc": "typedef struct Triplet {\n    size_t row;\n    size_t col;\n    int value;\n} Triplet;",
+        "framac": "typedef struct {\n    size_t row;\n    size_t col;\n    int value;\n} Triplet;",
+        "vercors": "class Triplet {\n    int row;\n    int col;\n    int value;\n}",
+        "verifast": "struct Triplet {\n    size_t row;\n    size_t col;\n    int value;\n};"
+      }
+    },
+    {
+      "year": "2021",
+      "name": "DLL to BST",
+      "description": "Description\nThis challenge is to verify an in-place algorithm to convert a sorted doubly-linked list (DLL)\ninto a balanced binary search tree (BST). The algorithm runs in linear time, and proceeds by\nfirst making a pass over the list to calculate its length, say n. It then recursively constructs\na BST out of the first n/2 nodes, makes this the left subtree of the middle node, and then\nrecursively constructs the right subtree using the remaining nodes.\nAssume that each node has 3 fields, data, prev, and next, and when constructing the BST,\nwe use the prev field to link a node to its left child and the next field to link a node to its right\nchild. The implementation is shown below:\n1 // Ref is the type of nodes used for both list and tree, and has these fields:\n2 field data: Int\n3 field prev: Ref // Also used as left subtree pointer\n4 field next: Ref // Also used as right subtree pointer\n5\n6 method size(head: Ref) returns (count: Int) {\n7 if (head != null) {\n8 count := size(head.next)\n9 count := count + 1\n10 } else {\n11 count := 0\n12 }\n13 }\n14\n15 method dll_to_bst(head: Ref) returns (root: Ref) {\n16 var n: Int\n17 var right: Ref\n18 n := size(head)\n19 root, right := dll_to_bst_rec(head, n)\n20 }\n21\n22 // Converts a sorted DLL into a balanced BST\n23 // head: Pointer to doubly linked list\n24 // n: number of nodes of list to convert to tree\n25 method dll_to_bst_rec(head: Ref, n: Int) returns (root: Ref, right: Ref) {\n26 if (n > 0) {\n27 // Recursively construct the left subtree\n28 var left: Ref\n29 left, root := dll_to_bst_rec(head, n/2)\n30 // [head, root) is a tree rooted at left, [root, ...] is a list\n31\n32 // Set pointer to left subtree\n33 root.prev := left\n34\n35 // Recursively construct the right subtree\n36 // size(right subtree) = n - size(left subtree) - 1 (for root)\n37 var temp: Ref\n38 temp, right := dll_to_bst_rec(root.next, n-n/2-1)\n39 // [head, root) is a tree rooted at left, [root.next, right) is tree at temp\n40\n41 // Set pointer to right subtree\n42 root.next := temp\n43 // [head, right) is a tree rooted at root\n44 } else {\n45 root := null\n46 right := head\n47 }\n48 }",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification Tasks\n1. Prove that this algorithm converts an input list into a tree."
+        },
+        {
+          "id": "task2",
+          "content": "2. Prove that the algorithm is memory-safe."
+        },
+        {
+          "id": "task3",
+          "content": "3. Prove that if the input list is sorted then the resulting tree is a BST."
+        },
+        {
+          "id": "task4",
+          "content": "4. Prove that the resulting BST is balanced."
+        },
+        {
+          "id": "task5",
+          "content": "5. Prove that the algorithm terminates."
+        },
+        {
+          "id": "task6",
+          "content": "6. (Optional) Prove the above for an iterative version of size."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Node {\n    var data: int\n    var prev: Node?\n    var next: Node?\n}\n\nclass DLLNode {\n    var data: int\n    var prev: DLLNode?\n    var next: DLLNode?\n}",
+        "verus": "struct Node {\n    data: i32,\n    prev: Option<Box<Node>>,  // Also used as left child in BST\n    next: Option<Box<Node>>,  // Also used as right child in BST\n}\n\nstruct DLLNode {\n    data: i32,\n    prev: Option<Box<DLLNode>>,\n    next: Option<Box<DLLNode>>,\n}",
+        "why3": "module DLLtoBST\n  use int.Int\n  use option.Option\n  \n  type node = {\n    data : int;\n    mutable prev : option node;\n    mutable next : option node;\n  }\n  \n  type dll_node = {\n    data : int;\n    mutable prev : option dll_node;\n    mutable next : option dll_node;\n  }\nend",
+        "cbmc": "typedef struct Node {\n    int data;\n    struct Node* prev;\n    struct Node* next;\n} Node;\n\ntypedef struct DLLNode {\n    int data;\n    struct DLLNode* prev;\n    struct DLLNode* next;\n} DLLNode;",
+        "framac": "typedef struct Node {\n    int data;\n    struct Node* prev;\n    struct Node* next;\n} Node;\n\ntypedef struct DLLNode {\n    int data;\n    struct DLLNode* prev;\n    struct DLLNode* next;\n} DLLNode;",
+        "vercors": "class Node {\n    int data;\n    Node prev;\n    Node next;\n}\n\nclass DLLNode {\n    int data;\n    DLLNode prev;\n    DLLNode next;\n}",
+        "verifast": "struct Node {\n    int data;\n    struct Node* prev;\n    struct Node* next;\n};\n\nstruct DLLNode {\n    int data;\n    struct DLLNode* prev;\n    struct DLLNode* next;\n};"
+      }
+    },
+    {
+      "year": "2021",
+      "name": "Lexicographic Permutations",
+      "description": "Description\nThis challenge considers an algorithm that takes any sequence A as input, and enumerates all possible permutations of A. Moreover, it enumerates these permutations in\nsorted (lexicographic) order. For example, when given a sequence A B C of characters as\ninput, the algorithm enumerates and outputs the following six sequences: A B C, A C B,\nB A C, B C A, C A B, C B A, in that specific order.\nLet us restrict ourselves to integer sequences for the purpose of this challenge. For\nexample, given an integer sequence 3 1 2 as input, the algorithm enumerates and reports\nthe sequences 1 2 3, 1 3 2, 2 1 3, 2 3 1, 3 1 2, 3 2 1, in that order.\nThe enumeration algorithm, named permut, is shown on the next page. At the heart\nof this algorithm lies a procedure named next(A) that takes an integer array A as input\nand modifies A to be the next permutation in the enumeration sequence. For example,\nif A were 2 3 1, then next(A) would modify A to be 3 1 2. The next procedure does not\nwrap, but instead returns a Boolean value that indicates whether a next permutation\nwas found. For example, next(2 3 1) yields true, whereas next(3 2 1) yields false as it\nis the last permutation.\n1 seqhinti permut(int[ ] A) {\n2 seqhinti result := seq();\n3\n4 if (A = null) return result;\n5\n6 sort(A);\n7\n8 do { result := result ++ seq(to seq(A)); }\n9 while (next(A));\n10\n11 return result;\n12 }\n13\n14 bool next(int[ ] A) {\n15 int i := A.length − 1;\n16 while (i > 0 ∧ A[i − 1] ≥ A[i]) {\n17 i := i − 1;\n18 }\n19\n20 if (i ≤ 0) return false;\n21\n22 int j := A.length − 1;\n23 while (A[j] ≤ A[i − 1]) {\n24 j := j − 1;\n25 }\n26\n27 int temp := A[i − 1];\n28 A[i − 1] := A[j];\n29 A[j] := temp;\n30\n31 j := A.length − 1;\n32 while (i < j) {\n33 temp := A[i];\n34 A[i] := A[j];\n35 A[j] := temp;\n36 i := i + 1;\n37 j := j − 1;\n38 }\n39\n40 return true;\n41 }",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "The verification challenges related to next are:\n1. Verify that next is memory safe.\n2. Verify that next terminates for every input.\n3. Verify that any changes on A performed by next(A) are permutations.\n4. Verify that, if next(A) returns false, then A is left unmodified and is indeed the\n“last permutation” in the permutation sequence.\n5. Verify that, if next(A) yields true, then A is modified to be the proper “next\npermutation” in the sequence"
+        },
+        {
+          "id": "task2",
+          "content": "The verification challenges related to the permut procedure are:\n6. Verify that permut is memory safe.\n7. Verify that permut terminates for every input.\n8. Verify that any permutation reported by permut is unique.\n9. Verify that permut(A) reports all permutations of A.\n10. Verify that permut outputs all permututations in lexicographic order."
+        }
+      ],
+      "data_structures": {
+        "dafny": "type Permutation = array<int>",
+        "verus": "Vec<i32>",
+        "why3": "module LexPerm\n  use int.Int\n  use array.Array\n  \n  type permutation = array int\nend",
+        "cbmc": "int* array;",
+        "framac": "int* array;",
+        "vercors": "int[] array;",
+        "verifast": "int* array;"
+      }
+    },
+    {
+      "year": "2021",
+      "name": "Shearsort",
+      "description": "Description\nFor this challenge we look at shearsort, which is a parallelisable algorithm for sorting\nan n × n integer matrix in a snake-like order. With snake-like we mean that, after\ntermination of shearsort, the rows of the given input matrix have been sorted in\nalternating direction.\nThe next page shows a pseudo-code implementation of shearsort. It takes an integer\nmatrix M as input, which is assumed to be of size n × n (with n a positive integer).\nThen the following two steps are repeated ceiling(log2\n(n)) + 1 times:\n1. Sort all rows of M in an alternating manner.\n2. Sort all columns of M in ascending order.\nThe row and column sorts in every round can be performed in parallel, as they\noperate on disjoint memory. The implementations of sort-row and sort-column are\nleft abstract, but could be chosen to be any sorting function.\n\nFurthermore, an alternative implementation of shearsort is given, that uses a matrix transpose operation instead of sort-column. This version should be equivalent\nto shearsort, although less efficient. Feel free to perform the verification tasks using alternative-shearsort instead, if that is more convenient.\nMoreover, in case your verifier does not support reasoning about concurrency, feel\nfree to turn all parallel for-loops into sequential ones.\nalternative-shearsort instead, if that is more convenient.\nMoreover, in case your verifier does not support reasoning about concurrency, feel\nfree to turn all parallel for-loops into sequential ones.\n1 // Sorts the row-th row of M in ascending order if ascending is true,\n2 // or in descending order if ascending is false.\n3 void sort-row(int[ ][ ] M, int row, bool ascending) {\n4 . . .\n5\n6 // Sorts the column-th column of M in ascending order.\n7 void sort-column(int[ ][ ] M, int column) {\n8 . . .\n9\n10 // Sorts M in snake-like order, assuming that M is an n × n matrix.\n11 void shearsort(int n, int[ ][ ] M) {\n12 repeat ceiling(log2\n(n)) + 1 times {\n13 for int tid = 0 . . . n do in parallel {\n14 sort-row(M, tid, tid % 2 = 0);\n15 }\n16 for int tid = 0 . . . n do in parallel {\n17 sort-column(M, tid);\n18 }\n19 }\n20\n21 // An alternative version of shearsort, that only uses sort-row.\n22 void alternative-shearsort(int n, int[ ][ ] M) {\n23 repeat ceiling(log2\n(n)) + 1 times {\n24 for int tid = 0 . . . n do in parallel {\n25 sort-row(M, tid, tid % 2 = 0);\n26 }\n27 transpose(M);\n28 for int tid = 0 . . . n do in parallel {\n29 sort-row(M, tid, true);\n30 }\n31 transpose(M);\n32 }",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Verification tasks\nThe verification tasks for shearsort are:\n1. Verify that shearsort terminates, and is memory safe."
+        },
+        {
+          "id": "task2",
+          "content": "2. Verify that shearsort permutes the input matrix."
+        },
+        {
+          "id": "task3",
+          "content": "3. Verify that shearsort sorts the matrix in a snake-like manner."
+        },
+        {
+          "id": "task4",
+          "content": "4. Verify that (parallel) shearsort satisfies the same specification as sequential\nshearsort, in which all parallel for-loops are replaced by sequential ones."
+        },
+        {
+          "id": "task5",
+          "content": "5. Verify that shearsort and alternative-shearsort satisfy the same specification."
+        },
+        {
+          "id": "task6",
+          "content": "6. Extra: give implementations to sort-row, sort-column and transpose, and verify these as well."
+        }
+      ],
+      "data_structures": {
+        "dafny": "type Matrix = array2<int>",
+        "verus": "Vec<Vec<i32>>",
+        "why3": "module Shearsort\n  use int.Int\n  use array.Array\n  \n  type matrix = array (array int)\nend",
+        "cbmc": "int** matrix;",
+        "framac": "int** matrix;",
+        "vercors": "int[][] matrix;",
+        "verifast": "int** matrix;"
+      }
+    },
+    {
+      "year": "2022",
+      "name": "Downsampling a Point Cloud",
+      "description": "The following algorithm describes the functionality of downsampling an input\npoint cloud. Downsampling is used to reduce the size of an input image before\nit is processed further. The resulting point cloud retains the overall geometric\nstructure but has a reduced number of points.\nTechniques such as this are common in domains such as signal/image processing and robotics. Our pseudocode uses square voxel downsampling with\na predefined voxel size. That is, the space is tiled into cube-shaped voxels, and\nthe average point in the voxel becomes the new point to replace the others.\nThis challenge was inspired by work on verifying an autonomous grasping\nalgorithm in [1]. \n[1] M. Farrell, N. Mavrakis, A. Ferrando, C. Dixon, and Y. Gao. Formal modelling and runtime verification of autonomous grasping for active debris\nremoval. Frontiers in Robotics and AI, 8, 2021.\nDisclaimer: the programs may contain bugs. If you find any, fix them and\nmention the fix in your submission!\n\ndatatype Point = Point(x : real, y : real, z : real)\nmethod downSample(p : list<Point>, voxel_size : real) returns (pd : list<Point>)\n{\n// Get max and min x, y and z of point cloud\nx_max := max{pt.x | pt ∈ p}; x_min := min{pt.x | pt ∈ p};\ny_max := max{pt.y | pt ∈ p}; y_min := min{pt.y | pt ∈ p};\nz_max := max{pt.z | pt ∈ p}; z_min := min{pt.z | pt ∈ p};\n// Find the number of voxels in all 3 dimensions. A voxel is a cube with\nedge length voxel_size. Note that we round up in the division.\nvar num_vox_x := (|x_max - x_min|/voxel_size).Ceiling;\nvar num_vox_y := (|y_max - y_min|/voxel_size).Ceiling;\nvar num_vox_z := (|z_max - z_min|/voxel_size).Ceiling;\n// Array of voxels, each element eg at voxel_array[i,j,k] is a Point which\nis initialised to (0.0, 0.0, 0.0)\nvoxel_array := new Point[num_vox_x,num_vox_y,num_vox_z];\n// Array of counts in all dimensions (useful for averaging), each element\nshould be set to 0 at initialisation, at the end the sum of counts\nshould be equal to the number of points in the input point cloud.\ncount_array := new int[num_vox_x,num_vox_y,num_vox_z];\n// Objective is to calculate : E.g : voxel_array[0,2,1] -> (((0.23, 2.45,\n1.89) + (0.13, 2.87, 1.35) + ..())/count_array[0,2,1])\nforall pt in p {\n//take the floor to collect points that are in the same region\nvar x_floored := ((pt.x - x_min)/voxel_size).Floor;\nvar y_floored := ((pt.y - y_min)/voxel_size).Floor;\nvar z_floored := ((pt.z - z_min)/voxel_size).Floor;\nvoxel_array[x_floored,y_floored,z_floored] := voxel_array[x_floored,\ny_floored,z_floored] + pt;\ncount_array[x_floored,y_floored,z_floored] := count_array[x_floored,\ny_floored,z_floored] + 1;\n}\n// Average the voxelised (bucketed) points to get the final point cloud\ni, j, k := 0, 0, 0;\npd := [];\nfor 0 ≤ i < num_vox_x\nfor 0 ≤ j < num_vox_y\nfor 0 ≤ k < num_vox_z\nif(count_array[i,j,k] 6=0)\npd.append(voxel_array[i,j,k]/count_array[i,j,k]);\nreturn pd;\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the downsample method. The pseudocode\nuses real numbers but participants may simplify and use integers if their tool\ndoes not have adequate support for real numbers. Other potential simplifications include requiring that the least point is at (0, 0, 0) and fixed parameters\nfor x_max, y_max and z_max."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks. Verify the following properties:\n1. Memory Safety"
+        },
+        {
+          "id": "task3",
+          "content": "Verification tasks. Verify the following properties:\n2. Termination."
+        },
+        {
+          "id": "task4",
+          "content": "Verification tasks. Verify the following properties:\n3. The output point cloud is smaller or equal to the input point cloud. For\nexample:\nsize(pd) <= size(p)"
+        },
+        {
+          "id": "task5",
+          "content": "Verification tasks. Verify the following properties:\n4. The output point cloud is within the same range as the input point cloud.\nFor example\nboundingbox(pd) inside boundingbox(p)"
+        },
+        {
+          "id": "task6",
+          "content": "Verification tasks. Verify the following properties:\n5. The output point cloud is a correct downsampled version of the input\npoint cloud."
+        }
+      ],
+      "data_structures": {
+        "dafny": "datatype Point = Point(x: nat, y: nat, z: nat)",
+        "verus": "struct Point {\n    x: u32,\n    y: u32,\n    z: u32,\n}\nVec<Point>",
+        "why3": "module PointCloud\n  use int.Int\n  \n  type point = {\n    x : int;\n    y : int;\n    z : int;\n  }\nend",
+        "cbmc": "typedef struct Point {\n    unsigned int x;\n    unsigned int y;\n    unsigned int z;\n} Point;",
+        "framac": "typedef struct Point {\n    unsigned int x;\n    unsigned int y;\n    unsigned int z;\n} Point;",
+        "vercors": "class Point {\n    int x;\n    int y;\n    int z;\n}",
+        "verifast": "struct Point {\n    unsigned int x;\n    unsigned int y;\n    unsigned int z;\n};"
+      }
+    },
+    {
+      "year": "2022",
+      "name": "Mergesort with Runs",
+      "description": "Problem Description\nThe following mergesort based algorithm sorts the elements of a list or array,\nand, at the same time, computes the indexes where runs of equal elements end.\nThe program below operates on a type T with a weak partial ordering ≤,\ni.e., there exists a mapping f : T → L, such that L is linearly ordered and\nt1 ≤ t2 iff f(t1) ≤ f(t2). Moreover, we assume an unsigned integer type size_t\nlarge enough to hold array indexes, and a type array that supports indexing\na[i] and pushing elements to the back a.push_back, extending the array’s size.\nArrays are always initialized as empty array with length zero.\nExample\nmsort([5,4,5,3,9,3],0,6) = {\nruns: [ 2,3, 5,6] // end indexes or runs (exclusive)\ndata: [3,3,4,5,5,9] // sorted input\n}\n// Structure to store sorted array and end indexes of runs\nstruct sr {\narray<size_t> runs; // End indexes of runs (exclusive)\narray<T> data; // Data\n}\n// Merge r1 and r2\nsr merge(sr r1, sr r2) {\nsr res;\nsize_t di1 = 0; size_t di2 = 0; // Current positions in data arrays\nsize_t ri1 = 0; size_t ri2 = 0; // Current positions in runs\nwhile (ri1 < r1.runs.length or ri2 < r2.runs.length) {\n// Check if we have to take data from first and/or second input array\nbool t1 = ri1 < r1.runs.length\nand (ri2 == r2.runs.length or r1.data[di1] <= r2.data[di2]);\nbool t2 = ri2 < r2.runs.length\nand (ri1 == r1.runs.length or r2.data[di2] <= r1.data[di1]);\nif (t1) { // Copy data from first input array\nfor (;di1 < r1.runs[ri1]; ++di1 ) res.data.push_back(r1.data[di1]);\n++ri1;\n}\nif (t2) { // Copy data from second input array\nfor (;di2 < r2.runs[ri2]; ++di2) res.data.push_back(r2.data[di2]);\n++ri2;\n}\n// Add new segment boundary\nres.runs.push_back(res.data.size());\n}\nreturn res;\n}\n// Mergesort array in between l and h. assumes l<=h\nsr msort(array<T> a, size_t l, size_t h) {\n// Corner cases\nif (l == h) return res;\nif (h − l == 1) {\nres.data.push_back(a[l]);\nres.runs.push_back(res.data.size());\nreturn res;\n}\nsize_t m = l + (h − l)/2; // Compute middle index\nsr res1 = msort(a,l,m); // Sort left side\nsr res2 = msort(a,m,h); // Sort right side\nreturn merge(res1,res2); // Merge\n}\nDisclaimer: the programs may contain bugs. If you find any, fix them and\nmention the fix in your submission!",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Implementation task. Implement the merge and msort functions. Implement the array, T, and size_t types in any way that fits the tool you are using. If you cannot handle fixed bit-width types, you may use arbitrary precision integers for size_t. If you cannot handle generic types or type-classes, you may fix T to some concrete type, e.g., integer"
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks. Verify the following properties:\n1. Memory Safety"
+        },
+        {
+          "id": "task3",
+          "content": "Verification tasks. Verify the following properties:\n2. Termination."
+        },
+        {
+          "id": "task4",
+          "content": "Verification tasks. Verify the following properties:\n3. merge merges correctly (permutation and sortedness)"
+        },
+        {
+          "id": "task5",
+          "content": "Verification tasks. Verify the following properties:\n4. merge returns the correct run indexes"
+        },
+        {
+          "id": "task6",
+          "content": "Verification tasks. Verify the following properties:\n5. msort sorts the input (permutation and sortedness)"
+        },
+        {
+          "id": "task7",
+          "content": "Verification tasks. Verify the following properties:\n6. msort returns the correct run indexes"
+        },
+        {
+          "id": "task8",
+          "content": "Verification tasks. Verify the following properties:\n7. msort is a stable sorting algorithm"
+        },
+        {
+          "id": "task9",
+          "content": "Verification tasks. Verify the following properties:\n8. msort runs in O(n log n) time and O(n log n) space."
+        }
+      ],
+      "data_structures": {
+        "verus": "struct Sr {\n    runs: Vec<usize>,\n    data: Vec<u32>,\n}"
+      }
+    },
+    {
+      "year": "2022",
+      "name": "The World's Simplest Lock-Free Hash Set",
+      "description": "Problem Description\nThis challenge is inspired by Jeff Preshing’s blog entry: The World’s Simplest\nLock-Free Hash Table.\nThis simple hash-set has a fixed capacity, only supports insert and membership query operations, and uses linear probing for collision handling. However, it is thread-safe and implemented lock-free. At the core, the insert operation uses a compare-and-swap (CAS) operation to find a free spot for adding\nthe key to be inserted. An optimization replaces expensive CAS operations by\ncheaper load operations when the table fills up.\nThe hashtable works with a key type K. It has a special value key_invalid\n:: K that is used as placeholder for empty slots, and cannot be used as key.\nMoreover, there is a function get_hash(size_t,K) :: size_t, such that get_hash(n,k)\nreturns a hash-code for k, in the range [0, n).\nThe compare and swap operation that we use returns the value stored in\ntarget after the operation (whether swapped or not). You are free to replace it\nwith whatever similar operation your tool supports:\nT compare_and_swap(T &target, T oldv, T newv) {\nT result;\natomic {\nif (target == oldv) target=newv;\nresult=target;}\nreturn result;}\ntypedef hset = array<K>\nhset empty(size_t n) {\nhset t = new K[n];\nfor (size_t i = 0; i < n; ++ i) t[i]=key_invalid;\nreturn t;\n}\n// Assumes k 6= key_invalid\n// returns true if key was inserted, false if table is full\nbool insert(K k, hset t) {\nsize_t n = t.length;\nsize_t i0 = get_hash(n,k);\nsize_t i = i0;\ndo {\n{ // Optimization: probe for potentially free spot\nkey kk = atomic_load(t[i]);\nif (kk == k) return true; // Key already in table\nif (kk 6= key_invalid) { // Spot taken, try next index\ni = (i + 1) mod n; continue;\n}\n}\n// Maybe i is still free when we try to put our key there\nkey k\n0 = compare_and_swap(t[i],key_invalid,k);\nif (k\n0 == k) return true; // We (or someone else) stored our key\ni = (i + 1) mod n; // Someone else interfered with us, try next index\n} while (i 6= i0); // Stop if we went one full round\nreturn false; // Table is full\n}\n// Assumes k 6= key_invalid\nbool member(hset t, key k) {\nsize_t n = t.length;\nsize_t i0 = get_hash(n,k);\nsize_t i = i0;\ndo {\nkey k\n0 = atomic_load(t[i]);\nif (k\n0 == k) return true; // found the key\nif (k\n0 == key_invalid) return false; // found empty entry. Key not in.\ni = (i + 1) mod n;\n} while (i 6= i0);\nreturn false; // Table full, our key is not in\n}",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "If your tool does not support concurrency, and you also cannot model concurrency on a more abstract level, implement and verify the sequential version of\nthis hash-set as last resort.\nImplementation task. Implement the above hash-table. Use whatever atomic\noperations your tool supports, but try to stay lock-free. If you have to use locks,\nuse a fine-grained lock around compare_and_swap, rather than locking the whole\ntable for the duration of an insert/member operation."
+        },
+        {
+          "id": "task2",
+          "content": "Verification tasks. Verify the following properties:\n1. empty(n) creates an empty set with capacity n"
+        },
+        {
+          "id": "task3",
+          "content": "Verification tasks. Verify the following properties:\n2. member(k) == true, if insert(k) has been executed before (and returned\ntrue)\nYou are free to re-phrase properties 2 but make sure you can prove\nthings like:\ninsert(1) || insert(2) || insert(3);\n{ assert(member(1) and !member(42)) } || insert(4) || insert(5);"
+        },
+        {
+          "id": "task4",
+          "content": "Verification tasks. Verify the following properties:\n3. member(k) == false, if no insert(k) that returned true can have been\nexecuted.\nYou are free to re-phrase properties 3, but make sure you can prove\nthings like:\ninsert(1) || insert(2) || insert(3);\n{ assert(member(1) and !member(42)) } || insert(4) || insert(5);"
+        },
+        {
+          "id": "task5",
+          "content": "Verification tasks. Verify the following properties:\n4. termination"
+        },
+        {
+          "id": "task6",
+          "content": "Verification tasks. Verify the following properties:\n5. every key is contained in the table at most once"
+        },
+        {
+          "id": "task7",
+          "content": "Verification tasks. Verify the following properties:\n6. if insert returns false, the table is full"
+        }
+      ],
+      "data_structures": {
+        "dafny": "type Key = int\ntype HashSet = array<Key>",
+        "verus": "type Key = i32;\nstruct HashSet {\n    table: Vec<Key>,\n}",
+        "why3": "module HashSet\n  use int.Int\n  use array.Array\n  \n  type key = int\n  type hashset = array key\nend",
+        "cbmc": "typedef int Key;\ntypedef Key* HashSet;",
+        "framac": "typedef int Key;\ntypedef Key* HashSet;",
+        "vercors": "class HashSet {\n    int[] table;\n}",
+        "verifast": "typedef int Key;\ntypedef Key* HashSet;"
+      }
+    },
+    {
+      "year": "2023",
+      "name": "Binary Decision Diagrams",
+      "description": "Binary Decision Diagrams (BDD) allow extremely compact representations of propositional formulas by sharing\ncommon sub-expressions. Formulas are stored as directed acyclic graphs, where each internal node represents\nthe conditional test of a variable 𝑥. Two leaf nodes are used to indicate the values ⊤ and ⊥. Using a BDD, the\nformula (𝑥1∧ 𝑥2) ∨ 𝑥3 would be represented as the following graph:\nDotted edges are used to indicate paths where the variable is false, while solid edges indicate paths where the\nvariable is true.\nA Reduced Ordered BDD (ROBDD) has the following additional properties:\n1. A BDD is ordered if its variables appear in the same order along every path\n2. A BDD is reduced if neither of the following rules can be applied:\na. Eliminate any nodes whose children are isomorphic\nb. Combine isomorphic subgraphs\nWe can implement a simple library to build ROBDDs in Ocaml in the following manner: \ntype var = int\ntype node = | Node of { var: int; left: node; right: node; } | True | False\nlet equal n m = match n, m with\n| True, True -> true\n| False, False -> true\n| Node n, Node m -> n.var = m.var && n.right == m.right && n.left == m.left\n| _ -> false\nmodule Tbl = Hashtbl.Make(struct\ntype t = node\nlet equal = equal\nlet hash = Hashtbl.hash\nend)\ntype bdd = node Tbl.t\nlet mk_bdd () : bdd = Tbl.create 32\nlet mk_node (b : bdd) (n : node) : node =\nmatch Tbl.find_opt b n with\n| Some n -> n\n| None -> Tbl.add b n n; n\nlet mk_true b : node = mk_node b True\nlet mk_false b : node = mk_node b False\nlet mk_if b var left right =\nif equal left right then left else\nmk_node b (Node { var; left; right })\nlet rec mk_not (b : bdd) (n : node) : node = match n with\n| True -> mk_false b\n| False -> mk_true b\n| Node { var; left; right } -> mk_if b var (mk_not b left) (mk_not b right)\nlet rec mk_and (b : bdd) (l : node) (r : node) : node = match l, r with\n| True, _ -> r\n| _, True -> l\n| False, _ | _, False -> mk_false b\n| Node {var = vara; left = lefta; right = righta }, Node { var = varb; left =\nleftb; right = rightb } ->\nbegin match compare vara varb with\n| -1 -> mk_if b vara (mk_and b lefta r) (mk_and b righta r)\n| 0 -> mk_if b vara (mk_and b lefta leftb) (mk_and b righta rightb)\n| 1 -> mk_if b varb (mk_and b l leftb) (mk_and b l rightb)\n| _ -> assert false\nend\nIn this implementation each BDD node holds references to its two children, forming the DAG of a formula.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Translate the BDD library above into the language of your choice and use a verification tool to check the following\nproperties:\n1. Verify the memory safety"
+        },
+        {
+          "id": "task2",
+          "content": "2. Verify the termination"
+        },
+        {
+          "id": "task3",
+          "content": "3. Verify the operations are correct: a. Applying and(a, b) should produce a node equivalent to the conjunction of the formulas represented by a and b\nb. Applying not(a) should produce a node equivalent to the negation of the formulas represented by a"
+        },
+        {
+          "id": "task4",
+          "content": "4. Verify that each operation preserves the properties of a ROBDD\na. If the input BDD is ordered, then the output of each operation is an ordered BDD\nb. Similarly, if the input BDD is reduced, then the output is also reduced"
+        }
+      ],
+      "data_structures": {
+        "dafny": "type Variable = int\n\ndatatype BDDNode = \n    | True\n    | False\n    | Node(var: Variable, left: BDDNode, right: BDDNode)  // left=false branch, right=true branch",
+        "verus": "pub type Variable = i32;\n// BDD Node representation\npub enum BDDNode {\n    True,\n    False, \n    Node {\n        var: Variable,\n        left: Box<BDDNode>,   // false branch (dotted edge)\n        right: Box<BDDNode>,  // true branch (solid edge)\n    },\n}",
+        "why3": "(* Why3 Data Structure Definition for Binary Decision Diagram *)\nmodule BDD\n\n  use int.Int\n  \n  type variable = int\n  \n  type bdd_node = \n    | True\n    | False\n    | Node variable bdd_node bdd_node  (* var, left (false), right (true) *)\n\nend",
+        "cbmc": "typedef int Variable;\n\ntypedef struct BDDNode {\n    enum { NODE_TRUE, NODE_FALSE, NODE_INTERNAL } type;\n    Variable var;           // Variable for internal nodes\n    struct BDDNode* left;   // false branch (dotted edge)\n    struct BDDNode* right;  // true branch (solid edge)\n} BDDNode;",
+        "framac": "typedef int Variable;\n\ntypedef struct BDDNode {\n    enum { NODE_TRUE, NODE_FALSE, NODE_INTERNAL } type;\n    Variable var;              // Variable for internal nodes\n    struct BDDNode* left;      // false branch (dotted edge)\n    struct BDDNode* right;     // true branch (solid edge)  \n} BDDNode;",
+        "vercors": "class BDDNode {\n    int var;        // Variable\n    BDDNode left;   // false branch (dotted edge)\n    BDDNode right;  // true branch (solid edge)\n}",
+        "verifast": "typedef int Variable;\n\nstruct BDDNode;\n\nstruct BDDNode {\n    int type;           // 0=True, 1=False, 2=Internal\n    Variable var;       // Variable for internal nodes\n    struct BDDNode* left;   // false branch\n    struct BDDNode* right;  // true branch\n};"
+      }
+    },
+    {
+      "year": "2023",
+      "name": "List Reversal",
+      "description": "In-place reversal of a singly-linked list is a classical algorithm. It is efficient (constant space and linear time) and straightforward to implement in any mainstream programming language. Here is a C implementation: struct Cell { int value; struct Cell *next; };\nstruct Cell *list_reversal(struct Cell *l) {\nstruct Cell *r = NULL;\nwhile (l != NULL) {\nstruct Cell *tmp = l;\nl = l->next;\ntmp->next = r;\nr = tmp;\n}\nreturn r;\n}\nList reversal has been widely studied, notably in the context of program verification. In particular, it is the\narchetypal case study in Separation Logic, and the very first example in Reynolds’s landmark paper [LICS 2002].\nIt is clear that the code above successfully terminates on a NULL-terminated list. Perhaps less well-known is the\nfact that it also successfully terminates on any infinite list that loops at some point, i.e., a lasso-shaped list with\nan initial segment (of any length ≥ 0) and then a cycle (of any length ≥ 1). When applied to a list like this, list\nreversal reverses the cycle and leaves the initial segment unchanged (by reversing it twice).\nIf the memory is finite, any list is either NULL-terminated or loops at some point, and thus list reversal always\nterminates.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "(a) Implement list reversal in a language of your choice."
+        },
+        {
+          "id": "task2",
+          "content": "(b) Show that your implementation, if invoked on a well-formed list, is free of runtime violations; in\nparticular, no invalid pointer operation occurs. Part of this task is to specify precisely “well-formed.”\n(Both NULL-terminated and lasso-shaped lists are considered well-formed.)"
+        },
+        {
+          "id": "task3",
+          "content": "(c) Show that your implementation, if invoked on any well-formed list in finite memory, terminates."
+        },
+        {
+          "id": "task4",
+          "content": "(d) Show that, at termination, the resulting list is the reverse of the original. For lasso-shaped lists, this\nmeans the initial segment is unchanged and the cycle is reversed, as explained above."
+        },
+        {
+          "id": "task5",
+          "content": "(e) Show that the space and time consumed are linear in the length of the list."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class Cell {\n    var value: int\n    var next: Cell?\n}",
+        "verus": "struct Cell {\n    value: i32,\n    next: Option<Box<Cell>>,\n}",
+        "why3": "module ListReversal\n\n  use int.Int\n  use option.Option\n  \n  type cell = {\n    value : int;\n    next : option cell;\n  }\n\nend",
+        "cbmc": "typedef struct Cell {\n    int value;\n    struct Cell* next;\n} Cell;",
+        "framac": "typedef struct Cell {\n    int value;\n    struct Cell* next;\n} Cell;",
+        "vercors": "class Cell {\n    int value;\n    Cell next;\n}",
+        "verifast": "struct Cell {\n    int value;\n    struct Cell* next;\n};"
+      }
+    },
+    {
+      "year": "2023",
+      "name": "Nonblocking Concurrent Queue using LL or SC Synchronization",
+      "description": "Certain multicore architectures provide a concurrency mechanism in the form of a pair of atomic operations: ● load-linked (LL) ● store-conditional (SC). The semantics of these operations are specified as follows. To each scalar memory location v, there is associated a set of thread IDs, valid_v. If tid is the ID of the executing thread, then the two operations behave as follows: LL(v): valid_v ← valid_v U {tid}; return v; SC(v,x): if (tid in valid_v) { valid_v ← emptyset; v ← x; return true; } else return false;\nLL(v) returns the value stored in v as usual, but also adds tid to the valid set of v. SC(v,x) checks to see if the\nexecuting thread is in the valid set of v; if it is, then it clears valid_v, stores the value x in v, and returns true;\notherwise it returns false without modifying v or valid_v.\nA thread typically uses these operations as follows:\nt ← LL(v) // reads v\n…\nif (SC(v,x)) … // succeeds only if no thread modified v after the read above\nIn 2008, Claude Evéquoz proposed a concurrent FIFO queue based on this mechanism. To keep things simple,\nwe assume the element type is int, -1 indicates a “null” entry, and nonnegative values represent non-null\nentries. The shared data structures and enqueue/dequeue operations are shown below:\nint Q[LEN]; // array with indexes in 0..LEN-1\nunsigned int Head, Tail;\nbool enqueue(int val) {\nunsigned int t, tailSlot;\nint slot;\nwhile (true) { \nt = Tail;\nif (t == Head + LEN)\nreturn false; // queue is full\ntailSlot = t % LEN;\nslot = LL(&Q[tailSlot]);\nif (t == Tail) {\nif (slot != null) {\nif (LL(&Tail) == t)\nSC(&Tail, t+1);\n} else if (SC(&Q[tailSlot], val)) {\nif (LL(&Tail) == t)\nSC(&Tail, t+1);\nreturn true; // success}}}}\nint dequeue() {\nunsigned int h, headSlot;\nint slot;\nwhile (1) {\nh = Head;\nif (h == Tail)\nreturn null; // empty\nheadSlot = h % LEN;\nslot = LL(&Q[headSlot]);\nif (h == Head) {\nif (slot == null) {\nif (LL(&Head) == h)\nSC(&Head, h+1);\n} else if (SC(&Q[headSlot], null)) {\nif (LL(&Head) == h)\nSC(&Head, h+1);\nreturn slot; // success}}}}\nNotes:\n● The implementation uses array Q as a cyclic bounded buffer. Initially, Head = Tail = 0 and Q[i] = null\n(-1) for 0 ≤ i < LEN. ● Head and Tail increase monotonically; for this challenge, you may assume the “unsigned int” type is\nunbounded. ● The number of elements stored in the queue is Tail - Head, and these elements are located at\npositions Head%LEN, (Head+1)%LEN, ..., (Tail-1)%LEN of Q.\n● We assume a sequentially consistent memory model, i.e., an execution is an interleaved sequence of\natomic actions from the different threads, and the value read from a memory location is the last value\nwritten to that location.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "These can be done in any order. Simplify or add assumptions as needed. The first set of tasks use only the enqueue operation: 1. In your favorite language, write a program P incorporating Evéquoz's FIFO queue (only the enqueue operation is needed). The queue is initially empty. P generates NT threads (NT ≥ 1), with IDs 0, ..., NT-1. Each thread calls enqueue on its thread ID, then terminates."
+        },
+        {
+          "id": "task2",
+          "content": "2. Show that all executions of P terminate (i.e., all threads terminate)."
+        },
+        {
+          "id": "task3",
+          "content": "3. Show that no out-of-bound array indexes occur on any execution of P."
+        },
+        {
+          "id": "task4",
+          "content": "4. Assuming NT ≤ LEN, show that in any execution of P,\na. all calls to enqueue return true (success);\nb. at the final state, the size of the queue (Tail-Head) is NT;\nc. at the final state, the contents of the queue are some permutation of the integers 0, ..., NT-1."
+        },
+        {
+          "id": "task5",
+          "content": "5. Assuming NT > LEN, show that in any execution of P, at the final state,\na. the queue is full (Tail-Head=LEN)\nb. the data in the queue is some permutation of a subset of size LEN of 0, ..., NT-1."
+        },
+        {
+          "id": "task6",
+          "content": "If you have time, add the dequeue function...\nLet program P' be like P, except that each thread first enqueues its ID, then dequeues an entry, storing the result\nin some variable.\n6. Show that all executions of P' terminate."
+        },
+        {
+          "id": "task7",
+          "content": "7. Show that no out-of-bound array indexes occur on any execution of P'"
+        },
+        {
+          "id": "task8",
+          "content": "8. Assuming NT ≤ LEN, show that in any execution of P',\na. at the final state, the queue is empty: Tail=Head and all entries are null\nb. each call to enqueue returns true\nc. the set of values returned by dequeue is exactly { 0, ..., NT-1 }."
+        }
+      ],
+      "data_structures": {
+        "dafny": "class NonblockingQueue {\n    var Q: array<int>     // Array of elements, -1 represents null\n    var Head: nat         // Head pointer (monotonically increasing)\n    var Tail: nat         // Tail pointer (monotonically increasing)\n}",
+        "verus": "pub struct NonblockingQueue {\n    pub Q: Vec<i32>,      // Array of elements, -1 represents null\n    pub Head: u32,        // Head pointer (monotonically increasing)\n    pub Tail: u32,        // Tail pointer (monotonically increasing)\n}",
+        "why3": "module NonblockingQueue\n\n  use int.Int\n  use array.Array\n  \n  type queue_element = int  (* -1 represents null *)\n  \n  type nonblocking_queue = {\n    mutable q : array queue_element;  (* Array of elements *)\n    mutable head : int;                (* Head pointer *)\n    mutable tail : int;                (* Tail pointer *)\n  }\n\nend",
+        "cbmc": "#define LEN 1024  // Queue array length\n\nint Q[LEN];           // Array of elements, -1 represents null  \nunsigned int Head;    // Head pointer (monotonically increasing)\nunsigned int Tail;    // Tail pointer (monotonically increasing)",
+        "framac": "// Frama-C Data Structure Definition for Nonblocking Concurrent Queue using LL/SC\n#define LEN 1024  // Queue array length\n\nint Q[LEN];           // Array of elements, -1 represents null\nunsigned int Head;    // Head pointer (monotonically increasing)\nunsigned int Tail;    // Tail pointer (monotonically increasing)",
+        "vercors": "class NonblockingQueue {\n    int[] Q;      // Array of elements, -1 represents null\n    int Head;     // Head pointer (monotonically increasing)\n    int Tail;     // Tail pointer (monotonically increasing)\n}",
+        "verifast": "#define LEN 1024\n\nint Q[LEN];           // Array of elements, -1 represents null\nunsigned int Head;    // Head pointer (monotonically increasing)  \nunsigned int Tail;    // Tail pointer (monotonically increasing)"
+      }
+    },
+    {
+      "year": "2024",
+      "name": "Smart Array Copy by Shuffled Subsegments",
+      "description": "This challenge concerns array copy function(s) broadly inspired by real life implementations that aim to resist certain side-channel attacks. Their aim is to\ncopy all array elements from one array to another array of the same length.\nThis could be achieved with a simple loop through the array indices in order.\nHowever, to obfuscate the sequence of memory accesses performed, we aim to\nshuffle some of the operations performed on the arrays, as described below:",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "(a) Specify a function (or other operation) Permute which, when invoked, returns a (random, unknown) permutation. You do not need to implement this function, but it’s important to make clear how you represent permutations (or their properties) in your specification/modelling of Permute."
+        },
+        {
+          "id": "task2",
+          "content": "(b) Write an implementation of a function (or similar) SmartCopy which performs Smart Array Copy version 0, as described above."
+        },
+        {
+          "id": "task3",
+          "content": "(c) Verify that your implementation is memory-safe / crash free: in particular, that all array accesses performed are guaranteed to be within bounds."
+        },
+        {
+          "id": "task4",
+          "content": "(d) Verify that your implementation is guaranteed to terminate."
+        },
+        {
+          "id": "task5",
+          "content": "(e) Verify that, on termination, the elements of DEST will be exactly those stored originally in SRC, and that the elements of SRC will be unchanged. For this version 0, the elements should be in the same order in both arrays. Notes\n• In case it helps get started, you might try a simplification of the algorithm\nin which you build in the assumption that there is only a single segment\n(with several subsegments). That is, assuming q = 1 and n/2 < m ≤ n.\nIn this case there is only one “split” of the array (into subsegments, as well\nas some remainder r); the subsegments will be copied in shuffled order.\n• If you cannot prove properties for arbitrary values of n, m etc. you may\nfix some of these parameters as pre-defined constants in your work. Please\nlabel these clearly as well as whether or not these specific values can be\nfreely changed (without substantially affecting your verification results)."
+        },
+        {
+          "id": "task6",
+          "content": "Extension: Smart Array Copy version 1 In some settings, preserving\nthe order of elements may not be important. In this case, we can obfuscate yet\nfurther by also shuffling the order of elements as they are copied, as follows: (a) Specify a function (or other operation) Permute which, when invoked, returns a (random, unknown) permutation. You do not need to implement this function, but it’s important to make clear how you represent permutations (or their properties) in your specification/modelling of Permute."
+        },
+        {
+          "id": "task7",
+          "content": "(b) Write an implementation of a function (or similar) SmartCopy which performs Smart Array Copy version 0, as described above."
+        },
+        {
+          "id": "task8",
+          "content": "(c) Verify that your implementation is memory-safe / crash free: in particular, that all array accesses performed are guaranteed to be within bounds."
+        },
+        {
+          "id": "task9",
+          "content": "(d) Verify that your implementation is guaranteed to terminate."
+        },
+        {
+          "id": "task10",
+          "content": "(e) We adapt our previous scheme for copying subsegments to incorporate\na second permutation τ of the same values {0, 1, 2, . . . , l−1}. For each\nsegment, we generate a random pair of permutations σ and τ ; as before,\nwe use σ to choose the order of indices of subsegments to be copied from\nthe segment of SRC (as before); we then further apply the permutation τ to\nthis subsegment index to obtain the subsegment copied to in DEST. That\nis, the new scheme is to copy first subsegment σ(0) in SRC to subsegment\nτ (σ(0)) in DEST, then subsegment σ(1) to τ (σ(0)), and so on."
+        },
+        {
+          "id": "task11",
+          "content": "(f) Implement a new version of the algorithm, incorporating this additional\npermutation."
+        },
+        {
+          "id": "task12",
+          "content": "(g) Verify the same properties (a)-(e) of your new version."
+        },
+        {
+          "id": "task13",
+          "content": "(h) Write a short textual comment labelled MODULARITY: explaining to what\nextent you are able to reuse parts of the code and verification effort/results\nbetween your two different versions."
+        },
+        {
+          "id": "task14",
+          "content": "Extension: Smart Array Copy version 2 Take either your version 0 or\nversion 1 algorithm (or both!) and incorporate shuffling of the order in which\nsegments are copied. That is, implement a similar scheme to the version 0\nshuffling of subsegment handling, but this time for segments: instead of always\nhandling segment 0, then segment 1 etc., the order of segments handled by the\nnew algorithm is also randomly shuffled.\n\n(i) Implement a new version of the algorithm, incorporating this additional\nshuffle (make clear which previous version(s) you are extending)."
+        },
+        {
+          "id": "task15",
+          "content": "(j) Verify the same properties (a)-(e) of your new version."
+        },
+        {
+          "id": "task16",
+          "content": "(k) Write a short textual comment labelled MODULARITY: explaining to what\nextent you are able to reuse parts of the code and verification effort/results\nbetween your different versions."
+        }
+      ],
+      "data_structures": {
+        "dafny": "type Element  // Generic element type\ntype SmartArray = seq<Element>  // Array represented as sequence",
+        "verus": "Vec<Element>",
+        "why3": "array elt",
+        "cbmc": "// CBMC Data Structure Definition for Smart Array Copy\ntypedef int Element;  // Generic element type\nElement* array;       // Dynamic array of elements",
+        "framac": "typedef int Element;  // Generic element type\nElement* arr",
+        "vercors": "class SmartArray<T> {     \n    T[] elements;  // Array of generic elements    \n    SmartArray(T[] elems) {\n        elements = elems;\n    }\n}",
+        "verifast": "typedef int Element;  // Generic element type\nElement* arr;"
+      }
+    },
+    {
+      "year": "2024",
+      "name": "The Rope Data Structure",
+      "description": "A Rope is a special type of binary tree that is used to represent a string. Insertions and deletions can\nbe performed efficiently on Ropes, making them preferable to standard (e.g. C-style) strings when these\noperations occur frequently.\nThe data for the string represented by a Rope is stored in the leaf nodes: each leaf node contains a\n(standard) string segment, which makes up part of the represented string. Intuitively, the string represented\nby a Rope t, denoted repr (t), is defined recursively as follows:\n1. If t is a leaf node, then repr (t) is the segment stored at that node.\n2. If t has only a single child c, then repr (t) = repr (c)\n3. Otherwise, repr (t) = repr (l) ++ repr (r ).\nEach node in a Rope also stores an integer weight. The weight of a leaf node is equal to the length\nof the segment it contains. The weight of a non-leaf node is equal to the length of the string represented\n(in the repr (.) sense above) by its left child. Storing weights enables several operations on the Rope to be\nperformed more efficiently: for example, it is possible to compute the length of the represented string via a\nsingle traversal down the right children of the tree. Fig. 1 visualises a Rope representing the string “Hello\nmy name is Simon”. This example is taken from the Wikipedia page on Ropes (https://en.wikipedia.org/wiki/Rope_(data_structure)\n(we have used “ ” to represent spaces in the figure illustration).\nFor this challenge, you will write a Rope implementation and prove the correctness of various operations\non Ropes with respect to the strings they represent. In your solutions, you can represent characters and\nstrings of characters in any reasonable way (e.g. using integers to represent characters).",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "(a) Implement a function toStr(r:Rope): String that returns the string represented by a Rope. The toStr() function should correspond to the recursive definition repr described above (in particular, it is inefficient: it traverses the entire tree, ignoring the integer weights)."
+        },
+        {
+          "id": "task2",
+          "content": "(b) Prove that your function is memory-safe/crash free and always terminates"
+        },
+        {
+          "id": "task3",
+          "content": "The toStr() function is inefficient, but the idea is to now implement several efficient functions (that avoid\ncalling this function) and specify them in terms of this simpler function (if your verification tool supports\nthese notions, toStr() calls should only be made in specifications / ghost code in the tasks below).\n(c) Implement a recursively-defined function strLen(r:Rope): int that efficiently computes the length of\nthe string represented by a Rope (i.e. using the weight field values). Prove that, if result represents\nthe result of calling this function on a Rope r, the property result == length(toStr(r)) where\nlength represents a length function on String values."
+        },
+        {
+          "id": "task4",
+          "content": "(d) Implement a function concat(left:Rope, right:Rope): Rope, that joins two Rope instances into one by allocating a new node and making the two parameters its children. Specify and prove that applying toStr to the result of a call to concat gives a String equal to toStr(left) ++ toStr(right)"
+        },
+        {
+          "id": "task5",
+          "content": "(e) Implement a function delete(r:Rope, i:int, len:int) : Rope, that returns a Rope in which the len characters starting from position i have been removed from the represented string. The function may destructively update/reuse the passed Rope instance (or not) as you prefer. Specify and prove that your implementation has the correct effect on String represented by the resulting Rope. As an example of the last operation, if (for some Rope r) toStr(r) == \"lizard\" then it’s expected that\ntoStr(delete(r,1,2)) == \"lard\". The delete operation can, for example, be implemented by adapting the following pseudocode: def delete ( tree , i , len ):\n( left , remaining ) = split ( tree , i)\n(_ , right ) = split ( remaining , len )\nreturn concat ( left , right )  in which split() is a function that splits a Rope in two, e.g. via the following pseudo-code:\ndef split ( tree , i ):\\n    if isLeaf(tree):\\n    right = mkLeaf (tree.value [i ..])\ntree.value = tree . value [.. i]\ntree . weight = i\nreturn ( tree , right )\nelse if i < weight :\n( left , right ) = split ( tree . left , i)\nreturn ( left , concat ( right , tree . right ))\nelse if i > weight :\n( left , right ) = split ( tree . right , i - weight )\nreturn ( concat ( tree . left , left ) , right )\nelse:\nreturn ( tree.left, tree.right)\nIn the code above, mkLeaf(s) creates a new (leaf) Rope with value s. For a String s and in-bounds\ninteger i, the notations s[..i] and s[i..] represent the strings in which (only) the first i elements have\nbeen kept/deleted, respectively. Your implementations need not precisely follow the pseudo-code above."
+        },
+        {
+          "id": "task6",
+          "content": "(f) Prove that the implementations of these functions are memory-safe/crash free and always terminate."
+        },
+        {
+          "id": "task7",
+          "content": "Extension The paper “Ropes: an Alternative to Strings” (Software: Practice and Experience, 1995)\ndescribes the following optimisation for the concatenation operation:\nIn the general case, concatenation involves simply allocating a concatenation node containing\ntwo pointers to the two arguments. For performance reasons, it is desirable to deal with the\ncommon case in which the right argument is a short flat string specially. If both arguments are\nshort leaves, we produce a flat rope (leaf) consisting of the concatenation. This greatly reduces\nspace consumption and traversal times. If the left argument is a concatenation node whose right\nchild is a short leaf, and the right argument is also a short leaf, then we concatenate the two\nleaves, and then concatenate the result to the left son of the left argument."
+        },
+        {
+          "id": "task8",
+          "content": "(g) Implement these two optimisations to the concat function (you might want to make a new version). You can use a function isShort(s: String): bool to represent the “shortness” criterion; if your tool supports it you don’t need to give the function a body. In other words, the function can be uninterpreted: your verification can be agnostic as to what counts as “short” (that’s up to the function)."
+        },
+        {
+          "id": "task9",
+          "content": "(h) Implement a method insert(r: Rope, i: int, toInsert: String) that modifies the Rope, such that its new string representation includes the passed string toInsert inserted at position i. As an example of the last operation, if (for some Rope r) toStr(r) == \"lard\" then it’s expected that, after calling insert(r,1,\"iz\"), instead we have toStr(r) = \"lizard\"."
+        },
+        {
+          "id": "task10",
+          "content": "(i) Prove that the implementations of these functions are memory-safe/crash free and always terminate."
+        }
+      ],
+      "data_structures": {
+        "dafny": "// Dafny Data Structure Definition for Rope\ndatatype Rope = Rope(\n    left: Option<Rope>,     // Left child rope (nullable)\n    right: Option<Rope>,    // Right child rope (nullable)\n    value: seq<bv8>,        // String data as byte sequence\n    weight: nat             // Weight of the node\n)\n\ndatatype Option<T> = None | Some(value: T)",
+        "verus": "pub struct Rope {\n    pub left: Option<Box<Rope>>,\n    pub right: Option<Box<Rope>>,\n    pub value: Vec<u8>,\n    pub weight: usize,\n}",
+        "why3": "module Rope\n\n  use int.Int\n  use option.Option\n  use seq.Seq\n\n  type rope = {\n    left   : option rope;   (* Left child rope (nullable) *)\n    right  : option rope;   (* Right child rope (nullable) *)\n    value  : seq uint8;     (* String data as byte sequence *)\n    weight : int;           (* Weight of the node *)\n  }\n\nend",
+        "cbmc": "typedef struct Rope {\n    struct Rope* left;    // Left child rope (nullable)\n    struct Rope* right;   // Right child rope (nullable)\n    uint8_t* value;       // String data as byte array\n    size_t weight;        // Weight of the node\n} Rope;",
+        "framac": "typedef struct Rope {\n    struct Rope* left;    // Left child rope (nullable)\n    struct Rope* right;   // Right child rope (nullable)\n    uint8_t* value;       // String data as byte array\n    size_t weight;        // Weight of the node\n} Rope;",
+        "vercors": "// VerCors Data Structure Definition for Rope\nclass Rope {\n    Rope left;     // Left child rope (nullable)\n    Rope right;    // Right child rope (nullable)\n    byte[] value;  // String data as byte array\n    int weight;    // Weight of the node\n\n    Rope(Rope l, Rope r, byte[] v, int w) {\n        left = l;\n        right = r;\n        value = v;\n        weight = w;\n    }\n}",
+        "verifast": "struct Rope {\n    struct Rope* left;    // Left child rope (nullable)\n    struct Rope* right;   // Right child rope (nullable) \n    uint8_t* value;       // String data as byte array\n    size_t weight;        // Weight of the node\n};"
+      }
+    },
+    {
+      "year": "2024",
+      "name": "Work-Stealing for Task Trees (Extended)",
+      "description": "Work stealing is a popular efficient technique for performing load balancing in\nmulticore computations. In traditional schemes, the work-stealing is receiverinitiated: workers that run out of work are responsible for stealing tasks. In\na dual approach, called sender-initiated work-stealing, workers with tasks are\nresponsible for actively sharing their tasks with workers that are out of work.\nIn this challenge we investigate work-stealing in the context of a binary tree\nof tasks. Each task has at most two child subtasks and a task may be executed\nonly after their parent task; the root task must be executed first, therefore. The\norder in which tasks can be executed is otherwise not restricted.\nLet P > 0 be the number of workers; each worker has a unique ID i in the\nrange 0 to P−1. Each worker has a double-ended queue q[i] representing the\ntasks currently ready to execute and assigned to this worker; these start off\nempty, and the root task is then assigned to worker 0. Our algorithms are each\nbuilt around the same key main function, shown in pseudo code below:typedef int task // tasks are represented by their IDs\nconst int nTasks // number of tasks ( IDs 0 ,1 ,... , nTasks -1)\nconst task NO_TASK = -1 // special code to denote ‘no child task ’\nconst task ROOT_TASK = 0 // ID of the root task\ntask subtask [ nTasks ][2] // maps task ID to child task IDs / NO_TASK\nbool executed [ nTasks ] // marks executed tasks ; initially 0 ( false )\nconst int P // number of workers\ndeque < task > q[ P] // double - ended queue per worker ; initially empty\n// entry point for each worker ( calling this concurrently )\nvoid main ( int i) // i = ID of the worker ; 0 for the initial worker\nif i = 0 // the worker who starts things off\npush_bottom (q [i], ROOT_TASK )\nrepeat // until termination\nif ( empty (q[i ]) ) // if out of work , try to acquire a task\nacquire (i) // scheme - dependent function ; see later\nelse // pick a task and execute it\ntask t = pop_bottom (q [i ])\ncommunicate (i ) // scheme - dependent function ; see later\nexecute (i , t)\n// execution of a task t by worker i\nvoid execute ( int i , task t)\n// perform some task - specific computation ; omitted for simplicity\nexecuted [ t] += 1 // flag the task as executed\n// then schedule the subtasks\nadd_task (i , subtask [t ][1])\nadd_task (i , subtask [t ][0])\n// called for scheduling a task t into worker i’s queue\nvoid add_task ( int i , task t)\nif t != NO_TASK\npush_bottom (q [i], t)\nThe array subtask (which is never mutated in the code; you may assume this\nto be immutable if it helps you) expresses the tree structure of tasks: looking\nup a task’s ID in the array gives an array with two elements, storing the task\nIDs of its respective subtasks (or the special value NO TASK).\nWe assume an existing suitable implementation of a double-ended queue (the\ndeque type in our pseudo code). You do not need to implement this type for\nthese challenges. However, since the code we are concerned with interacts with\nthese queues, you will need specifications for five functions on these queues:\nempty(Q) returning a boolean indicating whether the queue Q is empty.\npeek top(Q) returning the element at the start of Q (without removing it).\npop top(Q) removing the top element from Q and returning it.\npush bottom(Q,T) which modifies the queue Q, adding the task T at the end.\npop bottom(Q) removing the bottom/end element from Q and returning it.\nThe variation between different task-handling schemes is expressed by changing (only) the implementations of the acquire and communicate functions.",
+      "tasks": [
+        {
+          "id": "task1",
+          "content": "Version 0: Sequential task processing We start with a sequential scheme:\nhere, we can assume P = 1 and so there is a unique worker executing the main\nfunction with ID (i parameter) 0. In this version, the two functions acquire\nand communicate are no-ops: their implementations are empty, and calling them\ndoes nothing. The (only) worker will initially add the root task to its queue,\nand continually execute a task in its queue, queueing up its subtasks, and so\non. We do not handle worker termination in the code (which is complex for\nconcurrent schemes), but all tasks should eventually be executed this way.\nTasks for version 0\n(a) Formalise the assumption that the initial values stored in the array (of\nlength two arrays) subtask define a valid binary tree rooted at task ID 0."
+        },
+        {
+          "id": "task2",
+          "content": "(b) Define suitable specifications for the queue functions listed above."
+        },
+        {
+          "id": "task3",
+          "content": "(c) Verify that the pseudocode functions given are memory-safe / crash free\n(assuming that the queue functions are similarly safe): in particular, verify\nthat all array accesses performed are guaranteed to be within bounds."
+        },
+        {
+          "id": "task4",
+          "content": "(d) Verify that every task is executed at most once."
+        },
+        {
+          "id": "task5",
+          "content": "(e) Verify that all task dependencies (as expressed by the tree structure) are\nrespected: a subtask is never executed before its parent."
+        },
+        {
+          "id": "task6",
+          "content": "(f) Verify that all tasks are eventually executed."
+        },
+        {
+          "id": "task7",
+          "content": "(g) Verify that (after ROOT TASK has been inserted by worker 0) all the worker\nqueues (in version 0, the single queue q[0]) eventually become empty."
+        },
+        {
+          "id": "task8",
+          "content": "Version 1: Sender-initiated Work-stealing The following alternative implementations of the acquire and communicate functions (along with additional definitions/state as shown) implement a sender-initiated work-stealing scheme. // extra definitions / state const task WAITING = -2 // code for ‘a task would be welcome ’ const task NOT_WAITING = -3 // code for ‘not receiving tasks ’ task s [P ]; // communication cells , all initially NOT_WAITING // called by workers when running out of work void acquire ( int i ) s[i ] = WAITING // ‘a task would be welcome ’ while (s [i] == WAITING ) // block until receiving a task noop add_task (i , s[i ]) s[i ] = NOT_WAITING // technically optional // consider pushing a task to an idle ( different ) worker void communicate ( int i) if ( empty (q[i ]) ) // cannot provide a task if we have none return int j = random in {0 , ... , P -1}\\{ i} // pick a random other worker if s[ j] != WAITING // check if that worker is waiting for tasks return // give up if we picked a worker not waiting task t = peek_top (q[i ]) // attempt to atomically take the target communication slot bool r = compare_and_swap (& s[j] , WAITING , t) if (r ) // we successfully wrote the task ID to s[j] pop_top (q[i ]) // remove from our queue ; now worker j gets it The acquire function is only called when a worker has no tasks, and sets the worker’s communication cell to WAITING to signal that a task can be assigned to it. It then busy-waits until this cell’s value has been changed (to a task ID), and it then inserts this task and continues. The communicate function represents worker i considering sending a task to another worker. If it has a task to send, it randomly guesses (once) a different worker ID, and checks whether that worker is waiting for work (if not, it gives up for on communication for now). If so, it uses a compare-and-swap operation (which might be racing with other workers trying to assign the same worker a task) to attempt to atomically update the worker’s communication cell with the task ID to send, removing this from its own queue if this operation is successful. Tasks for version 1\n(h) Prove that all functions provided for this scheme are memory-safe / crash\nfree  (as for task (c) above)."
+        },
+        {
+          "id": "task9",
+          "content": "(i) Prove that the same properties (d)–(g) as for version 0 for this new senderinitiated concurrent scheme hold (in particular, assuming P > 1)."
+        },
+        {
+          "id": "task10",
+          "content": "(j) Write a short textual comment labelled MODULARITY: explaining to what\nextent you are able to reuse parts of the code and verification effort/results\nbetween your two different versions."
+        },
+        {
+          "id": "task11",
+          "content": "Version 2: Receiver-initiated Work-stealing The following alternative\nimplementations of the acquire and communicate functions (along with definitions/state as shown) implement a receiver-initiated work-stealing scheme.\nconst int NO_REQUEST = -1 // special \" worker ID\" value\nint r[P] // request cell per worker ; initially all NO_REQUEST\nconst task NO_RESPONSE = -2 // code for ‘no task provided yet ’\ntask t [P] // transfer cell per worker ; initially all NO_RESPONSE\n// called by workers when running out of work\nvoid acquire ( int i )\nwhile true // block until receiving a proper task\nt[i ] = NO_RESPONSE // initialize the cell for receiving a task\nint k = random in {0 , .. , P -1}\\{ i } // pick random other worker\nif compare_and_swap (& r[ k], NO_REQUEST , i) // make a request\nwhile (t [i] == NO_RESPONSE ) // wait for a response\ncommunicate (i ) // reply negatively to incoming queries\nif (t [i] != NO_TASK ) // if we obtained a valid task\nadd_task (i , t[i ]) // get ready to work on that task\nreturn\n// otherwise , if obtained a negative reply , then try again\ncommunicate (i ) // provide negative reply to incoming queries\n// check for incoming steal requests\nvoid communicate ( int i)\nint j = r[i ] // check our own request cell\nif j == NO_REQUEST // if no request , then nothing to do\nreturn\nif ( empty (q[i ]) )\nt[j ] = NO_TASK // if no task at hand , provide a negative reply\nelse\nt[j ] = pop_top (q[i ]) // else , reply with a task\nr[i ] = NO_REQUEST // reset request cell to allow further requests\nThe scheme here is for workers without work to (via acquire) first prepare\ntheir transfer cell for receiving a task, then pick a random other worker and\nregister a request for work in their request cell. Then workers wait to receive a\nresponse: either NO TASK or a task ID (signifying a task transferred to them).\nAll workers are responsible for checking whether they have received requests\nand responding, by periodically calling the communicate function.\nTasks for version 2\n(k) Prove that all functions provided for this scheme are memory-safe / crash\nfree (as for task (c) above)."
+        },
+        {
+          "id": "task12",
+          "content": "(l) Prove that the same properties (d)–(g) as for version 1 (for P > 1)."
+        },
+        {
+          "id": "task13",
+          "content": "(m) Write a short textual comment labelled MODULARITY: explaining to what extent you are able to reuse parts of the code and verification effort/results between each of your different versions."
+        }
+      ],
+      "data_structures": {
+        "dafny": "// Dafny Data Structure Definition for Work-Stealing\ntype Task = int\nclass WorkStealing {\n    var subtask: array2<Task>    // Maps task ID to child task IDs\n    var executed: array<bool>    // Marks executed tasks\n    var q: array<seq<Task>>      // Double-ended queue per worker\n}",
+        "verus": "type Task = i32;  // Tasks are represented by their IDs\nstruct WorkStealing {\n    subtask: Vec<Vec<Task>>,  // Maps task ID to child task IDs / NO_TASK  \n    executed: Vec<bool>,       // Marks executed tasks\n    q: Vec<VecDeque<Task>>,    // Double-ended queue per worker\n}",
+        "why3": "(* Why3 Data Structure Definition for Work-Stealing *)\nmodule WorkStealing\n  use int.Int\n  use array.Array\n  use list.List\n  \n  type task = int\n  type subtask_array = array (array task)  \n  type executed_array = array bool\n  type queue_array = array (list task)\nend",
+        "cbmc": "// CBMC Data Structure Definition for Work-Stealing\ntypedef int task;\nint subtask[NTASKS][2];  // Maps task ID to child task IDs / NO_TASK\nbool executed[NTASKS];   // Marks executed tasks\ndeque_t q[P];            // Double-ended queue per worker",
+        "framac": "// Frama-C Data Structure Definition for Work-Stealing  \ntypedef int task;\ntypedef struct deque deque_t;  // Abstract deque type\nint subtask[NTASKS][2];        // Maps task ID to child task IDs\nint executed[NTASKS];          // Marks executed tasks\ndeque_t* q[P];                 // Double-ended queue per worker",
+        "vercors": "// VerCors Data Structure Definition for Work-Stealing\nclass WorkStealing {\n    int[][] subtask;      // Maps task ID to child task IDs\n    boolean[] executed;   // Marks executed tasks\n    Deque[] q;           // Double-ended queue per worker\n}",
+        "verifast": "// VeriFast Data Structure Definition for Work-Stealing\ntypedef int task;\nstruct deque;  // Abstract deque type\nint subtask[NTASKS][2];  // Maps task ID to child task IDs\nbool executed[NTASKS];   // Marks executed tasks  \nstruct deque* q[P];      // Double-ended queue per worker"
+      }
+    }
+  ]
+}

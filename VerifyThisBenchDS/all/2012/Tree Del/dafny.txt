@@ -1,0 +1,5 @@
+class Tree {
+	var data: int;
+	var left: Tree;
+	var right: Tree;
+}

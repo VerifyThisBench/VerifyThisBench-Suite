@@ -1,0 +1,7 @@
+class Node {
+    Node left;
+    Node right;
+    Node parent;
+    boolean sense;
+    int version;
+}

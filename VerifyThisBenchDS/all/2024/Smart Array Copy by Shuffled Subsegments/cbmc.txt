@@ -1,0 +1,3 @@
+// CBMC Data Structure Definition for Smart Array Copy
+typedef int Element;  // Generic element type
+Element* array;       // Dynamic array of elements

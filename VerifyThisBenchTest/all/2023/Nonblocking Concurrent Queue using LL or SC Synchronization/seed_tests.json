@@ -1,0 +1,1296 @@
+{
+  "challenge": "Nonblocking Concurrent Queue using LL or SC Synchronization",
+  "description": "Validate termination, index safety, and final-state properties of concurrent enqueue/dequeue executions over a bounded cyclic queue.",
+  "function_signature": "run_execution(LEN, NT, initial_queue, threads) -> final_state",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "LEN": 3,
+        "NT": 1,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "initial queue is empty: Head = Tail = 0 and all array entries are null (-1)",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "thread IDs are exactly 0..NT-1 and initial queue is empty",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "LEN": 3,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            5,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "all array entries must be null in the initial empty queue",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "LEN": 3,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 1,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "initial queue must satisfy Head = Tail = 0",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task2",
+      "input": {
+        "LEN": 4,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "all_threads_terminated": true
+        }
+      },
+      "condition": "post",
+      "spec": "all executions of P terminate when each thread performs one enqueue",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task2",
+      "input": {
+        "LEN": 1,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "all_threads_terminated": true
+        }
+      },
+      "condition": "post",
+      "spec": "termination must still hold even when more threads than capacity contend to enqueue",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "LEN": 3,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "all_threads_terminated": false
+        }
+      },
+      "condition": "post",
+      "spec": "it is not allowed that some thread spins forever in P",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task3",
+      "input": {
+        "LEN": 5,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "no_out_of_bounds": true
+        }
+      },
+      "condition": "post",
+      "spec": "all computed enqueue indexes tailSlot = Tail % LEN stay within 0..LEN-1",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task3",
+      "input": {
+        "LEN": 1,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "no_out_of_bounds": true
+        }
+      },
+      "condition": "post",
+      "spec": "index safety must hold even for the minimum queue length LEN = 1",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task3",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "no_out_of_bounds": false
+        }
+      },
+      "condition": "post",
+      "spec": "the specification forbids any execution with an array access outside 0..LEN-1",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task4",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task4: NT <= LEN",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task4",
+      "input": {
+        "LEN": 2,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task4: NT <= LEN",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task4",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              2,
+              0,
+              1,
+              -1
+            ],
+            "Head": 0,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN, all enqueue calls return true",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task4",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            false,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              2,
+              0,
+              -1,
+              -1
+            ],
+            "Head": 0,
+            "Tail": 2
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN, no enqueue may fail",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task4",
+      "input": {
+        "LEN": 5,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              1,
+              3,
+              0,
+              2,
+              -1
+            ],
+            "Head": 0,
+            "Tail": 4
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN, final queue size Tail-Head is exactly NT",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task4",
+      "input": {
+        "LEN": 5,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              1,
+              3,
+              0,
+              -1,
+              -1
+            ],
+            "Head": 0,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN, final queue size cannot be less than NT",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task4",
+      "input": {
+        "LEN": 4,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              3,
+              1,
+              0,
+              2
+            ],
+            "Head": 0,
+            "Tail": 4
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN, final queue contents are a permutation of 0..NT-1",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task4",
+      "input": {
+        "LEN": 4,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "final_queue": {
+            "Q": [
+              3,
+              1,
+              1,
+              2
+            ],
+            "Head": 0,
+            "Tail": 4
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "final queue contents must contain each thread ID exactly once; duplicates violate permutation",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 5,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task5: NT > LEN",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task5: NT > LEN",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 5,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "final_queue": {
+            "Q": [
+              4,
+              1,
+              3
+            ],
+            "Head": 0,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT > LEN, final queue is full: Tail-Head = LEN",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 5,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "final_queue": {
+            "Q": [
+              4,
+              1,
+              -1
+            ],
+            "Head": 0,
+            "Tail": 2
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT > LEN, final queue cannot have size smaller than LEN",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 5,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "final_queue": {
+            "Q": [
+              4,
+              1,
+              3
+            ],
+            "Head": 0,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT > LEN, final data is a permutation of some subset of size LEN of 0..NT-1",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "LEN": 3,
+        "NT": 5,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "final_queue": {
+            "Q": [
+              4,
+              1,
+              7
+            ],
+            "Head": 0,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "every stored value must come from the thread ID set 0..NT-1",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task6",
+      "input": {
+        "LEN": 3,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "all_threads_terminated": true
+        }
+      },
+      "condition": "post",
+      "spec": "all executions of P' terminate when each thread enqueues once and dequeues once",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task6",
+      "input": {
+        "LEN": 1,
+        "NT": 1,
+        "initial_queue": {
+          "Q": [
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0
+        ],
+        "result": {
+          "all_threads_terminated": false
+        }
+      },
+      "condition": "post",
+      "spec": "P' must terminate even in the single-thread single-slot case",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task7",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "no_out_of_bounds": true
+        }
+      },
+      "condition": "post",
+      "spec": "all computed enqueue and dequeue indexes stay within 0..LEN-1 in P'",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task7",
+      "input": {
+        "LEN": 2,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "no_out_of_bounds": false
+        }
+      },
+      "condition": "post",
+      "spec": "the specification forbids any out-of-bound access in P'",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task8",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task8: NT <= LEN",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task8",
+      "input": {
+        "LEN": 2,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "assumption for task8: NT <= LEN",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task8",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true
+          ],
+          "dequeue_results": [
+            2,
+            0,
+            1
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "Head": 3,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN in P', final queue is empty: Tail = Head and all entries are null",
+      "expected": true
+    },
+    {
+      "id": "T032",
+      "task": "task8",
+      "input": {
+        "LEN": 4,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true
+          ],
+          "dequeue_results": [
+            2,
+            0,
+            1
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              1,
+              -1,
+              -1
+            ],
+            "Head": 3,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "if Tail = Head but some array entry is non-null, the final queue is not empty as specified",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task8",
+      "input": {
+        "LEN": 3,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true
+          ],
+          "dequeue_results": [
+            1,
+            2,
+            0
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              -1,
+              -1
+            ],
+            "Head": 3,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN in P', each enqueue call returns true",
+      "expected": true
+    },
+    {
+      "id": "T034",
+      "task": "task8",
+      "input": {
+        "LEN": 3,
+        "NT": 3,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            false,
+            true
+          ],
+          "dequeue_results": [
+            1,
+            2,
+            0
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              -1,
+              -1
+            ],
+            "Head": 3,
+            "Tail": 3
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "when NT <= LEN in P', no enqueue may fail",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task8",
+      "input": {
+        "LEN": 5,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "dequeue_results": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "Head": 4,
+            "Tail": 4
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the set of values returned by dequeue is exactly {0, ..., NT-1}",
+      "expected": true
+    },
+    {
+      "id": "T036",
+      "task": "task8",
+      "input": {
+        "LEN": 5,
+        "NT": 4,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "enqueue_results": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "dequeue_results": [
+            3,
+            1,
+            1,
+            2
+          ],
+          "final_queue": {
+            "Q": [
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
+            ],
+            "Head": 4,
+            "Tail": 4
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "returned dequeue values must contain every ID exactly once; duplicates violate the required set",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task2",
+      "input": {
+        "LEN": 2,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1,
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "all_threads_terminated": false
+        }
+      },
+      "condition": "post",
+      "spec": "P must terminate for all executions even with two threads contending on a small queue",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task3",
+      "input": {
+        "LEN": 1,
+        "NT": 2,
+        "initial_queue": {
+          "Q": [
+            -1
+          ],
+          "Head": 0,
+          "Tail": 0
+        },
+        "threads": [
+          0,
+          1
+        ],
+        "result": {
+          "no_out_of_bounds": false
+        }
+      },
+      "condition": "post",
+      "spec": "the index-safety property forbids out-of-bound array accesses even at the minimum LEN = 1",
+      "expected": false
+    }
+  ]
+}

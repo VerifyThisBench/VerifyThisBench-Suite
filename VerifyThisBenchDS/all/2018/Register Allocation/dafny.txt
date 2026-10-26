@@ -1,0 +1,1 @@
+datatype RegisterAllocation = RegisterAllocation(G: map<int, set<int>>, A: map<int, string>)

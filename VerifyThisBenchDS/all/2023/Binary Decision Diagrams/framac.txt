@@ -1,0 +1,9 @@
+typedef int Variable;
+
+typedef struct BDDNode {
+    enum { NODE_TRUE, NODE_FALSE, NODE_INTERNAL } type;
+    Variable var;              // Variable for internal nodes
+    struct BDDNode* left;      // false branch (dotted edge)
+    struct BDDNode* right;     // true branch (solid edge)  
+} BDDNode;
+

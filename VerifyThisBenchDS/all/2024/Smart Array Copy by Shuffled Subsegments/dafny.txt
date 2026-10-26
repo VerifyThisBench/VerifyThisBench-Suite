@@ -1,0 +1,2 @@
+type Element  // Generic element type
+type SmartArray = seq<Element>  // Array represented as sequence

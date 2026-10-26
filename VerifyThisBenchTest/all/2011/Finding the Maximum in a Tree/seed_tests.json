@@ -1,0 +1,537 @@
+{
+  "challenge": "Finding the Maximum in a Tree",
+  "description": "Compute the maximum of the values in a binary tree",
+  "function_signature": "tree_max(tree) -> value",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "tree is not null / not empty",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "tree": null
+      },
+      "condition": "pre",
+      "spec": "tree is not null / not empty",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 7,
+          "left": null,
+          "right": null
+        }
+      },
+      "condition": "pre",
+      "spec": "tree is not null / not empty",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 8
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 8
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 10
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 7,
+          "left": null,
+          "right": null
+        },
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 7,
+          "left": null,
+          "right": null
+        },
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 7,
+          "left": null,
+          "right": null
+        },
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 3,
+          "left": {
+            "value": 9,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": 9
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 3,
+          "left": {
+            "value": 9,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": 9
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 3,
+          "left": {
+            "value": 9,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 5,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 5,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 5,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 5,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": -3,
+          "left": {
+            "value": -1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": -7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": -1
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": -3,
+          "left": {
+            "value": -1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": -7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": -3
+      },
+      "condition": "post",
+      "spec": "result >= all values in tree",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": -3,
+          "left": {
+            "value": -1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": -7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": -1
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": -3,
+          "left": {
+            "value": -1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": -7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "result exists in tree",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 3,
+          "left": {
+            "value": 9,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "result must be >= every value in tree; 4 is less than 9, 6, and 7 which are also in the tree",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 5,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 5,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "result must be a value present in the tree; 6 does not occur anywhere in the tree of all 5s",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": -3,
+          "left": {
+            "value": -1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": -7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": -7
+      },
+      "condition": "post",
+      "spec": "result must be the maximum (-1), not the minimum value (-7) of the tree",
+      "expected": false
+    }
+  ]
+}

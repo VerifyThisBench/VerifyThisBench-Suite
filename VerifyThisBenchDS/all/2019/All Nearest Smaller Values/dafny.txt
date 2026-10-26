@@ -1,0 +1,4 @@
+class Stack<T> {
+    var data: array<T>
+    var size: int
+}

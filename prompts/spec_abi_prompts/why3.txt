@@ -1,0 +1,35 @@
+Specification ABI requirements (must follow exactly):
+- Emit exactly one top-level `module`.
+- Define `predicate main_spec_pre(<input variables in order>)`.
+- Define `predicate main_spec_post(<the same input variables in the same order>, <result value>)`.
+- Define `let main_impl(<input variables in order>) : <return type>`.
+- `main_impl` must include:
+  - `requires { main_spec_pre(<input variables in order>) }`
+  - `ensures  { main_spec_post(<input variables in order>, result) }`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `main_spec_pre` or `main_spec_post`.
+- Use one parameter group per logical input variable, e.g. `predicate main_spec_pre (a: array int) (x: int)`.
+- The postcondition ABI must use Why3's contract result name `result`; do not invent a custom result binder in the contract.
+- Do not inline the specification logic directly in `requires`/`ensures`; always delegate to `main_spec_pre` and `main_spec_post`.
+
+Example skeleton:
+```why3
+module MaxInArray
+
+  use int.Int
+  use array.Array
+
+  predicate main_spec_pre (a: array int) =
+    length a > 0
+
+  predicate main_spec_post (a: array int) (result: int) =
+    (forall i. 0 <= i < length a -> result >= a[i]) /\
+    (exists i. 0 <= i < length a /\ result = a[i])
+
+  let main_impl (a: array int) : int
+    requires { main_spec_pre a }
+    ensures  { main_spec_post a result }
+  =
+    (* implementation here *)
+
+end
+```

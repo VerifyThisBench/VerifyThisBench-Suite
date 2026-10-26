@@ -1,0 +1,5 @@
+// CBMC Data Structure Definition for Work-Stealing
+typedef int task;
+int subtask[NTASKS][2];  // Maps task ID to child task IDs / NO_TASK
+bool executed[NTASKS];   // Marks executed tasks
+deque_t q[P];            // Double-ended queue per worker

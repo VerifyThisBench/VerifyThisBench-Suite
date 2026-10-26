@@ -1,0 +1,3 @@
+// Two integer arrays in strictly increasing order
+int[] array1;
+int[] array2;

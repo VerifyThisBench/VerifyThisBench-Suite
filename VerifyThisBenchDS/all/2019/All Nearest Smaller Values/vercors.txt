@@ -1,0 +1,4 @@
+class Stack {
+    int[] data;
+    int size;
+}

@@ -1,0 +1,6 @@
+module Shearsort
+  use int.Int
+  use array.Array
+  
+  type matrix = array (array int)
+end

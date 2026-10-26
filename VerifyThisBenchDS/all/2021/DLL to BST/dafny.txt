@@ -1,0 +1,11 @@
+class Node {
+    var data: int
+    var prev: Node?
+    var next: Node?
+}
+
+class DLLNode {
+    var data: int
+    var prev: DLLNode?
+    var next: DLLNode?
+}

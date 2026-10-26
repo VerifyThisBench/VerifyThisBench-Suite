@@ -1,0 +1,38 @@
+Specification ABI requirements (must follow exactly):
+- Define exactly one entry method named `mainImpl` inside a class.
+- Define a pure boolean method or inline predicate `mainSpecPre(<input variables in order>)` that encodes the precondition.
+- Define a pure boolean method or inline predicate `mainSpecPost(<the same input variables in the same order>, <return value>)` that encodes the postcondition.
+- In `mainImpl`'s contract, use:
+  - `requires mainSpecPre(<input variables in order>);`
+  - `ensures mainSpecPost(<the same input variables in the same order>, \result);`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `mainSpecPre` or `mainSpecPost`.
+- Use `\result` in the ensures clause to refer to the return value of `mainImpl`.
+- Add appropriate `context` or `requires`/`ensures` for permissions (e.g., `Perm()`) as needed by VerCors.
+- Do not inline the specification logic directly in `requires`/`ensures`; always delegate to `mainSpecPre` and `mainSpecPost`.
+
+Example skeleton:
+```pvl
+class MaxInArray {
+
+    requires arr != null;
+    requires arr.length > 0;
+    context (\forall* int j; 0 <= j && j < arr.length; Perm(arr[j], read));
+    pure boolean mainSpecPre(int[] arr) = arr != null && arr.length > 0;
+
+    requires arr != null;
+    requires 0 <= idx && idx < arr.length;
+    context (\forall* int j; 0 <= j && j < arr.length; Perm(arr[j], read));
+    pure boolean mainSpecPost(int[] arr, int idx) =
+        0 <= idx && idx < arr.length &&
+        (\forall int i; 0 <= i && i < arr.length; arr[idx] >= arr[i]);
+
+    context arr != null;
+    context arr.length > 0;
+    context (\forall* int j; 0 <= j && j < arr.length; Perm(arr[j], read));
+    requires mainSpecPre(arr);
+    ensures mainSpecPost(arr, \result);
+    int mainImpl(int[] arr) {
+        // implementation here
+    }
+}
+```

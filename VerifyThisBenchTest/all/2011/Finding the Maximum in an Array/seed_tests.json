@@ -1,0 +1,283 @@
+{
+  "challenge": "Finding the Maximum in an Array",
+  "description": "Find the index of the maximum element in a non-empty array using elimination search",
+  "function_signature": "max(array) -> index",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "array length > 0",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "array length > 0",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "array length > 0",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "0 <= result_index < array.length",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": -1
+      },
+      "condition": "post",
+      "spec": "0 <= result_index < array.length",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "0 <= result_index < array.length",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          2,
+          8,
+          1,
+          9,
+          3
+        ],
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          7,
+          7,
+          7
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          7,
+          7,
+          7
+        ],
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "array": [
+          1
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          4,
+          1,
+          5,
+          9,
+          2
+        ],
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          4,
+          1,
+          5,
+          9,
+          2
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "array[result_index] >= array[i] for all valid i",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          4,
+          1,
+          5,
+          9,
+          2
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "array[result_index] must be the maximum; array[0]=3 is not >= array[5]=9",
+      "expected": false
+    }
+  ]
+}

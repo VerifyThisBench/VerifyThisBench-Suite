@@ -1,0 +1,14 @@
+module Rope
+
+  use int.Int
+  use option.Option
+  use seq.Seq
+
+  type rope = {
+    left   : option rope;   (* Left child rope (nullable) *)
+    right  : option rope;   (* Right child rope (nullable) *)
+    value  : seq uint8;     (* String data as byte sequence *)
+    weight : int;           (* Weight of the node *)
+  }
+
+end

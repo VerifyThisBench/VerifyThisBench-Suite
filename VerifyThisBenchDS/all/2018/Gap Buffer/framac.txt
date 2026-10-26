@@ -1,0 +1,5 @@
+struct GapBuffer {
+    char *buffer;
+    int l;
+    int r;
+};

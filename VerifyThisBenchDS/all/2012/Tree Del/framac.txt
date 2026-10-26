@@ -1,0 +1,7 @@
+struct tree {
+    struct tree *left;
+    int data;
+    struct tree *right;
+};
+
+typedef struct tree *Tree;

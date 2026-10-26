@@ -1,0 +1,2 @@
+typedef int Element;  // Generic element type
+Element* arr;

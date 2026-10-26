@@ -1,0 +1,74 @@
+typedef struct TreeNode {
+    int value;
+    struct TreeNode* left;
+    struct TreeNode* right;
+    struct TreeNode* parent;
+} TreeNode;
+
+/*@
+  predicate valid_tree_node(TreeNode* node) =
+    \valid(node) && 
+    (node->left == \null || (\valid(node->left) && node->left->parent == node)) &&
+    (node->right == \null || (\valid(node->right) && node->right->parent == node));
+
+  predicate is_cartesian_tree(TreeNode* root, int* sequence, integer start, integer end) =
+    (root == \null && start >= end) ||
+    (root != \null && valid_tree_node(root) && start < end &&
+     \exists integer k; start <= k < end && sequence[k] == root->value &&
+     (\forall integer i; start <= i < end ==> sequence[k] <= sequence[i]) &&
+     is_cartesian_tree(root->left, sequence, start, k) &&
+     is_cartesian_tree(root->right, sequence, k+1, end));
+@*/
+
+/*@
+  requires \valid(sequence + (0..length-1));
+  requires length > 0;
+  requires \forall integer i, j; 0 <= i < j < length ==> sequence[i] != sequence[j];
+  assigns \nothing;
+  ensures is_cartesian_tree(\result, sequence, 0, length);
+*/
+TreeNode* construct_cartesian_tree(int* sequence, int length) {
+    if (length == 0) {
+        return NULL;
+    }
+    
+    // Find minimum element
+    int min_idx = 0;
+    /*@
+      loop invariant 0 <= i <= length;
+      loop invariant 0 <= min_idx < length;
+      loop invariant \forall integer j; 0 <= j < i ==> sequence[min_idx] <= sequence[j];
+      loop assigns i, min_idx;
+    */
+    for (int i = 1; i < length; i++) {
+        if (sequence[i] < sequence[min_idx]) {
+            min_idx = i;
+        }
+    }
+    
+    TreeNode* root = (TreeNode*)malloc(sizeof(TreeNode));
+    if (!root) return NULL;
+    
+    root->value = sequence[min_idx];
+    root->left = NULL;
+    root->right = NULL;
+    root->parent = NULL;
+    
+    // Construct left subtree
+    if (min_idx > 0) {
+        root->left = construct_cartesian_tree(sequence, min_idx);
+        if (root->left) {
+            root->left->parent = root;
+        }
+    }
+    
+    // Construct right subtree
+    if (min_idx < length - 1) {
+        root->right = construct_cartesian_tree(sequence + min_idx + 1, length - min_idx - 1);
+        if (root->right) {
+            root->right->parent = root;
+        }
+    }
+    
+    return root;
+}

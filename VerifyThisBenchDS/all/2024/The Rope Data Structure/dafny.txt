@@ -1,0 +1,9 @@
+// Dafny Data Structure Definition for Rope
+datatype Rope = Rope(
+    left: Option<Rope>,     // Left child rope (nullable)
+    right: Option<Rope>,    // Right child rope (nullable)
+    value: seq<bv8>,        // String data as byte sequence
+    weight: nat             // Weight of the node
+)
+
+datatype Option<T> = None | Some(value: T)

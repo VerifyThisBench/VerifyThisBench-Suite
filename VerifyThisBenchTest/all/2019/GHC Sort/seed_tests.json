@@ -1,0 +1,924 @@
+{
+  "challenge": "GHC Sort",
+  "description": "Sort an integer array using GHC's patience-sort-style segmentation and merging process.",
+  "function_signature": "ghc_sort(array) -> array; merge(left, right) -> array",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          7
+        ]
+      },
+      "condition": "pre",
+      "spec": "single-element array is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          -3,
+          0,
+          -1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation returns the sorted version of the input",
+      "expected": true,
+      "input_extra": "invalid"
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          -3,
+          0,
+          -1,
+          2
+        ],
+        "result": [
+          -3,
+          -1,
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation returns the sorted version of the input",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          3,
+          4,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation returns the sorted version of the input",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation handles a fully decreasing input by returning ascending order",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          1,
+          1
+        ],
+        "result": [
+          1,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation preserves arrays with all equal elements",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          3,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "implementation result must be fully sorted, not just partially merged",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "left": [
+          2,
+          3,
+          8,
+          9
+        ],
+        "right": [
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "merge requires left segment to be sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "left": [
+          2,
+          3,
+          8,
+          9
+        ],
+        "right": [
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "merge requires right segment to be sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "left": [
+          2,
+          1
+        ],
+        "right": [
+          3,
+          4
+        ]
+      },
+      "condition": "pre",
+      "spec": "merge requires left segment to be sorted in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "left": [
+          1,
+          2
+        ],
+        "right": [
+          4,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "merge requires right segment to be sorted in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "left": [
+          2,
+          3,
+          8,
+          9
+        ],
+        "right": [
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          3,
+          4,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "merge returns a sorted array when both inputs are sorted",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "left": [],
+        "right": [
+          1,
+          2,
+          3
+        ],
+        "result": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result is sorted when one input is empty",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "left": [
+          -2,
+          0,
+          2
+        ],
+        "right": [
+          -1,
+          3
+        ],
+        "result": [
+          -2,
+          -1,
+          0,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result is sorted with negative and positive numbers",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "left": [
+          1,
+          1
+        ],
+        "right": [
+          1,
+          1,
+          2
+        ],
+        "result": [
+          1,
+          1,
+          1,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result is sorted when inputs contain duplicates",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "left": [
+          2,
+          3,
+          8,
+          9
+        ],
+        "right": [
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          8,
+          3,
+          4,
+          5,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result must be globally sorted, not just contain sorted pieces",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "left": [
+          1,
+          4
+        ],
+        "right": [
+          2,
+          3
+        ],
+        "result": [
+          1,
+          2,
+          4,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result violates sortedness if a later element is smaller than its predecessor",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          3,
+          4,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm returns a sorted array",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "array": [],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm returns a sorted array for empty input",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "array": [
+          7
+        ],
+        "result": [
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm returns a sorted array for single-element input",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm sorts a decreasing input",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task4",
+      "input": {
+        "array": [
+          0,
+          -1,
+          0,
+          -2
+        ],
+        "result": [
+          -2,
+          -1,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm returns a sorted array with duplicates and negatives",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task4",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          3,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm output must be nondecreasing at every adjacent position",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task4",
+      "input": {
+        "array": [
+          2,
+          2,
+          1
+        ],
+        "result": [
+          1,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm output is not sorted if an inversion remains",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task5",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          3,
+          4,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting result is a permutation of the input",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task5",
+      "input": {
+        "array": [],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "empty output is a permutation of empty input",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task5",
+      "input": {
+        "array": [
+          1,
+          1,
+          2
+        ],
+        "result": [
+          1,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation property preserves multiplicities of duplicate elements",
+      "expected": true
+    },
+    {
+      "id": "T031",
+      "task": "task5",
+      "input": {
+        "array": [
+          0,
+          -1,
+          0,
+          -2
+        ],
+        "result": [
+          -2,
+          -1,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation property holds with negative numbers and duplicates",
+      "expected": true
+    },
+    {
+      "id": "T032",
+      "task": "task5",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          5,
+          8,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation fails if an element from the input is missing in the output",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task5",
+      "input": {
+        "array": [
+          1,
+          1,
+          2
+        ],
+        "result": [
+          1,
+          2,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation fails if duplicate counts differ between input and output",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task5",
+      "input": {
+        "array": [
+          4,
+          5,
+          6
+        ],
+        "result": [
+          4,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation fails if output contains an element not present in the input",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task1",
+      "input": {
+        "array": [
+          -3,
+          0,
+          -1,
+          2
+        ],
+        "result": [
+          2,
+          0,
+          -1,
+          -3
+        ]
+      },
+      "condition": "post",
+      "spec": "result must be ascending, not descending order",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "returning the input unchanged is not sorting; the result must be in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2
+        ],
+        "result": [
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "result length must equal input length; dropping an element violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          1,
+          1
+        ],
+        "result": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "result must have the same multiset of elements as the input; an extra element is invalid",
+      "expected": false
+    },
+    {
+      "id": "T039",
+      "task": "task3",
+      "input": {
+        "left": [
+          2,
+          3,
+          8,
+          9
+        ],
+        "right": [
+          3,
+          4,
+          5
+        ],
+        "result": [
+          9,
+          8,
+          5,
+          4,
+          3,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "merge result must be sorted ascending, not descending",
+      "expected": false
+    },
+    {
+      "id": "T040",
+      "task": "task3",
+      "input": {
+        "left": [
+          1,
+          2,
+          3
+        ],
+        "right": [],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "merging a sorted list with an empty list must return the non-empty list, not the empty one",
+      "expected": false
+    },
+    {
+      "id": "T041",
+      "task": "task4",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          9,
+          8,
+          5,
+          4,
+          3,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "overall sorting algorithm must produce nondecreasing order, not reverse order",
+      "expected": false
+    },
+    {
+      "id": "T042",
+      "task": "task4",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2
+        ],
+        "result": [
+          2,
+          3,
+          4,
+          5,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "sorted output must have the same length as the input; an inserted duplicate breaks sortedness as a sorted permutation",
+      "expected": false
+    },
+    {
+      "id": "T043",
+      "task": "task4",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result": [
+          1,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "an inversion at positions 2 and 3 (3 > 2) means the array is not sorted",
+      "expected": false
+    },
+    {
+      "id": "T044",
+      "task": "task5",
+      "input": {
+        "array": [
+          3,
+          2,
+          8,
+          9,
+          3,
+          4,
+          5
+        ],
+        "result": [
+          2,
+          3,
+          3,
+          3,
+          4,
+          5,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "permutation fails: 9 from input is missing and an extra 3 was introduced, changing the multiset",
+      "expected": false
+    }
+  ]
+}

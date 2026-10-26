@@ -1,0 +1,6 @@
+module GHCSort
+  use int.Int
+  use array.Array
+  
+  type ghc_array = array int
+end

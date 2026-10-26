@@ -1,0 +1,6 @@
+class SmartArray<T> {     
+    T[] elements;  // Array of generic elements    
+    SmartArray(T[] elems) {
+        elements = elems;
+    }
+}

@@ -1,0 +1,826 @@
+{
+  "challenge": "Downsampling a Point Cloud",
+  "description": "Downsample a point cloud by grouping points into voxels and replacing each non-empty voxel with the average point in that voxel.",
+  "function_signature": "downSample(p, voxel_size) -> pd",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "input point cloud is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "p": null,
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "input point cloud is not null",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "p": [],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "input point cloud is non-empty so min and max are defined",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 5,
+            "y": 5,
+            "z": 5
+          }
+        ],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "single-point cloud is allowed",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 0
+      },
+      "condition": "pre",
+      "spec": "voxel_size must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": -1
+      },
+      "condition": "pre",
+      "spec": "voxel_size must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "all points in one voxel are replaced by their average point using integer coordinates",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "points in different voxels remain as one representative per non-empty voxel",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "output contains one averaged point for each non-empty voxel",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "representative point must be the average of all points in the voxel, not an arbitrary input point",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "points from different non-empty voxels must not be merged into one output point",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "memory safety requires non-empty input and positive voxel_size so array dimensions and voxel indices are well-defined",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "p": [],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "memory safety fails when input is empty because min and max are undefined",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "p": [
+          {
+            "x": 4,
+            "y": 4,
+            "z": 4
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 4
+          }
+        ],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "memory safety requires at least one voxel in each dimension; all points identical would make zero-sized dimensions in the given pseudocode",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 0
+      },
+      "condition": "pre",
+      "spec": "memory safety requires voxel_size > 0 to avoid division by zero",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 1,
+            "z": 3
+          }
+        ],
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "termination holds for finite non-null input with positive voxel dimensions",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "p": null,
+        "voxel_size": 1
+      },
+      "condition": "pre",
+      "spec": "termination argument assumes finite iterable input, so null input violates the precondition",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "p": [
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ],
+        "voxel_size": 0
+      },
+      "condition": "pre",
+      "spec": "termination argument requires positive voxel_size because loop bounds depend on computed voxel counts",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task4",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "output point cloud size is less than or equal to input size",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "p": [
+          {
+            "x": 5,
+            "y": 5,
+            "z": 5
+          }
+        ],
+        "voxel_size": 1,
+        "result": [
+          {
+            "x": 5,
+            "y": 5,
+            "z": 5
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "single-point input may produce output of the same size",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "output point cloud size must not exceed input size",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task5",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 4,
+            "z": 6
+          },
+          {
+            "x": 4,
+            "y": 2,
+            "z": 8
+          }
+        ],
+        "voxel_size": 5,
+        "result": [
+          {
+            "x": 2,
+            "y": 2,
+            "z": 4
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "every output point lies within the bounding box of the input point cloud",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "p": [
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 3,
+        "result": [
+          {
+            "x": 4,
+            "y": 2,
+            "z": 2
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "output x coordinate must remain between input minimum and maximum x values",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "p": [
+          {
+            "x": 1,
+            "y": 5,
+            "z": 2
+          },
+          {
+            "x": 2,
+            "y": 7,
+            "z": 4
+          },
+          {
+            "x": 3,
+            "y": 6,
+            "z": 3
+          }
+        ],
+        "voxel_size": 10,
+        "result": [
+          {
+            "x": 2,
+            "y": 8,
+            "z": 3
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "output y coordinate must remain between input minimum and maximum y values",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task6",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "correct downsampling produces one averaged point per non-empty voxel with correct voxel assignment",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task6",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "z": 1
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "when all input points fall in one voxel, output is exactly the average point of that voxel",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task6",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "downsampled representative for a voxel must be the average of points in that voxel, not a different point",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task6",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 4
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "points that belong to different voxels must not be combined into one averaged output point",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task1",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        ],
+        "voxel_size": 2,
+        "result": []
+      },
+      "condition": "post",
+      "spec": "non-empty input with at least one point must yield at least one representative point, not an empty cloud",
+      "expected": false
+    },
+    {
+      "id": "T030",
+      "task": "task4",
+      "input": {
+        "p": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 4
+          }
+        ],
+        "voxel_size": 2,
+        "result": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2,
+            "y": 2,
+            "z": 2
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 4
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "size(pd) must not exceed size(p); here output has 3 points but input has only 2",
+      "expected": false
+    }
+  ]
+}

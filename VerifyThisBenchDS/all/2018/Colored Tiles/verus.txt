@@ -1,0 +1,9 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub struct ColoredTiles {
+    pub count: [i32; 51],
+}
+
+} // verus!

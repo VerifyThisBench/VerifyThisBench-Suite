@@ -1,0 +1,757 @@
+{
+  "challenge": "Tree Del",
+  "description": "Delete the node with the minimal key from a non-empty binary search tree and return the updated tree and removed minimum value",
+  "function_signature": "search_tree_delete_min(tree) -> [result_tree, result_min]",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 3,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "tree is not null and satisfies the binary search tree ordering property",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 7,
+          "left": null,
+          "right": {
+            "value": 9,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "tree is non-empty; a single-root BST with no left child is valid input",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 0,
+          "left": {
+            "value": -3,
+            "left": {
+              "value": -5,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": -1,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 4,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "BST input may contain negative keys as long as ordering holds",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "tree": null
+      },
+      "condition": "pre",
+      "spec": "tree must be non-empty and not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 6,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "all keys in the left subtree must be strictly smaller than the root key",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 3,
+            "left": null,
+            "right": {
+              "value": 6,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "every node in a left subtree must be less than the ancestor root key",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": null,
+          "right": {
+            "value": 4,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "all keys in the right subtree must be strictly greater than the root key",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": null,
+          "right": null
+        },
+        "result": [
+          null,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "for a single-node BST, the minimum is the root key and the resulting tree is empty",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": null,
+          "right": {
+            "value": 7,
+            "left": {
+              "value": 6,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 9,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": [
+          {
+            "value": 7,
+            "left": {
+              "value": 6,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 9,
+              "left": null,
+              "right": null
+            }
+          },
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "if the root has no left child, delete the root, return its key as minimum, and promote the right subtree",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 3,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 8,
+            "left": {
+              "value": 6,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 9,
+              "left": null,
+              "right": null
+            }
+          }
+        },
+        "result": [
+          {
+            "value": 5,
+            "left": {
+              "value": 3,
+              "left": null,
+              "right": {
+                "value": 4,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 8,
+              "left": {
+                "value": 6,
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": 9,
+                "left": null,
+                "right": null
+              }
+            }
+          },
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "delete the leftmost node, return its key, and preserve BST structure when the minimum is a leaf",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 10,
+          "left": {
+            "value": 5,
+            "left": {
+              "value": 2,
+              "left": null,
+              "right": {
+                "value": 3,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 12,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 10,
+            "left": {
+              "value": 5,
+              "left": {
+                "value": 3,
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": 7,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 12,
+              "left": null,
+              "right": null
+            }
+          },
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "when the minimum node has a right subtree, that right subtree is reattached as the left child of the minimum node's parent",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 0,
+          "left": {
+            "value": -3,
+            "left": {
+              "value": -5,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": -1,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 4,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 0,
+            "left": {
+              "value": -3,
+              "left": null,
+              "right": {
+                "value": -1,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          -5
+        ]
+      },
+      "condition": "post",
+      "spec": "the returned minimum is the smallest key even when keys are negative, and the resulting tree remains a BST",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": null,
+          "right": null
+        },
+        "result": [
+          null,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "returned minimum must equal the original smallest key",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": null,
+          "right": {
+            "value": 7,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 5,
+            "left": null,
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          },
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "the minimum node must actually be removed from the tree",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 3,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 5,
+            "left": {
+              "value": 3,
+              "left": {
+                "value": 1,
+                "left": null,
+                "right": null
+              },
+              "right": null
+            },
+            "right": {
+              "value": 8,
+              "left": null,
+              "right": null
+            }
+          },
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "the returned value must be the global minimum, not just any value removed from the left subtree",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 10,
+          "left": {
+            "value": 5,
+            "left": {
+              "value": 2,
+              "left": null,
+              "right": {
+                "value": 3,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 7,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 12,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 10,
+            "left": {
+              "value": 5,
+              "left": null,
+              "right": {
+                "value": 7,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 12,
+              "left": null,
+              "right": null
+            }
+          },
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "if the deleted minimum had a right child, that child must not be lost; it must be reattached in the result tree",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 5,
+          "left": {
+            "value": 3,
+            "left": {
+              "value": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": 8,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 5,
+            "left": {
+              "value": 3,
+              "left": {
+                "value": 6,
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": 4,
+                "left": null,
+                "right": null
+              }
+            },
+            "right": {
+              "value": 8,
+              "left": null,
+              "right": null
+            }
+          },
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "after deletion the resulting tree must still satisfy the binary search tree ordering property",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 4,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 4,
+            "left": null,
+            "right": {
+              "value": 6,
+              "left": null,
+              "right": null
+            }
+          },
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "when the minimum is the immediate left child of the root, removing it and setting the root's left pointer to the minimum's right subtree yields a valid BST",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 4,
+          "left": {
+            "value": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 6,
+            "left": null,
+            "right": null
+          }
+        },
+        "result": [
+          {
+            "value": 2,
+            "left": null,
+            "right": {
+              "value": 6,
+              "left": null,
+              "right": null
+            }
+          },
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "deleting the minimum from a tree with a left child must not replace the root with the deleted minimum",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 9,
+          "left": {
+            "value": 7,
+            "left": {
+              "value": 5,
+              "left": {
+                "value": 1,
+                "left": null,
+                "right": null
+              },
+              "right": null
+            },
+            "right": null
+          },
+          "right": null
+        },
+        "result": [
+          {
+            "value": 9,
+            "left": {
+              "value": 7,
+              "left": {
+                "value": 5,
+                "left": null,
+                "right": null
+              },
+              "right": null
+            },
+            "right": null
+          },
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "deletion correctly traverses a deep left spine to remove the leftmost node",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": 9,
+          "left": {
+            "value": 7,
+            "left": {
+              "value": 5,
+              "left": {
+                "value": 1,
+                "left": null,
+                "right": null
+              },
+              "right": null
+            },
+            "right": null
+          },
+          "right": null
+        },
+        "result": [
+          {
+            "value": 9,
+            "left": {
+              "value": 7,
+              "left": {
+                "value": 5,
+                "left": {
+                  "value": 1,
+                  "left": null,
+                  "right": null
+                },
+                "right": null
+              },
+              "right": null
+            },
+            "right": null
+          },
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "the minimum node must be removed from the tree; returning the original tree unchanged violates the postcondition",
+      "expected": false
+    }
+  ]
+}

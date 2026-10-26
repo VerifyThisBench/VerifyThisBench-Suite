@@ -1,0 +1,5 @@
+typedef struct {
+    size_t row;
+    size_t col;
+    int value;
+} Triplet;

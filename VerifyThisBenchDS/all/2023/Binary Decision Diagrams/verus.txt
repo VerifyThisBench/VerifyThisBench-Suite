@@ -1,0 +1,13 @@
+pub type Variable = i32;
+// BDD Node representation
+pub enum BDDNode {
+    True,
+    False, 
+    Node {
+        var: Variable,
+        left: Box<BDDNode>,   // false branch (dotted edge)
+        right: Box<BDDNode>,  // true branch (solid edge)
+    },
+}
+
+

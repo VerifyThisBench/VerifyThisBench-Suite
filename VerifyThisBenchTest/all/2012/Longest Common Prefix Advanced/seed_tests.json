@@ -1,0 +1,416 @@
+{
+  "challenge": "Longest Common Prefix Advanced",
+  "description": "Find the start index and length of a longest repeated substring in an integer array using a suffix array and adjacent LCP values.",
+  "function_signature": "doLRS(array) -> {start, length}",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          8,
+          8,
+          6
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": [
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null and has minimum valid size 1",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "array may contain repeated values",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "array length is at least 1 so returned start index is valid",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          8,
+          8,
+          6
+        ],
+        "result": {
+          "start": 1,
+          "length": 1
+        }
+      },
+      "condition": "post",
+      "spec": "result length equals the length of a longest repeated substring and result start points to one occurrence",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "result": {
+          "start": 0,
+          "length": 3
+        }
+      },
+      "condition": "post",
+      "spec": "result length equals the maximum repeated-substring length and start is an occurrence of that substring",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "start": 0,
+          "length": 0
+        }
+      },
+      "condition": "post",
+      "spec": "if there is no repeated substring then result length is 0 and default start remains 0",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          5,
+          5
+        ],
+        "result": {
+          "start": 1,
+          "length": 2
+        }
+      },
+      "condition": "post",
+      "spec": "for all-equal values, result captures the longest repeated suffix prefix with correct occurrence start",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          -1,
+          -2,
+          -1,
+          -2,
+          -1
+        ],
+        "result": {
+          "start": 0,
+          "length": 3
+        }
+      },
+      "condition": "post",
+      "spec": "algorithm works with negative numbers and returns the longest repeated substring",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array": [
+          1
+        ],
+        "result": {
+          "start": 0,
+          "length": 0
+        }
+      },
+      "condition": "post",
+      "spec": "single-element array has no repeated substring so length is 0 and start is 0",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          8,
+          8,
+          6
+        ],
+        "result": {
+          "start": 0,
+          "length": 1
+        }
+      },
+      "condition": "post",
+      "spec": "result start must point to an occurrence of a longest repeated substring, not just any occurrence length",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "result": {
+          "start": 0,
+          "length": 2
+        }
+      },
+      "condition": "post",
+      "spec": "result length must be maximal among all repeated substrings",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": {
+          "start": 2,
+          "length": 1
+        }
+      },
+      "condition": "post",
+      "spec": "when no repeated substring exists, any positive length violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          5,
+          5
+        ],
+        "result": {
+          "start": 0,
+          "length": 2
+        }
+      },
+      "condition": "post",
+      "spec": "result start must match the occurrence selected from the lexicographically later adjacent suffix when a new maximum LCP is found",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "array": [
+          -1,
+          -2,
+          -1,
+          -2,
+          -1
+        ],
+        "result": {
+          "start": 2,
+          "length": 3
+        }
+      },
+      "condition": "post",
+      "spec": "result substring of claimed maximum length must actually exist fully at the reported start",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "result": {
+          "start": 1,
+          "length": 3
+        }
+      },
+      "condition": "post",
+      "spec": "overlapping repeated substrings are allowed and longest repeated substring length is computed correctly",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        "result": {
+          "start": 2,
+          "length": 4
+        }
+      },
+      "condition": "post",
+      "spec": "result may come from a later suffix and should equal the longest repeated substring found by adjacent LCPs",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        "result": {
+          "start": 0,
+          "length": 4
+        }
+      },
+      "condition": "post",
+      "spec": "reported start must be the one selected by the client code when the maximum LCP is found",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          3,
+          1,
+          3
+        ],
+        "result": {
+          "start": 2,
+          "length": 2
+        }
+      },
+      "condition": "post",
+      "spec": "for repeated pattern with multiple occurrences, result length is maximal and start is a valid occurrence chosen by the scan",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "result": {
+          "start": 1,
+          "length": 4
+        }
+      },
+      "condition": "post",
+      "spec": "result length cannot exceed array.length - 1; for n=4 the longest repeated substring is at most 3",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "array": [
+          7,
+          8,
+          8,
+          6
+        ],
+        "result": {
+          "start": 5,
+          "length": 1
+        }
+      },
+      "condition": "post",
+      "spec": "result start must be a valid index into the array (0 <= start < length); 5 is out of bounds for length 4",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          3,
+          1,
+          3
+        ],
+        "result": {
+          "start": 0,
+          "length": 0
+        }
+      },
+      "condition": "post",
+      "spec": "result length must be the maximum repeated substring length; reporting 0 when a repeated substring exists is incorrect",
+      "expected": false
+    }
+  ]
+}

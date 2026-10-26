@@ -1,0 +1,7 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub type IntArray = Vec<i32>;
+
+} // verus!

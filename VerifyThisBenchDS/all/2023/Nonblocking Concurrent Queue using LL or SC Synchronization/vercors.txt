@@ -1,0 +1,5 @@
+class NonblockingQueue {
+    int[] Q;      // Array of elements, -1 represents null
+    int Head;     // Head pointer (monotonically increasing)
+    int Tail;     // Tail pointer (monotonically increasing)
+}

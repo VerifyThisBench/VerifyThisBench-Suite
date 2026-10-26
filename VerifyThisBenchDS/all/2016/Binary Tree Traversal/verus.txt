@@ -1,0 +1,6 @@
+struct Tree {
+    left: Option<Box<Tree>>,
+    right: Option<Box<Tree>>,
+    parent: Option<Box<Tree>>,
+    mark: bool,
+}

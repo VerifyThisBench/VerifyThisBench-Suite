@@ -1,0 +1,6 @@
+// VeriFast Data Structure Definition for Work-Stealing
+typedef int task;
+struct deque;  // Abstract deque type
+int subtask[NTASKS][2];  // Maps task ID to child task IDs
+bool executed[NTASKS];   // Marks executed tasks  
+struct deque* q[P];      // Double-ended queue per worker

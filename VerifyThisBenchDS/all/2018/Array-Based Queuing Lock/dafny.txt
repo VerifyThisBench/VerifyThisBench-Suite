@@ -1,0 +1,1 @@
+datatype QueueLock = QueueLock(pass: seq<bool>, next: int)

@@ -1,0 +1,114 @@
+#include "stdlib.h"
+
+struct TreeNode {
+    int value;
+    struct TreeNode* left;
+    struct TreeNode* right;
+    struct TreeNode* parent;
+};
+
+/*@
+predicate tree_node(struct TreeNode* node, int value, struct TreeNode* left, struct TreeNode* right, struct TreeNode* parent) =
+    node->value |-> value &*& node->left |-> left &*& node->right |-> right &*& node->parent |-> parent;
+
+predicate tree(struct TreeNode* root) = 
+    root == 0 ? true : 
+    tree_node(root, ?value, ?left, ?right, ?parent) &*& tree(left) &*& tree(right);
+
+predicate cartesian_tree(struct TreeNode* root, list<int> sequence) =
+    root == 0 ? 
+        sequence == nil :
+        tree_node(root, ?value, ?left, ?right, ?parent) &*&
+        mem(value, sequence) &*& 
+        cartesian_tree(left, ?left_seq) &*& 
+        cartesian_tree(right, ?right_seq) &*&
+        append(left_seq, cons(value, right_seq)) == sequence;
+@*/
+
+struct TreeNode* create_node(int value)
+    //@ requires true;
+    //@ ensures tree_node(result, value, 0, 0, 0);
+{
+    struct TreeNode* node = malloc(sizeof(struct TreeNode));
+    if (node == 0) abort();
+    
+    node->value = value;
+    node->left = 0;
+    node->right = 0;
+    node->parent = 0;
+    
+    //@ close tree_node(node, value, 0, 0, 0);
+    return node;
+}
+
+int find_min_index(int* sequence, int length)
+    //@ requires ints(sequence, length, ?values) &*& length > 0;
+    //@ ensures ints(sequence, length, values) &*& 0 <= result &*& result < length;
+{
+    int min_idx = 0;
+    
+    //@ assert ints(sequence, length, values);
+    for (int i = 1; i < length; i++)
+        //@ invariant 1 <= i &*& i <= length &*& 0 <= min_idx &*& min_idx < length;
+        //@ invariant ints(sequence, length, values);
+    {
+        if (sequence[i] < sequence[min_idx]) {
+            min_idx = i;
+        }
+    }
+    
+    return min_idx;
+}
+
+struct TreeNode* construct_cartesian_tree(int* sequence, int length)
+    //@ requires ints(sequence, length, ?values) &*& length >= 0;
+    //@ ensures ints(sequence, length, values) &*& tree(result);
+{
+    if (length == 0) {
+        return 0;
+    }
+    
+    if (length == 1) {
+        //@ open ints(sequence, 1, values);
+        struct TreeNode* node = create_node(sequence[0]);
+        //@ open tree_node(node, sequence[0], 0, 0, 0);
+        //@ close tree(0);
+        //@ close tree_node(node, sequence[0], 0, 0, 0);
+        //@ close tree(node);
+        //@ close ints(sequence, 1, values);
+        return node;
+    }
+    
+    int min_idx = find_min_index(sequence, length);
+    struct TreeNode* root = create_node(sequence[min_idx]);
+    
+    //@ open tree_node(root, sequence[min_idx], 0, 0, 0);
+    
+    // Construct left subtree
+    if (min_idx > 0) {
+        root->left = construct_cartesian_tree(sequence, min_idx);
+        if (root->left != 0) {
+            //@ open tree(root->left);
+            //@ open tree_node(root->left, ?left_value, ?left_left, ?left_right, ?left_parent);
+            root->left->parent = root;
+            //@ close tree_node(root->left, left_value, left_left, left_right, root);
+            //@ close tree(root->left);
+        }
+    }
+    
+    // Construct right subtree  
+    if (min_idx < length - 1) {
+        root->right = construct_cartesian_tree(sequence + min_idx + 1, length - min_idx - 1);
+        if (root->right != 0) {
+            //@ open tree(root->right);
+            //@ open tree_node(root->right, ?right_value, ?right_left, ?right_right, ?right_parent);
+            root->right->parent = root;
+            //@ close tree_node(root->right, right_value, right_left, right_right, root);
+            //@ close tree(root->right);
+        }
+    }
+    
+    //@ close tree_node(root, sequence[min_idx], root->left, root->right, 0);
+    //@ close tree(root);
+    return root;
+}

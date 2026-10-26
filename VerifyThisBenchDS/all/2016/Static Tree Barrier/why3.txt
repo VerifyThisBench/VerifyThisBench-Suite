@@ -1,0 +1,12 @@
+module TreeBarrier
+  use int.Int
+  use option.Option
+  
+  type node = {
+    left : option node;
+    right : option node;
+    parent : option node;
+    mutable sense : bool;
+    mutable version : int;
+  }
+end

@@ -1,0 +1,7 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub type IntMatrix = Vec<Vec<i32>>;
+
+} // verus!

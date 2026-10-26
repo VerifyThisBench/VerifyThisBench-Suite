@@ -1,0 +1,19 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub struct Node {
+    pub value: i32,
+    pub next: Option<Box<Node>>,
+    pub prev: Option<Box<Node>>,
+    pub nested_next: Option<Box<Node>>,
+    pub nested_prev: Option<Box<Node>>,
+}
+
+pub struct DoublyLinkedList {
+    pub head: Option<Box<Node>>,
+    pub spec contents: Seq<i32>,
+    pub spec nodes: Seq<Node>,
+}
+
+} // verus!

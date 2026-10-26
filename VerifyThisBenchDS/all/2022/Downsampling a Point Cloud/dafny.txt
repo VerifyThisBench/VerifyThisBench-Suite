@@ -1,0 +1,1 @@
+datatype Point = Point(x: nat, y: nat, z: nat)

@@ -1,0 +1,396 @@
+{
+  "challenge": "Maximum-sum Array (one-dimension)",
+  "description": "Return the maximum sum of any contiguous subarray of a one-dimensional integer array according to Kadane's algorithm.",
+  "function_signature": "maxSubArraySum(array) -> integer",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": [
+          -2,
+          -3,
+          4,
+          -1,
+          -2,
+          1,
+          5,
+          -3
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "array has non-negative length and is a valid input",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          -2,
+          -3,
+          4,
+          -1,
+          -2,
+          1,
+          5,
+          -3
+        ],
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          -5,
+          -1,
+          -8
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray, allowing the empty subarray sum 0",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          0,
+          0
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          5
+        ],
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          -1,
+          2
+        ],
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array": [],
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "returned value is the sum of some contiguous subarray, with only empty subarray sum 0 available for empty input",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "array": [
+          -2,
+          -3,
+          4,
+          -1,
+          -2,
+          1,
+          5,
+          -3
+        ],
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "array": [
+          -5,
+          -1,
+          -8
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value, allowing empty subarray sum 0",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "array": [
+          0,
+          0,
+          0
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "array": [
+          5,
+          -2,
+          3,
+          4
+        ],
+        "result": 10
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "array": [
+          2,
+          -1,
+          2
+        ],
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "array": [
+          4,
+          -1,
+          -2,
+          1,
+          5
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "array": [
+          5
+        ],
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "array": [],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "every contiguous subarray sum is less than or equal to the returned value for empty input",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": -1
+      },
+      "condition": "post",
+      "spec": "-1 is not the sum of any contiguous subarray of [1,2,3] (all sums are non-negative)",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task1",
+      "input": {
+        "array": [
+          -2,
+          -3,
+          4,
+          -1,
+          -2,
+          1,
+          5,
+          -3
+        ],
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "6 is not the sum of any contiguous subarray of this input (no contiguous slice totals exactly 6)",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          -1,
+          4
+        ],
+        "result": 5
+      },
+      "condition": "post",
+      "spec": "the full subarray sum 6 exceeds the claimed bound 5, violating the upper-bound postcondition",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task2",
+      "input": {
+        "array": [
+          -1,
+          -2,
+          -3
+        ],
+        "result": -2
+      },
+      "condition": "post",
+      "spec": "the empty subarray sum 0 exceeds the claimed bound -2, violating the upper-bound postcondition",
+      "expected": false
+    }
+  ]
+}

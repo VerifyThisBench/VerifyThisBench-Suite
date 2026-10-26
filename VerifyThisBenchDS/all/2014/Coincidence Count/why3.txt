@@ -1,0 +1,4 @@
+use array.Array
+
+// Two arrays in strictly increasing order
+type sorted_array = array int

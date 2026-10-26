@@ -1,0 +1,422 @@
+{
+  "challenge": "Finding Two Duplets in an Array",
+  "description": "Find two values in an integer array of length n+2 such that both values occur at least twice, assuming values are in the range 0 to n-1.",
+  "function_signature": "find_two_duplets(array) -> [value1, value2]",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          2,
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "array length is at least 4 so n = length - 2 satisfies n >= 2",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          0,
+          1,
+          2,
+          3,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "all array values are within the valid range 0 to n-1 where n = length - 2",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          0,
+          2,
+          3,
+          1,
+          2,
+          4
+        ]
+      },
+      "condition": "pre",
+      "spec": "array contains at least two distinct values that each occur at least twice",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "array length is at least 4 so n = length - 2 satisfies n >= 2",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          -1,
+          1,
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "all array values are within the valid range 0 to n-1 where n = length - 2",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          2,
+          0,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "all array values are within the valid range 0 to n-1 where n = length - 2",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "array contains at least two distinct values that each occur at least twice",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          2,
+          0,
+          1
+        ],
+        "result": [
+          0,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "both returned values occur at least twice in the input array",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          3,
+          1,
+          2,
+          0,
+          3
+        ],
+        "result": [
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "both returned values occur at least twice in the input array",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          4,
+          2,
+          1,
+          3,
+          2,
+          4
+        ],
+        "result": [
+          1,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "returned values are valid duplicated values from the input array",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          2,
+          0,
+          1
+        ],
+        "result": [
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "the two returned values are distinct duplicated values",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          3,
+          1,
+          2,
+          0,
+          3
+        ],
+        "result": [
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "both returned values occur at least twice in the input array",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          4,
+          2,
+          1,
+          3,
+          2,
+          4
+        ],
+        "result": [
+          0,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "both returned values occur at least twice in the input array",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          0,
+          1
+        ],
+        "result": [
+          1,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "minimum-size valid input still returns two duplicated values",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          0,
+          1,
+          1,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "returned values may be any two distinct values that each occur at least twice when more than two duplicates exist",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          0,
+          1,
+          1,
+          2,
+          2
+        ],
+        "result": [
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "returned values must both be elements of the input array that occur at least twice",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          0,
+          4,
+          1,
+          3,
+          2,
+          4
+        ],
+        "result": [
+          4,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "returned values are duplicated values even when array contains non-duplicated values as well",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          0,
+          4,
+          1,
+          3,
+          2,
+          4
+        ],
+        "result": [
+          3,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "both returned values occur at least twice in the input array",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": [
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "order of the two returned duplicated values does not matter",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          1,
+          0,
+          1
+        ],
+        "result": [
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "the two returned values must be distinct duplicated values, not the same value twice",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": [
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "returned values must each appear at least twice in the array; 3 and 4 occur only once",
+      "expected": false
+    }
+  ]
+}

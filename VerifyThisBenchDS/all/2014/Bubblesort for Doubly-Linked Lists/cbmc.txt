@@ -1,0 +1,10 @@
+struct list_head {
+    struct list_head *next;
+    struct list_head *prev;
+};
+
+struct node {
+    int value;
+    struct list_head linkage;
+    struct list_head nested;
+};

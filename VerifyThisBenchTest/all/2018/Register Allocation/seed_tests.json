@@ -1,0 +1,1493 @@
+{
+  "challenge": "Register Allocation",
+  "description": "Run simplified iterated register coalescing so every initial variable gets an assignment while preserving pre-assignments, avoiding register conflicts on initial interference edges, and terminating.",
+  "function_signature": "irc(G, A, registers, pick_sequence, coalesce_map) -> result_A",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ]
+      },
+      "condition": "pre",
+      "spec": "initial precondition: dom A is a subset of dom G and no two interfering pre-assigned variables share the same physical register",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          }
+        ]
+      },
+      "condition": "pre",
+      "spec": "initial precondition: every pre-assigned variable must belong to dom G",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [],
+        "coalesce_map": []
+      },
+      "condition": "pre",
+      "spec": "initial precondition: no two interfering variables are pre-assigned the same physical register",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "G": [],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [],
+        "coalesce_map": []
+      },
+      "condition": "pre",
+      "spec": "empty interference graph satisfies dom A subset dom G and has no conflicting pre-assignments",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "every variable in the initial domain of G gets an assignment in the final A",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": []
+          },
+          {
+            "var": 2,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": 2
+          },
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "coalesced non-interfering variables from the initial domain are both assigned in the final A",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2,
+              3
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "spill"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "every initial variable gets some assignment, possibly spill when no register is available",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": []
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "final A must contain assignments for all variables from the initial domain, including isolated variables",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 4,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          4
+        ],
+        "coalesce_map": [
+          {
+            "var": 4,
+            "with": null
+          }
+        ],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "single variable in the initial domain must still be assigned in the final A",
+      "expected": false
+    },
+    {
+      "id": "T010",
+      "task": "task3",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": []
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R2"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R2"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          },
+          {
+            "var": 3,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "a variable pre-assigned a physical register keeps the same assignment in the final A",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task3",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2",
+          "R3"
+        ],
+        "pick_sequence": [
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R3"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "all pre-assigned variables preserve their original physical registers",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task3",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R2"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "changing the register of a pre-assigned variable violates preservation of pre-assignment",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "G": [
+          {
+            "var": 5,
+            "interferes": []
+          }
+        ],
+        "A": [
+          {
+            "var": 5,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [],
+        "coalesce_map": [],
+        "result": [
+          {
+            "var": 5,
+            "assign": "spill"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "a pre-assigned physical register cannot be replaced by spill in the final A",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "no two variables that interfered in the initial G are assigned the same physical register",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2,
+              3
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "spill"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "spilled variables do not violate the interference safety property because only equal physical registers are forbidden",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "interfering variables cannot end with the same physical register",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "spill"
+          },
+          {
+            "var": 3,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "non-interfering variables may share a physical register without violating the safety property",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": []
+          },
+          {
+            "var": 2,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": 2
+          },
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "coalesced variables that did not interfere initially may share the same register",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task5",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "termination: each recursive step removes or merges one variable, so a finite initial dom G yields termination",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task5",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": []
+          },
+          {
+            "var": 2,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": 2
+          },
+          {
+            "var": 2,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "termination also holds when coalescing occurs because merge strictly decreases the size of dom G",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task5",
+      "input": {
+        "G": [],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [],
+        "coalesce_map": [],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "termination base case: when pick returns none on an empty remaining graph, the procedure returns immediately",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": null
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "every variable in initial dom G must receive a non-null assignment (a register or spill); leaving a variable unassigned violates the property",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "vars 1 and 2 interfere in initial G but were assigned the same register R1, violating the no-conflict property",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2,
+              3
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [
+          {
+            "var": 1,
+            "assign": "R1"
+          }
+        ],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R1"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "var 2 was assigned R1 even though it interferes with var 1 already pre-assigned R1, violating the safety property",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task4",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": [
+          {
+            "var": 1,
+            "assign": "R1"
+          },
+          {
+            "var": 2,
+            "assign": "R2"
+          },
+          {
+            "var": 3,
+            "assign": "R2"
+          }
+        ]
+      },
+      "condition": "post",
+      "spec": "vars 2 and 3 interfere initially but ended up sharing register R2, violating the no-conflict property",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task5",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          1,
+          1
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          }
+        ],
+        "result": "nonterminating"
+      },
+      "condition": "post",
+      "spec": "if pick keeps returning the same already-removed variable then the procedure does not terminate, violating the termination property",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task5",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": [
+              2
+            ]
+          },
+          {
+            "var": 2,
+            "interferes": [
+              1,
+              3
+            ]
+          },
+          {
+            "var": 3,
+            "interferes": [
+              2
+            ]
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1",
+          "R2"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          3
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": null
+          },
+          {
+            "var": 2,
+            "with": null
+          },
+          {
+            "var": 3,
+            "with": null
+          }
+        ],
+        "result": "diverged"
+      },
+      "condition": "post",
+      "spec": "a divergent execution on a finite, well-formed input contradicts the termination property",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task5",
+      "input": {
+        "G": [
+          {
+            "var": 1,
+            "interferes": []
+          },
+          {
+            "var": 2,
+            "interferes": []
+          }
+        ],
+        "A": [],
+        "registers": [
+          "R1"
+        ],
+        "pick_sequence": [
+          1,
+          2,
+          1,
+          2
+        ],
+        "coalesce_map": [
+          {
+            "var": 1,
+            "with": 2
+          },
+          {
+            "var": 2,
+            "with": 1
+          }
+        ],
+        "result": "infinite_recursion"
+      },
+      "condition": "post",
+      "spec": "mutually-pointing coalesce that never decreases dom G size would violate termination, since each recursive call must shrink the working set",
+      "expected": false
+    }
+  ]
+}

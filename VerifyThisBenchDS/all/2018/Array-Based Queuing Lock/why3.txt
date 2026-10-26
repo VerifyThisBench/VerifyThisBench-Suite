@@ -1,0 +1,4 @@
+type queuelock = {
+  pass: array bool;
+  next: int;
+}

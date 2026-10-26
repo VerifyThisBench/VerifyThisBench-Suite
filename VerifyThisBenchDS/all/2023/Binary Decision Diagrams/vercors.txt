@@ -1,0 +1,5 @@
+class BDDNode {
+    int var;        // Variable
+    BDDNode left;   // false branch (dotted edge)
+    BDDNode right;  // true branch (solid edge)
+}

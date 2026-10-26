@@ -1,0 +1,6 @@
+module LexPerm
+  use int.Int
+  use array.Array
+  
+  type permutation = array int
+end

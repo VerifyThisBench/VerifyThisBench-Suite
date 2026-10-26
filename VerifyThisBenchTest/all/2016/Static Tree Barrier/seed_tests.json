@@ -1,0 +1,1074 @@
+{
+  "challenge": "Static Tree Barrier",
+  "description": "Checks tree-barrier state invariants and the existence of a state where all node versions are equal during a terminating barrier call.",
+  "function_signature": "verify_barrier_property(tree_state, call_node, terminates, result) -> bool",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": false,
+            "version": 0,
+            "is_call_node": true
+          },
+          "left": null,
+          "right": null
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "tree is not null and call node exists in the immutable tree",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": false,
+            "version": 0,
+            "is_call_node": false
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 0,
+              "is_call_node": true
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": false,
+              "version": 0,
+              "is_call_node": false
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "initial state may be any finite binary tree with exactly one call node",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "tree": null,
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "tree is not null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": false,
+            "version": 0,
+            "is_call_node": false
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 0,
+              "is_call_node": false
+            },
+            "left": null,
+            "right": null
+          },
+          "right": null
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "there is exactly one node on which barrier is invoked",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": false,
+            "version": 0,
+            "is_call_node": true
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 0,
+              "is_call_node": true
+            },
+            "left": null,
+            "right": null
+          },
+          "right": null
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "there is exactly one node on which barrier is invoked",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": true,
+            "version": 0,
+            "is_call_node": true
+          },
+          "left": null,
+          "right": null
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "barrier requires the calling node to start with sense equal to false",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "tree": {
+          "value": {
+            "sense": false,
+            "version": 0,
+            "is_call_node": false
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 0,
+              "is_call_node": true
+            },
+            "left": null,
+            "right": null
+          },
+          "right": null
+        },
+        "terminates": true
+      },
+      "condition": "pre",
+      "spec": "barrier requires the calling node to start with sense equal to false",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": true,
+            "version": 1
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 1
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": true,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant holds: if a node has sense true then every node in its subtree has sense true",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": true,
+            "version": 2
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 2
+            },
+            "left": {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            },
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": true,
+              "version": 2
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant holds on a deeper subtree when the root of that subtree has sense true",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": false,
+            "version": 0
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 1
+            },
+            "left": {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            },
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant is local to each subtree: a true node requires only its own descendants to be true",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": true,
+            "version": 1
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 1
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": true,
+              "version": 1
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant fails when a node has sense true but one descendant in its subtree has sense false",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": false,
+            "version": 1
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 1
+            },
+            "left": {
+              "value": {
+                "sense": false,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            },
+            "right": null
+          },
+          "right": null
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant fails for a non-root subtree when that subtree root is true and a descendant is false",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": false,
+            "version": 0
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "invariant holds vacuously when all nodes have sense false",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": false,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "for a terminating barrier call, there exists a state during execution where all nodes have the same version",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "call_node": "left",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "existence of an all-equal-version state may occur after some intermediate unequal-version states",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": null,
+              "right": null
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            },
+            {
+              "value": {
+                "sense": false,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "single-node terminating execution has a state where all node versions are equal",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "call_node": "left",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 2
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 2
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 2
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "postcondition fails if no state in the terminating execution has all node versions equal",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 2
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "all nodes must have the same version in one state; pairwise equality in different states is insufficient",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "call_node": "right",
+        "terminates": false,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "the equal-version existence requirement applies only if the barrier call terminates",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 5
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 5
+                },
+                "left": {
+                  "value": {
+                    "sense": false,
+                    "version": 5
+                  },
+                  "left": null,
+                  "right": null
+                },
+                "right": null
+              },
+              "right": null
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 6
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 6
+                },
+                "left": {
+                  "value": {
+                    "sense": true,
+                    "version": 6
+                  },
+                  "left": null,
+                  "right": null
+                },
+                "right": null
+              },
+              "right": null
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "the equal-version state may occur in an unbalanced tree and with versions other than zero",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": true,
+            "version": 1
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 1
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "the root has sense true but its right descendant has sense false, violating the subtree-sense invariant; result must be false",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": true,
+            "version": 2
+          },
+          "left": {
+            "value": {
+              "sense": true,
+              "version": 2
+            },
+            "left": {
+              "value": {
+                "sense": false,
+                "version": 1
+              },
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": {
+                "sense": true,
+                "version": 2
+              },
+              "left": null,
+              "right": null
+            }
+          },
+          "right": {
+            "value": {
+              "sense": true,
+              "version": 2
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "deep descendant has sense false under a true ancestor, so the invariant is violated and result must be false",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 2
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 2
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 3
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": true
+      },
+      "condition": "post",
+      "spec": "no state in this terminating execution has all node versions equal, so the existence postcondition is violated",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task1",
+      "input": {
+        "state": {
+          "value": {
+            "sense": false,
+            "version": 0
+          },
+          "left": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": {
+              "sense": false,
+              "version": 0
+            },
+            "left": null,
+            "right": null
+          }
+        },
+        "result": false
+      },
+      "condition": "post",
+      "spec": "all-false state vacuously satisfies the subtree-sense invariant, so result should be true rather than false",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task1",
+      "input": {
+        "call_node": "root",
+        "terminates": true,
+        "execution": {
+          "states": [
+            {
+              "value": {
+                "sense": false,
+                "version": 0
+              },
+              "left": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": false,
+                  "version": 0
+                },
+                "left": null,
+                "right": null
+              }
+            },
+            {
+              "value": {
+                "sense": true,
+                "version": 1
+              },
+              "left": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              },
+              "right": {
+                "value": {
+                  "sense": true,
+                  "version": 1
+                },
+                "left": null,
+                "right": null
+              }
+            }
+          ]
+        },
+        "result": false
+      },
+      "condition": "post",
+      "spec": "execution has both an all-version-0 and an all-version-1 state, so the existence postcondition holds and result should be true",
+      "expected": false
+    }
+  ]
+}

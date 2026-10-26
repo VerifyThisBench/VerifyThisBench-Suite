@@ -1,0 +1,837 @@
+{
+  "challenge": "Gap Buffer",
+  "description": "Verify gap buffer operations and abstraction to contiguous editor content, including growth when the gap is empty.",
+  "function_signature": "operation(buffer: {buffer: [char], l: int, r: int}, op: string, x?: char) -> {buffer: [char], l: int, r: int}",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "left"
+      },
+      "condition": "pre",
+      "spec": "buffer is not null and indices satisfy 0 <= l <= r <= length(buffer)",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "_"
+          ],
+          "l": 0,
+          "r": 2
+        },
+        "op": "right"
+      },
+      "condition": "pre",
+      "spec": "buffer is not null and indices satisfy 0 <= l <= r <= length(buffer)",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "buffer": null,
+        "op": "left"
+      },
+      "condition": "pre",
+      "spec": "buffer structure is not null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": -1,
+          "r": 1
+        },
+        "op": "delete"
+      },
+      "condition": "pre",
+      "spec": "left gap index l is nonnegative",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 2,
+          "r": 1
+        },
+        "op": "insert",
+        "x": "z"
+      },
+      "condition": "pre",
+      "spec": "indices satisfy l <= r",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_"
+          ],
+          "l": 1,
+          "r": 4
+        },
+        "op": "right"
+      },
+      "condition": "pre",
+      "spec": "right gap index r does not exceed buffer length",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "left",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "a",
+            "b"
+          ],
+          "l": 0,
+          "r": 2
+        }
+      },
+      "condition": "post",
+      "spec": "left moves cursor one position left when l != 0 and preserves represented text",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "left",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b"
+          ],
+          "l": 0,
+          "r": 2
+        }
+      },
+      "condition": "post",
+      "spec": "left copies the character before the cursor into the cell just before the new right gap boundary",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "right",
+        "result": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 2,
+          "r": 4
+        }
+      },
+      "condition": "post",
+      "spec": "right moves cursor one position right when r < length and preserves represented text",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "right",
+        "result": {
+          "buffer": [
+            "a",
+            "c",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 2,
+          "r": 4
+        }
+      },
+      "condition": "post",
+      "spec": "right copies the character at the right side of the gap into the old left gap boundary",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "insert",
+        "x": "x",
+        "result": {
+          "buffer": [
+            "a",
+            "x",
+            "_",
+            "b"
+          ],
+          "l": 2,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "insert writes x at a[l] and increments l when the gap is nonempty",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "insert",
+        "x": "x",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "x",
+            "b"
+          ],
+          "l": 2,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "insert places the new character at the beginning of the gap, not elsewhere",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 2,
+          "r": 4
+        },
+        "op": "delete",
+        "result": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 1,
+          "r": 4
+        }
+      },
+      "condition": "post",
+      "spec": "delete removes the character immediately before the cursor by decrementing l when l != 0",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 2,
+          "r": 4
+        },
+        "op": "delete",
+        "result": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 2,
+          "r": 4
+        }
+      },
+      "condition": "post",
+      "spec": "delete changes l when there is a character before the cursor",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "_",
+            "_",
+            "a"
+          ],
+          "l": 0,
+          "r": 2
+        },
+        "op": "left",
+        "result": {
+          "buffer": [
+            "_",
+            "_",
+            "a"
+          ],
+          "l": 0,
+          "r": 2
+        }
+      },
+      "condition": "post",
+      "spec": "left leaves the buffer unchanged when l == 0",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "h",
+            "i",
+            "_",
+            "_",
+            "!",
+            "?"
+          ],
+          "l": 2,
+          "r": 4
+        }
+      },
+      "condition": "pre",
+      "spec": "well-formed gap buffer for abstraction: 0 <= l <= r <= length(buffer)",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [],
+          "l": 0,
+          "r": 0
+        }
+      },
+      "condition": "pre",
+      "spec": "empty buffer with empty gap is a valid abstract state",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        }
+      },
+      "condition": "pre",
+      "spec": "abstraction requires r within array bounds",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "result": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "condition": "post",
+      "spec": "abstract contiguous content is buffer[0..l-1] followed by buffer[r..n-1]",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "x",
+            "y",
+            "z"
+          ],
+          "l": 3,
+          "r": 3
+        },
+        "result": [
+          "x",
+          "y",
+          "z"
+        ]
+      },
+      "condition": "post",
+      "spec": "when the gap is empty at the end, the abstract content is the whole array",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "_",
+            "_",
+            "a",
+            "b"
+          ],
+          "l": 0,
+          "r": 2
+        },
+        "result": [
+          "a",
+          "b"
+        ]
+      },
+      "condition": "post",
+      "spec": "when l == 0, abstract content starts at index r",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "result": [
+          "a",
+          "_",
+          "b",
+          "c"
+        ]
+      },
+      "condition": "post",
+      "spec": "abstract content excludes the gap cells",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_"
+          ],
+          "l": 2,
+          "r": 4
+        },
+        "result": [
+          "a"
+        ]
+      },
+      "condition": "post",
+      "spec": "abstract content includes all characters before the gap",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "result": [
+          "a",
+          "c",
+          "b"
+        ]
+      },
+      "condition": "post",
+      "spec": "abstract content preserves the order of characters outside the gap",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 2
+        },
+        "op": "grow"
+      },
+      "condition": "pre",
+      "spec": "grow requires a well-formed gap buffer state",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 2,
+          "r": 1
+        },
+        "op": "grow"
+      },
+      "condition": "pre",
+      "spec": "grow requires l <= r",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 1
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "grow enlarges the buffer, preserves abstract content, and creates a nonempty gap at the cursor",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "x",
+            "y"
+          ],
+          "l": 0,
+          "r": 0
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "_",
+            "_",
+            "x",
+            "y"
+          ],
+          "l": 0,
+          "r": 2
+        }
+      },
+      "condition": "post",
+      "spec": "grow preserves abstract content when the gap is at the beginning",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 3,
+          "r": 3
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "a",
+            "b",
+            "c",
+            "_",
+            "_"
+          ],
+          "l": 3,
+          "r": 5
+        }
+      },
+      "condition": "post",
+      "spec": "grow preserves abstract content when the gap is at the end and increases available gap size",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 1
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "c",
+            "b"
+          ],
+          "l": 1,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "grow must preserve the order of characters after the gap",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 1
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 2
+        }
+      },
+      "condition": "post",
+      "spec": "grow must increase the buffer length, not merely shift within the same capacity",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        },
+        "op": "right",
+        "result": {
+          "buffer": [
+            "a",
+            "b",
+            "_",
+            "_",
+            "c"
+          ],
+          "l": 1,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "right must advance both l and r by one; leaving them unchanged means the cursor did not move",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task3",
+      "input": {
+        "buffer": {
+          "buffer": [
+            "a",
+            "b",
+            "c"
+          ],
+          "l": 1,
+          "r": 1
+        },
+        "op": "grow",
+        "result": {
+          "buffer": [
+            "a",
+            "_",
+            "_",
+            "b",
+            "d"
+          ],
+          "l": 1,
+          "r": 3
+        }
+      },
+      "condition": "post",
+      "spec": "grow must preserve the original characters; replacing 'c' with 'd' changes the abstract content",
+      "expected": false
+    }
+  ]
+}

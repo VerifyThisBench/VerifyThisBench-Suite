@@ -1,0 +1,7 @@
+module HashSet
+  use int.Int
+  use array.Array
+  
+  type key = int
+  type hashset = array key
+end

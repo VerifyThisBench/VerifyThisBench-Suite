@@ -1,0 +1,590 @@
+{
+  "challenge": "Lexicographic Permutations",
+  "description": "Enumerate all permutations of an integer sequence in lexicographic order using next and permut",
+  "function_signature": "next(array) -> {result: bool, array: array}; permut(array) -> sequence<array>",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          3,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null, so next can access its length and elements safely",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is a valid input and next should terminate safely without accessing invalid memory",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "single-element array is a valid input and next should terminate safely",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array must not be null for next because it dereferences length and elements",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          3,
+          1
+        ],
+        "result": true,
+        "result_array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true, the modified array is the lexicographically next permutation",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": true,
+        "result_array": [
+          1,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true, the modified array is the lexicographically next permutation",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          1
+        ],
+        "result": false,
+        "result_array": [
+          3,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns false, the input array is unchanged and is already the last permutation",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          1,
+          2
+        ],
+        "result": true,
+        "result_array": [
+          1,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true, changes preserve the multiset of elements and produce the next lexicographic arrangement even with duplicates",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          -1,
+          0,
+          -2
+        ],
+        "result": true,
+        "result_array": [
+          0,
+          -2,
+          -1
+        ]
+      },
+      "condition": "post",
+      "spec": "next works with negative integers and returns the proper next lexicographic permutation",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          3,
+          1
+        ],
+        "result": true,
+        "result_array": [
+          2,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true, the result must be the immediate next permutation, not just any permutation",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          2,
+          1
+        ],
+        "result": false,
+        "result_array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns false, the array must remain unchanged",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": false,
+        "result_array": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "returning false is allowed only when the input is already the last permutation in descending order",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          1,
+          2
+        ],
+        "result": true,
+        "result_array": [
+          2,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true, modifications must be a permutation of the original array",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "array": [
+          7
+        ],
+        "result": false,
+        "result_array": [
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "for a single-element array, there is no next permutation and the array is unchanged",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "permut accepts any non-null integer array as input",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is a valid input for permut and should be handled safely",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "null input is allowed for permut because it returns an empty sequence immediately",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            2,
+            1,
+            3
+          ],
+          [
+            2,
+            3,
+            1
+          ],
+          [
+            3,
+            1,
+            2
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "permut reports all permutations of the input exactly once and in lexicographic order",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "permut outputs all permutations in lexicographic order for a two-element array",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "array": [
+          2,
+          2,
+          1
+        ],
+        "result": [
+          [
+            1,
+            2,
+            2
+          ],
+          [
+            2,
+            1,
+            2
+          ],
+          [
+            2,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "permut reports each distinct permutation exactly once even when the input has duplicates",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "array": null,
+        "result": []
+      },
+      "condition": "post",
+      "spec": "permut returns the empty sequence on null input",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            2,
+            1,
+            3
+          ],
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            2,
+            3,
+            1
+          ],
+          [
+            3,
+            1,
+            2
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "the output sequence must be in lexicographic order",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            2,
+            1,
+            3
+          ],
+          [
+            2,
+            1,
+            3
+          ],
+          [
+            3,
+            1,
+            2
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "every permutation reported by permut must be unique",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            2,
+            3,
+            1
+          ],
+          [
+            3,
+            1,
+            2
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "permut must report all permutations of the input, so none may be missing",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "every reported sequence must itself be a permutation of the input array",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          2,
+          3
+        ],
+        "result": true,
+        "result_array": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "if next returns true the array must change to the strictly next permutation, not stay equal to the input",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          1,
+          3
+        ],
+        "result": false,
+        "result_array": [
+          2,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "next may return false only when the array is the last (descending) permutation; [2,1,3] still has successor [2,3,1]",
+      "expected": false
+    }
+  ]
+}

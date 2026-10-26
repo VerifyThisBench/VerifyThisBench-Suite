@@ -1,0 +1,9 @@
+module Stack
+  use int.Int
+  use array.Array
+  
+  type stack = {
+    mutable data: array int;
+    mutable size: int;
+  }
+end

@@ -1,0 +1,31 @@
+Specification ABI requirements (must follow exactly):
+- Define exactly one entry function named `main_impl`.
+- Define an ACSL logic predicate `main_spec_pre(<input variables in order>)`.
+- Define an ACSL logic predicate `main_spec_post(<the same input variables in the same order>, <return value variable>)`.
+- In `main_impl`'s function contract, use:
+  - `requires main_spec_pre(<input variables in order>);`
+  - `ensures main_spec_post(<the same input variables in the same order>, \result);`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `main_spec_pre` or `main_spec_post`.
+- Use `\result` in the ensures clause to refer to the return value of `main_impl`.
+- Do not inline the specification logic directly in `requires`/`ensures`; always delegate to `main_spec_pre` and `main_spec_post`.
+
+Example skeleton:
+```c
+/*@ predicate main_spec_pre(int *a, integer n) =
+      \valid_read(a + (0..n-1)) && n > 0;
+*/
+
+/*@ predicate main_spec_post(int *a, integer n, integer result) =
+      (\forall integer k; 0 <= k < n ==> result >= a[k]) &&
+      (\exists integer k; 0 <= k < n && result == a[k]);
+*/
+
+/*@
+  requires main_spec_pre(a, n);
+  ensures main_spec_post(a, n, \result);
+  assigns \nothing;
+*/
+int main_impl(int *a, int n) {
+    // implementation here
+}
+```

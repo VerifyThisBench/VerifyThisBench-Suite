@@ -1,0 +1,6 @@
+// Frama-C Data Structure Definition for Nonblocking Concurrent Queue using LL/SC
+#define LEN 1024  // Queue array length
+
+int Q[LEN];           // Array of elements, -1 represents null
+unsigned int Head;    // Head pointer (monotonically increasing)
+unsigned int Tail;    // Tail pointer (monotonically increasing)

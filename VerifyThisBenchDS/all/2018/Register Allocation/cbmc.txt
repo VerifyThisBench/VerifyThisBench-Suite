@@ -1,0 +1,17 @@
+struct InterferenceNode {
+    int variable;
+    int *interfering_vars;
+    int count;
+};
+
+struct RegisterAssignment {
+    int variable;
+    char *register_or_spill;
+};
+
+struct RegisterAllocation {
+    struct InterferenceNode *G;
+    int G_size;
+    struct RegisterAssignment *A;
+    int A_size;
+};

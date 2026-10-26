@@ -1,0 +1,540 @@
+{
+  "challenge": "Monotonic Segments",
+  "description": "Compute cutpoints that partition an integer sequence into monotonic segments, with separate verification of basic cutpoint properties, monotonicity, and maximality.",
+  "function_signature": "monotonic_cutpoints(array) -> cutpoints",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ]
+      },
+      "condition": "pre",
+      "spec": "input array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is allowed because sequence length may be 0",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": [
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "single-element array is allowed",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "input array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task2",
+      "input": {
+        "array": [],
+        "result": [
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are non-empty, start at 0, end at n, and every cutpoint is within 0..n",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task2",
+      "input": {
+        "array": [
+          7
+        ],
+        "result": [
+          0,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are non-empty, start at 0, end at n, and every cutpoint is within 0..n",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7
+        ],
+        "result": [
+          0,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are non-empty, start at 0, end at n, and every cutpoint is within 0..n",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          1,
+          3,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "first cutpoint must be 0",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          3,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "last cutpoint must be n",
+      "expected": false
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "array": [
+          6,
+          3,
+          4,
+          2,
+          5,
+          3,
+          7
+        ],
+        "result": [
+          0,
+          2,
+          4,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "every cutpoint must be within bounds 0..n",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "array": [
+          2,
+          2,
+          2
+        ],
+        "result": []
+      },
+      "condition": "post",
+      "spec": "cutpoints sequence must be non-empty",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7
+        ],
+        "result": [
+          0,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "each segment between consecutive cutpoints is monotonic",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          3,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "each segment between consecutive cutpoints is monotonic",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task3",
+      "input": {
+        "array": [
+          6,
+          3,
+          4,
+          2,
+          5,
+          3,
+          7
+        ],
+        "result": [
+          0,
+          2,
+          4,
+          6,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "each segment between consecutive cutpoints is monotonic",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "array": [
+          2,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "a segment of equal values is monotonic because it is non-increasing",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "array": [
+          -3,
+          -1,
+          0,
+          -2
+        ],
+        "result": [
+          0,
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "monotonicity must hold for arrays containing negative numbers",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          4,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "segment [1,4,7,3] is not monotonic, so every segment between cutpoints must be monotonic",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "array": [
+          6,
+          3,
+          4,
+          2,
+          5,
+          3,
+          7
+        ],
+        "result": [
+          0,
+          3,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "segment [6,3,4] is neither strictly increasing nor non-increasing, so monotonicity fails",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          3,
+          2
+        ],
+        "result": [
+          0,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "entire segment [1,3,2] is not monotonic",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          3,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are maximal: extending any segment by one element would break monotonicity",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "array": [
+          6,
+          3,
+          4,
+          2,
+          5,
+          3,
+          7
+        ],
+        "result": [
+          0,
+          2,
+          4,
+          6,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are maximal: each segment is as long as possible while remaining monotonic",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": [
+          0,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "a single increasing segment over the whole array is maximal",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          2,
+          3,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "cutpoints are not maximal if a segment is split even though it can be extended and remain monotonic",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "array": [
+          2,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "for equal values, splitting into shorter non-increasing segments is not maximal because the first segment can be extended",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "array": [
+          1,
+          4,
+          7,
+          3,
+          3,
+          5,
+          9
+        ],
+        "result": [
+          0,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "segment [1,4,7,3,3] mixes an increase then a decrease, so it is not monotonic",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "array": [
+          5,
+          1,
+          2,
+          3
+        ],
+        "result": [
+          0,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "[5,1,2,3] is neither all increasing nor non-increasing across the whole range, so a single segment is not monotonic",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task4",
+      "input": {
+        "array": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": [
+          0,
+          2,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "splitting an already-monotonic [1,2,3,4] into two parts is not maximal because the first segment can be extended",
+      "expected": false
+    }
+  ]
+}

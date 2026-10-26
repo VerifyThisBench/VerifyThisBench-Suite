@@ -1,0 +1,3 @@
+// Two integer arrays in strictly increasing order
+array<int>
+array<int>

@@ -1,0 +1,604 @@
+{
+  "challenge": "Tree Buffer",
+  "description": "Verify that tree buffer implementations return the last h added elements and preserve representation invariants, including equivalence between naive, caterpillar, and real-time variants.",
+  "function_signature": "get(buffer) -> array",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 2,
+          "ys": []
+        }
+      },
+      "condition": "pre",
+      "spec": "buffer height h is non-negative and xs_len matches length of xs",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 0,
+          "xs": [],
+          "xs_len": 0,
+          "ys": []
+        }
+      },
+      "condition": "pre",
+      "spec": "buffer height h may be zero and xs_len matches length of xs",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": -1,
+          "xs": [],
+          "xs_len": 0,
+          "ys": []
+        }
+      },
+      "condition": "pre",
+      "spec": "buffer height h is non-negative",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 1,
+          "ys": []
+        }
+      },
+      "condition": "pre",
+      "spec": "xs_len equals the length of xs",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 2,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 2,
+          "ys": [
+            0
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "caterpillar invariant requires length of xs to be strictly less than h",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "buffer": null
+      },
+      "condition": "pre",
+      "spec": "buffer is not null",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 2,
+          "ys": []
+        },
+        "result": [
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "get returns the same sequence as take(h, xs concatenated with ys)",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            3,
+            2,
+            1
+          ]
+        },
+        "result": [
+          3,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "get returns the last h added elements when all recent elements are stored in ys",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            4
+          ],
+          "xs_len": 1,
+          "ys": [
+            3,
+            2
+          ]
+        },
+        "result": [
+          4,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "get returns take(h, xs concatenated with ys) for mixed xs and ys contents",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 2,
+          "xs": [
+            7
+          ],
+          "xs_len": 1,
+          "ys": []
+        },
+        "result": [
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "get may return fewer than h elements when fewer than h values were added",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 0,
+          "xs": [
+            5,
+            4
+          ],
+          "xs_len": 2,
+          "ys": [
+            3
+          ]
+        },
+        "result": []
+      },
+      "condition": "post",
+      "spec": "get returns the empty sequence when h is zero",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            4
+          ],
+          "xs_len": 1,
+          "ys": [
+            3,
+            2
+          ]
+        },
+        "result": [
+          4,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "get preserves the order of xs followed by ys",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            3,
+            2,
+            1
+          ]
+        },
+        "result": [
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "get returns exactly take(h, xs concatenated with ys), not a shorter prefix when enough elements exist",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 2,
+          "xs": [
+            9
+          ],
+          "xs_len": 1,
+          "ys": []
+        },
+        "result": [
+          9,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "get does not invent elements not present in xs or ys",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 4,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 2,
+          "ys": [
+            0,
+            -1
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "real-time buffer state satisfies representation invariant xs_len equals length of xs and length of xs is less than h",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 1,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            5
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "real-time buffer allows h equal to one with empty xs",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 3,
+          "ys": []
+        }
+      },
+      "condition": "pre",
+      "spec": "real-time buffer requires xs_len to equal length of xs",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 2,
+          "xs": [
+            1,
+            0
+          ],
+          "xs_len": 2,
+          "ys": [
+            9
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "real-time buffer requires length of xs to be strictly less than h",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            4
+          ],
+          "xs_len": 1,
+          "ys": [
+            3,
+            2
+          ]
+        },
+        "result": [
+          4,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation is functionally equivalent to the naive implementation for get",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            3,
+            2,
+            1
+          ]
+        },
+        "result": [
+          3,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation returns the last h added elements after a rollover into ys",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 5,
+          "xs": [
+            -2,
+            -3
+          ],
+          "xs_len": 2,
+          "ys": [
+            -4,
+            -5
+          ]
+        },
+        "result": [
+          -2,
+          -3,
+          -4,
+          -5
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation preserves negative values and order in xs followed by ys",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 1,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            8
+          ]
+        },
+        "result": [
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "when h is one, get returns exactly the most recent element",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            4
+          ],
+          "xs_len": 1,
+          "ys": [
+            3,
+            2
+          ]
+        },
+        "result": [
+          3,
+          4,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation must match naive ordering of last elements",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [],
+          "xs_len": 0,
+          "ys": [
+            3,
+            2,
+            1
+          ]
+        },
+        "result": [
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation must return all available last h elements when at least h exist",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 2,
+          "xs": [
+            6
+          ],
+          "xs_len": 1,
+          "ys": [
+            5
+          ]
+        },
+        "result": [
+          6,
+          5,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "real-time implementation result length is at most h and equals take(h, xs concatenated with ys)",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 3,
+          "xs": [
+            4
+          ],
+          "xs_len": 1,
+          "ys": [
+            3,
+            2
+          ]
+        },
+        "result": [
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "result reverses the expected order; concat must place xs before ys, not after",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task1",
+      "input": {
+        "buffer": {
+          "h": 0,
+          "xs": [
+            5,
+            4
+          ],
+          "xs_len": 2,
+          "ys": [
+            3
+          ]
+        },
+        "result": [
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "when h is zero, get must return the empty sequence, not a singleton",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task2",
+      "input": {
+        "buffer": {
+          "h": 4,
+          "xs": [
+            2,
+            1
+          ],
+          "xs_len": 2,
+          "ys": [
+            0,
+            -1
+          ]
+        },
+        "result": [
+          2,
+          1,
+          0,
+          -1,
+          -2
+        ]
+      },
+      "condition": "post",
+      "spec": "result length exceeds h, violating the at-most-h length bound of the real-time implementation",
+      "expected": false
+    }
+  ]
+}

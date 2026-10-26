@@ -1,0 +1,6 @@
+// Frama-C Data Structure Definition for Work-Stealing  
+typedef int task;
+typedef struct deque deque_t;  // Abstract deque type
+int subtask[NTASKS][2];        // Maps task ID to child task IDs
+int executed[NTASKS];          // Marks executed tasks
+deque_t* q[P];                 // Double-ended queue per worker

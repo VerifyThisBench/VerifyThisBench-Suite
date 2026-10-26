@@ -1,0 +1,728 @@
+{
+  "challenge": "Construction of a Cartesian Tree",
+  "description": "Construct a Cartesian tree from a sequence of distinct integers so that the tree is well formed, satisfies the heap property, and preserves the sequence under in-order traversal.",
+  "function_signature": "construct_cartesian_tree(sequence) -> tree",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "sequence is not null and has length > 0",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "single-element sequence satisfies length > 0 and distinctness",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          -3,
+          0,
+          7,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "sequence with negative and positive distinct values is valid",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "sequence": null
+      },
+      "condition": "pre",
+      "spec": "sequence must not be null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "sequence": []
+      },
+      "condition": "pre",
+      "spec": "sequence length must be greater than 0",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          2,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "all values in the sequence must be distinct",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          0,
+          -1,
+          -1,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "duplicate values violate the distinctness requirement",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 4,
+              "parent": 2,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "constructed tree is a valid Cartesian tree for the whole sequence",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          5
+        ],
+        "result": {
+          "value": 5,
+          "parent": null,
+          "left": null,
+          "right": null
+        }
+      },
+      "condition": "post",
+      "spec": "single-element sequence yields a one-node Cartesian tree",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": null,
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": null,
+            "right": {
+              "value": 3,
+              "parent": 2,
+              "left": null,
+              "right": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "increasing sequence yields a right-skewed valid Cartesian tree with minimum at root",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 2,
+          "parent": null,
+          "left": {
+            "value": 1,
+            "parent": 2,
+            "left": {
+              "value": 3,
+              "parent": 1,
+              "left": null,
+              "right": null
+            },
+            "right": {
+              "value": 4,
+              "parent": 1,
+              "left": null,
+              "right": null
+            }
+          },
+          "right": null
+        }
+      },
+      "condition": "post",
+      "spec": "root must be the minimum value of the sequence segment",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          2,
+          3,
+          1
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": null,
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": null,
+            "right": {
+              "value": 3,
+              "parent": 2,
+              "left": null,
+              "right": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "elements before the root in the sequence must appear in the left subtree, not the right subtree",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 4,
+              "parent": 2,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "tree is well formed and contains exactly one node per element in the sequence",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          2,
+          1
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 2,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": null
+        }
+      },
+      "condition": "post",
+      "spec": "two-element sequence yields a well formed binary tree with two nodes",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          -2,
+          -5,
+          0
+        ],
+        "result": {
+          "value": -5,
+          "parent": null,
+          "left": {
+            "value": -2,
+            "parent": -5,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 0,
+            "parent": -5,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "well formedness is independent of sign of values and should hold for negative numbers",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 4,
+            "parent": null,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "every non-root child must have its parent field pointing to its parent node",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": null
+        }
+      },
+      "condition": "post",
+      "spec": "tree must contain exactly one node for each element of the sequence",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 4,
+            "parent": 1,
+            "left": {
+              "value": 2,
+              "parent": 4,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "tree must not contain extra nodes whose values are not in the sequence",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 4,
+              "parent": 2,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "each non-root node has value larger than its parent",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 3,
+              "parent": 2,
+              "left": {
+                "value": 4,
+                "parent": 3,
+                "left": null,
+                "right": null
+              },
+              "right": null
+            },
+            "right": null
+          },
+          "right": null
+        }
+      },
+      "condition": "post",
+      "spec": "heap property holds for a left-skewed tree produced from a decreasing sequence",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          2,
+          1,
+          3
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 0,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "heap property fails if a child value is smaller than its parent",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          5,
+          2,
+          7
+        ],
+        "result": {
+          "value": 2,
+          "parent": null,
+          "left": {
+            "value": 5,
+            "parent": 2,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 1,
+            "parent": 2,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "heap property fails if any non-root node is not larger than its parent",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 4,
+              "parent": 2,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "in-order traversal of the tree yields the original sequence",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          1,
+          2,
+          3
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": null,
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": null,
+            "right": {
+              "value": 3,
+              "parent": 2,
+              "left": null,
+              "right": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "in-order traversal preserves order for an increasing sequence",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          2,
+          1,
+          3
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": null,
+          "right": {
+            "value": 2,
+            "parent": 1,
+            "left": null,
+            "right": {
+              "value": 3,
+              "parent": 2,
+              "left": null,
+              "right": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "in-order traversal must match the original sequence exactly, not merely contain the same values",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 3,
+            "parent": 1,
+            "left": null,
+            "right": null
+          },
+          "right": {
+            "value": 4,
+            "parent": 1,
+            "left": null,
+            "right": {
+              "value": 2,
+              "parent": 4,
+              "left": null,
+              "right": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the value 2 (smaller than 4) cannot be a descendant of 4 since the heap property requires children to be larger than their parent",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          4,
+          2
+        ],
+        "result": {
+          "value": 1,
+          "parent": null,
+          "left": {
+            "value": 2,
+            "parent": 1,
+            "left": {
+              "value": 3,
+              "parent": 2,
+              "left": null,
+              "right": null
+            },
+            "right": null
+          },
+          "right": {
+            "value": 4,
+            "parent": 1,
+            "left": null,
+            "right": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "in-order traversal here yields 3,2,1,4 which does not match the original sequence 3,1,4,2",
+      "expected": false
+    }
+  ]
+}

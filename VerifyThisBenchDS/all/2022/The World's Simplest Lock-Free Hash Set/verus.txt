@@ -1,0 +1,4 @@
+type Key = i32;
+struct HashSet {
+    table: Vec<Key>,
+}

@@ -1,0 +1,240 @@
+{
+  "challenge": "Parallel GCD",
+  "description": "Compute the greatest common divisor of two positive integers using repeated subtraction until both values become equal",
+  "function_signature": "parallel_gcd(a, b) -> result",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "a": 12,
+        "b": 18
+      },
+      "condition": "pre",
+      "spec": "both inputs are positive integers",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "a": 1,
+        "b": 1
+      },
+      "condition": "pre",
+      "spec": "both inputs are positive integers, allowing the minimum positive values",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "a": 7,
+        "b": 13
+      },
+      "condition": "pre",
+      "spec": "both inputs are positive integers",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "a": 0,
+        "b": 5
+      },
+      "condition": "pre",
+      "spec": "first input must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "a": 9,
+        "b": 0
+      },
+      "condition": "pre",
+      "spec": "second input must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "a": -4,
+        "b": 6
+      },
+      "condition": "pre",
+      "spec": "inputs must not be negative; both must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "a": -3,
+        "b": -9
+      },
+      "condition": "pre",
+      "spec": "both inputs must be strictly positive",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "a": 12,
+        "b": 18,
+        "result": 6
+      },
+      "condition": "post",
+      "spec": "result is positive and equals the greatest common divisor of the two inputs",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "a": 7,
+        "b": 13,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result is positive and equals the greatest common divisor of two coprime inputs",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "a": 21,
+        "b": 21,
+        "result": 21
+      },
+      "condition": "post",
+      "spec": "when both inputs are equal positive integers, result equals that common value",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "a": 1,
+        "b": 9,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result is the gcd when one input is 1",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "a": 8,
+        "b": 12,
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "result divides both inputs and is their greatest common divisor",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "a": 9,
+        "b": 6,
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result is the greatest common divisor for non-equal positive inputs",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "a": 12,
+        "b": 18,
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result must be the greatest common divisor, not just any common divisor",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "a": 8,
+        "b": 12,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result must be the greatest common divisor, not a smaller positive divisor",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "a": 7,
+        "b": 13,
+        "result": 7
+      },
+      "condition": "post",
+      "spec": "for coprime inputs, result must be 1 and must divide both inputs",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "a": 21,
+        "b": 21,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "when inputs are equal, result must equal that value, not a smaller divisor",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "a": 1,
+        "b": 9,
+        "result": 9
+      },
+      "condition": "post",
+      "spec": "result must divide both inputs; 9 does not divide 1",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "a": 9,
+        "b": 6,
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "output must be a positive number",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "a": 10,
+        "b": 15,
+        "result": -5
+      },
+      "condition": "post",
+      "spec": "output must be positive even if its magnitude matches the gcd",
+      "expected": false
+    }
+  ]
+}

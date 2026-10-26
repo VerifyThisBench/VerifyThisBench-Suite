@@ -1,0 +1,5 @@
+struct CartesianNode {
+    value: i32,
+    left: Option<Box<CartesianNode>>,
+    right: Option<Box<CartesianNode>>,
+}

@@ -1,0 +1,8 @@
+struct tree {
+    struct tree *left;
+    struct tree *right;
+    struct tree *parent;
+    int mark;
+};
+
+typedef struct tree *Tree;

@@ -1,0 +1,35 @@
+class Node {
+    var value: int
+    var next: Node?
+    var prev: Node?
+    var nested_next: Node?
+    var nested_prev: Node?
+    
+    ghost var in_list: bool
+    ghost var list_index: int
+    
+    constructor(v: int)
+    {
+        value := v;
+        next := null;
+        prev := null;
+        nested_next := this;
+        nested_prev := this;
+        in_list := false;
+        list_index := -1;
+    }
+}
+
+class DoublyLinkedList {
+    var head: Node?
+    
+    ghost var contents: seq<int>
+    ghost var nodes: seq<Node>
+    
+    constructor()
+    {
+        head := null;
+        contents := [];
+        nodes := [];
+    }
+}

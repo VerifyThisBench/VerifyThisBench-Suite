@@ -1,0 +1,6 @@
+typedef struct Rope {
+    struct Rope* left;    // Left child rope (nullable)
+    struct Rope* right;   // Right child rope (nullable)
+    uint8_t* value;       // String data as byte array
+    size_t weight;        // Weight of the node
+} Rope;

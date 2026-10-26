@@ -1,0 +1,5 @@
+class Triplet {
+    int row;
+    int col;
+    int value;
+}

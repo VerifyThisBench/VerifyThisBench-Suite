@@ -1,0 +1,376 @@
+{
+  "challenge": "Longest Common Prefix",
+  "description": "Computes the length of the longest common prefix of two suffixes of an integer array starting at indices x and y.",
+  "function_signature": "lcp(a, x, y) -> length",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3,
+          1,
+          2
+        ],
+        "x": 0,
+        "y": 3
+      },
+      "condition": "pre",
+      "spec": "array is not null and x and y are valid indices into the array",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "a": [
+          5
+        ],
+        "x": 0,
+        "y": 0
+      },
+      "condition": "pre",
+      "spec": "single-element array with x and y at the only valid index satisfies the index bounds",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "a": [
+          0,
+          0,
+          0
+        ],
+        "x": 1,
+        "y": 2
+      },
+      "condition": "pre",
+      "spec": "indices inside a non-empty array satisfy the precondition",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "a": null,
+        "x": 0,
+        "y": 0
+      },
+      "condition": "pre",
+      "spec": "array must not be null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "a": [],
+        "x": 0,
+        "y": 0
+      },
+      "condition": "pre",
+      "spec": "x and y must be valid indices, so an empty array is invalid",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "x": -1,
+        "y": 0
+      },
+      "condition": "pre",
+      "spec": "x must be a non-negative valid index",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "x": 0,
+        "y": 3
+      },
+      "condition": "pre",
+      "spec": "y must be strictly less than array length",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "a": [
+          4,
+          5,
+          6
+        ],
+        "x": 4,
+        "y": 1
+      },
+      "condition": "pre",
+      "spec": "x must be strictly less than array length",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3,
+          1,
+          2,
+          4
+        ],
+        "x": 0,
+        "y": 3,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result equals the number of matching elements from x and y until the first mismatch",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "a": [
+          7,
+          8,
+          9
+        ],
+        "x": 1,
+        "y": 1,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "when x equals y, result is the remaining suffix length",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "x": 0,
+        "y": 1,
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "result is zero when the first elements at x and y already differ",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "a": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "x": 0,
+        "y": 1,
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result may extend to the end of the array when all compared elements are equal",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "a": [
+          -1,
+          0,
+          -1,
+          0,
+          5
+        ],
+        "x": 0,
+        "y": 2,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result correctly handles negative numbers and repeated patterns",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3,
+          1,
+          2,
+          4
+        ],
+        "x": 0,
+        "y": 3,
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result must not exceed the matching prefix length when a mismatch occurs next",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "a": [
+          7,
+          8,
+          9
+        ],
+        "x": 1,
+        "y": 1,
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "when x equals y, result cannot be larger than the remaining suffix length",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "x": 0,
+        "y": 1,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result must be zero if the first compared elements differ",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "a": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "x": 0,
+        "y": 1,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result must be maximal, not just any common prefix length",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "a": [
+          5
+        ],
+        "x": 0,
+        "y": 0,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "single-element array compared with itself has longest common prefix length 1",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "a": [
+          2,
+          3,
+          2
+        ],
+        "x": 0,
+        "y": 2,
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result is limited by reaching the end of one suffix even if the first elements match",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "a": [
+          2,
+          3,
+          2
+        ],
+        "x": 0,
+        "y": 2,
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result cannot continue past the end of the array",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "a": [
+          1,
+          2,
+          3,
+          1,
+          2,
+          4
+        ],
+        "x": 0,
+        "y": 3,
+        "result": -1
+      },
+      "condition": "post",
+      "spec": "result must be non-negative; LCP length cannot be negative",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "a": [
+          0,
+          0,
+          0
+        ],
+        "x": 1,
+        "y": 2,
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "result must equal at least 1 because a[1]=a[2]=0 match before y reaches end of array",
+      "expected": false
+    }
+  ]
+}

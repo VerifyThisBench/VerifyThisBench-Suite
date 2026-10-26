@@ -1,0 +1,33 @@
+Specification ABI requirements (must follow exactly):
+- Define exactly one entry function named `main_impl`.
+- Express the precondition as a function `int main_spec_pre(<input variables in order>)` that returns 1 (true) or 0 (false).
+- Express the postcondition as a function `int main_spec_post(<the same input variables in the same order>, <return value>)` that returns 1 (true) or 0 (false).
+- In `main_impl`'s CBMC function contract, use:
+  - `__CPROVER_requires(main_spec_pre(<input variables in order>))`
+  - `__CPROVER_ensures(main_spec_post(<the same input variables in the same order>, __CPROVER_return_value))`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `main_spec_pre` or `main_spec_post`.
+- Use `__CPROVER_return_value` in the ensures clause to refer to the return value of `main_impl`.
+- Do not inline the specification logic directly in `__CPROVER_requires`/`__CPROVER_ensures`; always delegate to `main_spec_pre` and `main_spec_post`.
+
+Example skeleton:
+```c
+int main_spec_pre(int *a, int n) {
+    return a != 0 && n > 0;
+}
+
+int main_spec_post(int *a, int n, int result) {
+    // result is the index of the maximum element
+    if (result < 0 || result >= n) return 0;
+    for (int i = 0; i < n; i++) {
+        if (a[result] < a[i]) return 0;
+    }
+    return 1;
+}
+
+int main_impl(int *a, int n)
+  __CPROVER_requires(main_spec_pre(a, n))
+  __CPROVER_ensures(main_spec_post(a, n, __CPROVER_return_value))
+{
+    // implementation here
+}
+```

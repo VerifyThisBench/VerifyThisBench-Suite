@@ -1,0 +1,404 @@
+{
+  "challenge": "Coincidence Count",
+  "description": "Count how many integer values occur in both strictly increasing input arrays.",
+  "function_signature": "coincidence_count(array1, array2) -> int",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          3,
+          5
+        ],
+        "array2": [
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "pre",
+      "spec": "both input arrays are not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array1": [],
+        "array2": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "empty arrays are allowed and still satisfy strict increasing order",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array1": [
+          -5,
+          -2,
+          0,
+          7
+        ],
+        "array2": [
+          -6,
+          -2,
+          3,
+          8
+        ]
+      },
+      "condition": "pre",
+      "spec": "arrays may contain negative numbers as long as each is strictly increasing",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array1": null,
+        "array2": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "first input array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          2,
+          3
+        ],
+        "array2": null
+      },
+      "condition": "pre",
+      "spec": "second input array is not null",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          1,
+          3
+        ],
+        "array2": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "first array is strictly increasing with no duplicates",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          4,
+          5
+        ],
+        "array2": [
+          2,
+          2,
+          6
+        ]
+      },
+      "condition": "pre",
+      "spec": "second array is strictly increasing with no duplicates",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array1": [
+          3,
+          2,
+          5
+        ],
+        "array2": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "first array elements are in strictly increasing order",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          2,
+          3
+        ],
+        "array2": [
+          4,
+          3,
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "second array elements are in strictly increasing order",
+      "expected": false
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "array2": [
+          3,
+          4,
+          5,
+          8
+        ],
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result equals the number of values that appear in both arrays",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "array1": [],
+        "array2": [
+          1,
+          2,
+          3
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "if one array is empty then the coincidence count is zero",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          2,
+          3
+        ],
+        "array2": [
+          1,
+          2,
+          3
+        ],
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "when both strictly increasing arrays are identical, result equals their length",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "array1": [
+          -3,
+          -1,
+          2,
+          4
+        ],
+        "array2": [
+          -4,
+          -1,
+          0,
+          2,
+          5
+        ],
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result correctly counts shared negative and positive values",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "array1": [
+          10
+        ],
+        "array2": [
+          10
+        ],
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "single-element arrays with the same value have coincidence count one",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "array1": [
+          10
+        ],
+        "array2": [
+          11
+        ],
+        "result": 0
+      },
+      "condition": "post",
+      "spec": "single-element arrays with different values have coincidence count zero",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "array2": [
+          3,
+          4,
+          5,
+          8
+        ],
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result must count all common values, not just one matching value",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "array1": [],
+        "array2": [
+          1,
+          2,
+          3
+        ],
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result is zero when one array is empty",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          2,
+          3
+        ],
+        "array2": [
+          1,
+          2,
+          3
+        ],
+        "result": 2
+      },
+      "condition": "post",
+      "spec": "result equals the full number of shared elements for identical arrays",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "array1": [
+          -3,
+          -1,
+          2,
+          4
+        ],
+        "array2": [
+          -4,
+          -1,
+          0,
+          2,
+          5
+        ],
+        "result": 3
+      },
+      "condition": "post",
+      "spec": "result does not overcount values that are not present in both arrays",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          4,
+          6
+        ],
+        "array2": [
+          2,
+          3,
+          5
+        ],
+        "result": 1
+      },
+      "condition": "post",
+      "spec": "result is zero when the arrays have no common values",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "array1": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "array2": [
+          3,
+          4,
+          5,
+          8
+        ],
+        "result": 4
+      },
+      "condition": "post",
+      "spec": "result cannot exceed the smaller array's length and must equal the actual count of shared values (here 2, not 4)",
+      "expected": false
+    }
+  ]
+}

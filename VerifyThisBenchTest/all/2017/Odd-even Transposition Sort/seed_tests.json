@@ -1,0 +1,451 @@
+{
+  "challenge": "Odd-even Transposition Sort",
+  "description": "Sort an integer array using odd-even transposition sort, producing a sorted permutation of the input and terminating.",
+  "function_signature": "oddEvenSort(array) -> result_array",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "array": [
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result_array": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "array": [
+          4,
+          4,
+          4
+        ],
+        "result_array": [
+          4,
+          4,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "array": [
+          -1,
+          3,
+          0,
+          -2
+        ],
+        "result_array": [
+          -2,
+          -1,
+          0,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "array": [
+          2,
+          1
+        ],
+        "result_array": [
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result_array": [
+          1,
+          3,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "array": [
+          0,
+          -1,
+          -1,
+          2
+        ],
+        "result_array": [
+          -1,
+          0,
+          -1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is sorted in nondecreasing order",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty array is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "array is not null",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result_array": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is a permutation of the input array",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "array": [
+          2,
+          2,
+          1
+        ],
+        "result_array": [
+          1,
+          2,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array preserves multiplicities of duplicate elements",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "array": [],
+        "result_array": []
+      },
+      "condition": "post",
+      "spec": "empty result is a permutation of empty input",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "array": [
+          -1,
+          0,
+          -1,
+          2
+        ],
+        "result_array": [
+          -1,
+          -1,
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array is a permutation of the input array with negative values and duplicates",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ],
+        "result_array": [
+          1,
+          2,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array must contain exactly the same multiset of elements as input",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "array": [
+          2,
+          2,
+          1
+        ],
+        "result_array": [
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array must have the same length as input to be a permutation",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "array": [
+          0,
+          1,
+          2
+        ],
+        "result_array": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result array with extra elements is not a permutation of input",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "array": [
+          1,
+          1,
+          2
+        ],
+        "result_array": [
+          1,
+          2,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result array must preserve duplicate counts exactly",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task3",
+      "input": {
+        "array": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "finite non-null array input permits termination argument",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task3",
+      "input": {
+        "array": []
+      },
+      "condition": "pre",
+      "spec": "empty finite array permits termination argument",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task3",
+      "input": {
+        "array": null
+      },
+      "condition": "pre",
+      "spec": "termination is specified only for non-null arrays",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "result_array": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "algorithm terminates and produces a complete result for a reverse-sorted finite array",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "result_array": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "result is the unsorted input returned unchanged, violating the nondecreasing-order postcondition",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task3",
+      "input": {
+        "array": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "result_array": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "result is missing the trailing element, so the algorithm did not produce a complete sorted output upon termination",
+      "expected": false
+    }
+  ]
+}

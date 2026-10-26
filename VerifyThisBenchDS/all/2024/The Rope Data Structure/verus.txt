@@ -1,0 +1,6 @@
+pub struct Rope {
+    pub left: Option<Box<Rope>>,
+    pub right: Option<Box<Rope>>,
+    pub value: Vec<u8>,
+    pub weight: usize,
+}

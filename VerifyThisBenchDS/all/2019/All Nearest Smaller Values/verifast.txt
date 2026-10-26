@@ -1,0 +1,4 @@
+struct stack {
+    int *data;
+    int size;
+};

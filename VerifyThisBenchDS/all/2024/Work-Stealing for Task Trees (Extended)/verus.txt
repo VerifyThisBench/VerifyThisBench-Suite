@@ -1,0 +1,6 @@
+type Task = i32;  // Tasks are represented by their IDs
+struct WorkStealing {
+    subtask: Vec<Vec<Task>>,  // Maps task ID to child task IDs / NO_TASK  
+    executed: Vec<bool>,       // Marks executed tasks
+    q: Vec<VecDeque<Task>>,    // Double-ended queue per worker
+}

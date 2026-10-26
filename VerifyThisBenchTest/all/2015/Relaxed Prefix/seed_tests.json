@@ -1,0 +1,564 @@
+{
+  "challenge": "Relaxed Prefix",
+  "description": "Check whether an array contains a pattern as a relaxed prefix of some suffix, allowing removal of at most one element from the pattern.",
+  "function_signature": "relaxedContains(pat, a) -> bool",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          3
+        ],
+        "a": [
+          0,
+          1,
+          3,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "pat and a are not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "pat": [],
+        "a": [
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "pre",
+      "spec": "empty pattern is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1
+        ],
+        "a": []
+      },
+      "condition": "pre",
+      "spec": "empty text array is allowed as input",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "pat": null,
+        "a": [
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "pat is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2
+        ],
+        "a": null
+      },
+      "condition": "pre",
+      "spec": "a is not null",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "pat": null,
+        "a": null
+      },
+      "condition": "pre",
+      "spec": "both pat and a are not null",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          3
+        ],
+        "a": [
+          0,
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result is true when some suffix of a has pat as an exact prefix",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          3
+        ],
+        "a": [
+          0,
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result must be true when a matching suffix exists after removing one element from pat",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          3
+        ],
+        "a": [
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result is true for standard prefix match on a suffix with no removal needed",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          4
+        ],
+        "a": [
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result is false when no suffix matches pat even after removing at most one pattern element",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          4
+        ],
+        "a": [
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result cannot be true when every suffix requires more than one mismatch to fit pat",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "pat": [
+          2,
+          3
+        ],
+        "a": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result is true when a nonzero-start suffix of a begins with pat",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "pat": [
+          2,
+          4,
+          3
+        ],
+        "a": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result is true when a suffix matches after deleting one interior element from pat",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "pat": [
+          2,
+          4,
+          5
+        ],
+        "a": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result is false when no suffix can match after deleting at most one pattern element",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task1",
+      "input": {
+        "pat": [],
+        "a": [
+          5,
+          6,
+          7
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "empty pattern is contained in any array because it is a relaxed prefix of every suffix",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task1",
+      "input": {
+        "pat": [],
+        "a": [
+          5,
+          6,
+          7
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result must be true for empty pattern",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1
+        ],
+        "a": [],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "nonempty pattern is not contained in empty array",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1
+        ],
+        "a": [],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result is false when a has no suffix with enough elements to match a nonempty pattern",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task1",
+      "input": {
+        "pat": [
+          7
+        ],
+        "a": [
+          5,
+          7,
+          9
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "single-element pattern is contained if some suffix starts with that element",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task1",
+      "input": {
+        "pat": [
+          7,
+          8
+        ],
+        "a": [
+          5,
+          7,
+          9
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result is true when deleting one trailing element from pat yields a prefix of some suffix",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task1",
+      "input": {
+        "pat": [
+          7,
+          8,
+          10
+        ],
+        "a": [
+          5,
+          7,
+          9
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result is false when even after one deletion pat cannot match any suffix of a",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task1",
+      "input": {
+        "pat": [
+          0,
+          -1,
+          -2
+        ],
+        "a": [
+          4,
+          0,
+          -2,
+          5
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "negative numbers are handled correctly and one deletion from pat may create a match on a suffix",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          3
+        ],
+        "a": [
+          1,
+          3,
+          2,
+          3
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result cannot be false when pat is an exact prefix of a (no removal needed)",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task1",
+      "input": {
+        "pat": [
+          2,
+          3
+        ],
+        "a": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result must be true since the suffix starting at index 1 of a begins with pat exactly",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task1",
+      "input": {
+        "pat": [
+          0,
+          -1,
+          -2
+        ],
+        "a": [
+          4,
+          0,
+          -2,
+          5
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result must be true: deleting -1 from pat yields [0,-2] which is a prefix of suffix starting at index 1",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "pat": [
+          7
+        ],
+        "a": [
+          5,
+          7,
+          9
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "result must be true since the single-element pat 7 occurs as a prefix of the suffix starting at index 1",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task1",
+      "input": {
+        "pat": [
+          5,
+          5,
+          5
+        ],
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result cannot be true: pat shares no element with a, so even one deletion cannot produce a match",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "a": [
+          1,
+          9,
+          8,
+          3,
+          4
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result cannot be true: matching pat against any suffix needs at least two deletions, exceeding the allowed one",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2
+        ],
+        "a": [
+          3,
+          4,
+          5
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result cannot be true since pat shares no value with any suffix of a",
+      "expected": false
+    },
+    {
+      "id": "T030",
+      "task": "task1",
+      "input": {
+        "pat": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "a": [
+          1,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "result cannot be true: pat is too long to fit in a even after deleting one element",
+      "expected": false
+    }
+  ]
+}

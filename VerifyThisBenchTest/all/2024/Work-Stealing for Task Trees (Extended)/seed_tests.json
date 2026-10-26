@@ -1,0 +1,1186 @@
+{
+  "challenge": "Work-Stealing for Task Trees (Extended)",
+  "description": "Specify and validate binary task-tree structure, queue operations, safety, uniqueness, dependency order, eventual execution, and queue emptiness for sequential and work-stealing schemes.",
+  "function_signature": "work_stealing(state, worker_id, version) -> state/result",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "subtask defines a valid binary tree rooted at task 0: child IDs are either NO_TASK or within 0..nTasks-1, root exists, and every non-root node has exactly one parent",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "subtask defines a valid binary tree rooted at task 0 with all tasks reachable from the root",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            3
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "every child ID is either NO_TASK or a valid task index within bounds",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "every non-root task has at most one parent in the tree",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            -1
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "subtask relation is acyclic and forms a tree rooted at task 0",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "all tasks are reachable from the root so the structure is a single rooted tree, not a forest with disconnected tasks",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "operation": "empty",
+        "queue": []
+      },
+      "condition": "post",
+      "spec": "empty(Q) returns true exactly when the queue has length 0",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "operation": "empty",
+        "queue": [
+          4
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "empty(Q) must return false for a non-empty queue",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "operation": "peek_top",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 5,
+        "queue_after": [
+          5,
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "peek_top returns the first element and does not modify the queue",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "operation": "peek_top",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 7,
+        "queue_after": [
+          5,
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "peek_top must return the first element of the queue",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "operation": "pop_top",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 5,
+        "queue_after": [
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "pop_top returns and removes the first element of a non-empty queue",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "operation": "push_bottom",
+        "queue": [
+          5,
+          7
+        ],
+        "task": 9,
+        "queue_after": [
+          5,
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "push_bottom appends the given task at the end of the queue",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "operation": "pop_bottom",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 9,
+        "queue_after": [
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "pop_bottom returns and removes the last element of a non-empty queue",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "operation": "pop_bottom",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 7,
+        "queue_after": [
+          5,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "pop_bottom must remove exactly the last element and preserve the remaining order",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "version": 0,
+        "P": 1,
+        "worker_id": 0,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "memory safety requires 0 <= worker_id < P, root and queued task IDs are valid, and every subtask lookup uses indices within bounds",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "version": 0,
+        "P": 1,
+        "worker_id": 1,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "worker ID must be within the bounds of the worker array q",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "version": 0,
+        "P": 1,
+        "worker_id": 0,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            3
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "every task popped from a queue must be a valid task ID before accessing executed[t] or subtask[t]",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task4",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "every task is executed at most once, so each execution count is at most 1",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task4",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          2,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "a task must not be executed more than once",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task5",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "execution_order": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "a task dependency is respected when every child appears after its parent in the execution order",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task5",
+      "input": {
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "execution_order": [
+          1,
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "a child task must never be executed before its parent",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task6",
+      "input": {
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "all tasks are eventually executed, meaning every task in the rooted tree has execution count 1",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task6",
+      "input": {
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          0,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "eventual execution requires no task in the tree to remain unexecuted",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task7",
+      "input": {
+        "version": 0,
+        "P": 1,
+        "q": [
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "after all tasks have been processed in version 0, the single worker queue eventually becomes empty",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task7",
+      "input": {
+        "version": 0,
+        "P": 1,
+        "q": [
+          [
+            2
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "the eventual quiescent state requires the worker queue to be empty after processing is complete",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task8",
+      "input": {
+        "version": 1,
+        "P": 2,
+        "worker_id": 0,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ],
+          []
+        ],
+        "s": [
+          -3,
+          -3
+        ]
+      },
+      "condition": "pre",
+      "spec": "version 1 memory safety requires P > 1, worker ID in bounds, communication array s sized by P, and all queued task IDs within 0..nTasks-1",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task8",
+      "input": {
+        "version": 1,
+        "P": 1,
+        "worker_id": 0,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ]
+        ],
+        "s": [
+          -3
+        ]
+      },
+      "condition": "pre",
+      "spec": "version 1 communicate chooses a different worker, so memory-safe use requires P > 1",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task9",
+      "input": {
+        "version": 1,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_order": [
+          0,
+          2,
+          1
+        ],
+        "q": [
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "for sender-initiated work-stealing, tasks are each executed at most once, dependencies are respected, all tasks are eventually executed, and all queues eventually become empty",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task9",
+      "input": {
+        "version": 1,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          2,
+          1
+        ],
+        "execution_order": [
+          0,
+          1,
+          2
+        ],
+        "q": [
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "sender-initiated work-stealing must still ensure every task is executed at most once",
+      "expected": false
+    },
+    {
+      "id": "T030",
+      "task": "task9",
+      "input": {
+        "version": 1,
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1,
+          0
+        ],
+        "execution_order": [
+          0,
+          1,
+          2
+        ],
+        "q": [
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "sender-initiated work-stealing must eventually execute every task in the tree",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task9",
+      "input": {
+        "version": 1,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_order": [
+          1,
+          0,
+          2
+        ],
+        "q": [
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "sender-initiated work-stealing must preserve parent-before-child execution ordering",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task10",
+      "input": {
+        "comment": "The version 1 proof reuses the version 0 tree invariant, task-validity invariant, and postconditions for execute/add_task, extending only acquire/communicate reasoning and queue ownership transfer.",
+        "mentions_reuse_of": [
+          "tree invariant",
+          "execute/add_task specs",
+          "version0 results"
+        ],
+        "mentions_new_parts": [
+          "acquire",
+          "communicate",
+          "communication cell reasoning"
+        ]
+      },
+      "condition": "post",
+      "spec": "MODULARITY comment should explain what proof artifacts are reused from version 0 and what new reasoning is needed for version 1",
+      "expected": true
+    },
+    {
+      "id": "T033",
+      "task": "task10",
+      "input": {
+        "comment": "Everything was completely redone from scratch.",
+        "mentions_reuse_of": [],
+        "mentions_new_parts": []
+      },
+      "condition": "post",
+      "spec": "MODULARITY comment should discuss extent of reuse rather than omit reusable components",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task11",
+      "input": {
+        "version": 2,
+        "P": 3,
+        "worker_id": 1,
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ],
+          [],
+          []
+        ],
+        "r": [
+          -1,
+          -1,
+          -1
+        ],
+        "t": [
+          -2,
+          -2,
+          -2
+        ]
+      },
+      "condition": "pre",
+      "spec": "version 2 memory safety requires P > 1, worker ID in bounds, request and transfer arrays sized by P, and all queue task IDs valid",
+      "expected": true
+    },
+    {
+      "id": "T035",
+      "task": "task11",
+      "input": {
+        "version": 2,
+        "P": 3,
+        "worker_id": 1,
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            4
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "q": [
+          [
+            0
+          ],
+          [],
+          []
+        ],
+        "r": [
+          -1,
+          -1,
+          -1
+        ],
+        "t": [
+          -2,
+          -2,
+          -2
+        ]
+      },
+      "condition": "pre",
+      "spec": "version 2 remains memory-safe only if every child ID read from subtask is either NO_TASK or within task-index bounds",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task12",
+      "input": {
+        "version": 2,
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "execution_order": [
+          0,
+          2,
+          1,
+          3
+        ],
+        "q": [
+          [],
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "for receiver-initiated work-stealing, tasks are each executed at most once, dependencies are respected, all tasks are eventually executed, and all queues eventually become empty",
+      "expected": true
+    },
+    {
+      "id": "T037",
+      "task": "task12",
+      "input": {
+        "version": 2,
+        "nTasks": 4,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "execution_order": [
+          0,
+          3,
+          1,
+          2
+        ],
+        "q": [
+          [],
+          [],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "receiver-initiated work-stealing must preserve that each child is executed only after its parent",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task12",
+      "input": {
+        "version": 2,
+        "nTasks": 3,
+        "subtask": [
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ],
+        "executed_count": [
+          1,
+          1,
+          1
+        ],
+        "execution_order": [
+          0,
+          1,
+          2
+        ],
+        "q": [
+          [],
+          [
+            2
+          ],
+          []
+        ]
+      },
+      "condition": "post",
+      "spec": "receiver-initiated work-stealing should eventually leave all worker queues empty after all work completes",
+      "expected": false
+    },
+    {
+      "id": "T039",
+      "task": "task13",
+      "input": {
+        "comment": "Version 2 reuses the same global tree invariants and the core execute/add_task proofs from versions 0 and 1; only the request/response protocol for acquire and communicate requires additional version-specific reasoning.",
+        "mentions_reuse_of": [
+          "tree invariants",
+          "execute/add_task proofs",
+          "at-most-once/dependency lemmas"
+        ],
+        "mentions_new_parts": [
+          "request cells",
+          "transfer cells",
+          "protocol-specific acquire/communicate proofs"
+        ]
+      },
+      "condition": "post",
+      "spec": "MODULARITY comment should explain reuse across all versions and identify the protocol-specific proof obligations for version 2",
+      "expected": true
+    },
+    {
+      "id": "T040",
+      "task": "task13",
+      "input": {
+        "comment": "Only version 2 matters.",
+        "mentions_reuse_of": [],
+        "mentions_new_parts": [
+          "version 2"
+        ]
+      },
+      "condition": "post",
+      "spec": "MODULARITY comment should compare versions and discuss reuse between them, not ignore earlier versions",
+      "expected": false
+    },
+    {
+      "id": "T041",
+      "task": "task2",
+      "input": {
+        "operation": "pop_top",
+        "queue": [
+          5,
+          7,
+          9
+        ],
+        "result": 5,
+        "queue_after": [
+          5,
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "pop_top must remove the popped element from the queue, not leave the queue unchanged",
+      "expected": false
+    },
+    {
+      "id": "T042",
+      "task": "task2",
+      "input": {
+        "operation": "push_bottom",
+        "queue": [
+          5,
+          7
+        ],
+        "task": 9,
+        "queue_after": [
+          9,
+          5,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "push_bottom must append the new task at the end of the queue, not insert it at the front",
+      "expected": false
+    }
+  ]
+}

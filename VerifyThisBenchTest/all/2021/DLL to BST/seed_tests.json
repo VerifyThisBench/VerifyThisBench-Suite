@@ -1,0 +1,1499 @@
+{
+  "challenge": "DLL to BST",
+  "description": "Convert a sorted doubly linked list into a balanced binary search tree in place.",
+  "function_signature": "dll_to_bst(head) -> root",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "head": null
+      },
+      "condition": "pre",
+      "spec": "empty list is a valid input and may be converted to an empty tree",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 5,
+          "prev": null,
+          "next": null
+        }
+      },
+      "condition": "pre",
+      "spec": "a single acyclic node is a valid doubly linked list segment",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "a finite acyclic sorted list is a valid input for conversion",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": {
+            "data": 0,
+            "prev": null,
+            "next": null
+          },
+          "next": null
+        }
+      },
+      "condition": "pre",
+      "spec": "head.prev must be null for the head of a well-formed input list",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "for every next link in the input list, the back pointer must point to the predecessor",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 1,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "the input list must be acyclic and not revisit an earlier node",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "head": null,
+        "result": null
+      },
+      "condition": "post",
+      "spec": "converting an empty list yields an empty tree",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 7,
+          "prev": null,
+          "next": null
+        },
+        "result": {
+          "data": 7,
+          "prev": null,
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "a one-element list is converted into a one-node tree containing the same element",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the result for a 3-node list is a tree using all input elements exactly once",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": -2,
+          "prev": null,
+          "next": {
+            "data": -1,
+            "prev": {
+              "data": -2,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 0,
+              "prev": {
+                "data": -1,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 4,
+                "prev": {
+                  "data": 0,
+                  "prev": null,
+                  "next": null
+                },
+                "next": null
+              }
+            }
+          }
+        },
+        "result": {
+          "data": 0,
+          "prev": {
+            "data": -1,
+            "prev": {
+              "data": -2,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          },
+          "next": {
+            "data": 4,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the resulting tree preserves all list elements including negative values",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "the output tree must contain all nodes from the input list, not lose any element",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the output tree must not introduce nodes or values that were not in the input list",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 4,
+          "prev": null,
+          "next": null
+        },
+        "result": null
+      },
+      "condition": "post",
+      "spec": "a non-empty input list cannot produce an empty tree",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "head": null
+      },
+      "condition": "pre",
+      "spec": "null is safe because the algorithm checks for null before dereferencing",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 10,
+          "prev": null,
+          "next": {
+            "data": 20,
+            "prev": {
+              "data": 10,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "a well-formed finite doubly linked list is memory-safe to traverse and convert",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              }
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "the reachable heap region must not contain aliases that make one logical list node appear in multiple positions",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "memory safety requires consistent neighbor links so recursive calls only follow valid owned nodes",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the produced tree is a finite acyclic pointer structure, so no dereference leads through a cycle",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 5,
+          "prev": null,
+          "next": null
+        },
+        "result": {
+          "data": 5,
+          "prev": {
+            "data": 5,
+            "prev": null,
+            "next": null
+          },
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "a node must not become its own descendant or be duplicated in the tree, which would violate memory safety invariants",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          }
+        },
+        "result": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the result must not alias the same logical node into multiple positions of the tree",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "input list is sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 1,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 2,
+              "prev": {
+                "data": 1,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "duplicates are allowed because the input may be sorted in nondecreasing order",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 2,
+          "prev": null,
+          "next": {
+            "data": 1,
+            "prev": {
+              "data": 2,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "input list must be sorted; a descending adjacent pair violates the BST argument",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": -3,
+          "prev": null,
+          "next": {
+            "data": -1,
+            "prev": {
+              "data": -3,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 4,
+              "prev": {
+                "data": -1,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": -1,
+          "prev": {
+            "data": -3,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 4,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "all values in the left subtree are less than or equal to the root and all values in the right subtree are greater than or equal to the root",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the resulting tree must satisfy the BST ordering at the root and its subtrees",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 1,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 2,
+              "prev": {
+                "data": 1,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 1,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "a tree built from a sorted list with duplicates still satisfies the BST ordering with nondecreasing in-order traversal",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task4",
+      "input": {
+        "head": null
+      },
+      "condition": "pre",
+      "spec": "empty input is allowed and should yield a balanced empty tree",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 4,
+                "prev": {
+                  "data": 3,
+                  "prev": null,
+                  "next": null
+                },
+                "next": {
+                  "data": 5,
+                  "prev": {
+                    "data": 4,
+                    "prev": null,
+                    "next": null
+                  },
+                  "next": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "a finite sorted list of length 5 is a valid input for balance verification",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "for 3 elements, the heights of left and right subtrees differ by at most one at every node",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 4,
+                "prev": {
+                  "data": 3,
+                  "prev": null,
+                  "next": null
+                },
+                "next": null
+              }
+            }
+          }
+        },
+        "result": {
+          "data": 3,
+          "prev": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          },
+          "next": {
+            "data": 4,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "for 4 elements, the constructed BST is height-balanced",
+      "expected": true
+    },
+    {
+      "id": "T031",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": {
+              "data": 3,
+              "prev": null,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "a skewed tree with subtree heights differing by more than one is not balanced",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 9,
+          "prev": null,
+          "next": null
+        },
+        "result": {
+          "data": 9,
+          "prev": null,
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "a single-node tree is balanced",
+      "expected": true
+    },
+    {
+      "id": "T033",
+      "task": "task5",
+      "input": {
+        "head": null
+      },
+      "condition": "pre",
+      "spec": "termination holds immediately on empty input because recursion bottoms out at size zero",
+      "expected": true
+    },
+    {
+      "id": "T034",
+      "task": "task5",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 4,
+                "prev": {
+                  "data": 3,
+                  "prev": null,
+                  "next": null
+                },
+                "next": null
+              }
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "termination requires a finite acyclic list so size and recursive splitting decrease on a natural measure",
+      "expected": true
+    },
+    {
+      "id": "T035",
+      "task": "task5",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 1,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "termination cannot be justified on a cyclic list because traversal may not reach null",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task5",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "termination proof assumes a well-formed list segment with consistent links and finite ownership",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task5",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "successful conversion on a finite list witnesses that recursive calls reached the base case",
+      "expected": true
+    },
+    {
+      "id": "T038",
+      "task": "task6",
+      "input": {
+        "head": null
+      },
+      "condition": "pre",
+      "spec": "the iterative size variant should accept an empty list as valid input",
+      "expected": true
+    },
+    {
+      "id": "T039",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 4,
+          "prev": null,
+          "next": {
+            "data": 5,
+            "prev": {
+              "data": 4,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 6,
+              "prev": {
+                "data": 5,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "the iterative size variant is safe on a finite acyclic doubly linked list",
+      "expected": true
+    },
+    {
+      "id": "T040",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "the iterative size variant assumes consistent predecessor links along the list",
+      "expected": false
+    },
+    {
+      "id": "T041",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 1,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "the iterative size variant requires an acyclic list so loop traversal terminates",
+      "expected": false
+    },
+    {
+      "id": "T042",
+      "task": "task6",
+      "input": {
+        "head": null,
+        "result": null
+      },
+      "condition": "post",
+      "spec": "using an iterative size computation still yields an empty tree for empty input",
+      "expected": true
+    },
+    {
+      "id": "T043",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "replacing recursive size with iterative size preserves the same tree-conversion result on a valid input list",
+      "expected": true
+    },
+    {
+      "id": "T044",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": {
+              "data": 3,
+              "prev": null,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the iterative size variant does not justify an incorrect skewed tree result for a 3-node sorted list",
+      "expected": false
+    },
+    {
+      "id": "T045",
+      "task": "task1",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 2,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the resulting tree must contain each input value exactly once; here value 1 is missing and value 2 is duplicated",
+      "expected": false
+    },
+    {
+      "id": "T046",
+      "task": "task3",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 2,
+          "prev": {
+            "data": 3,
+            "prev": null,
+            "next": null
+          },
+          "next": {
+            "data": 1,
+            "prev": null,
+            "next": null
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "BST property requires left subtree values <= root and right subtree values >= root; here left has 3 > 2 and right has 1 < 2 (subtrees swapped)",
+      "expected": false
+    },
+    {
+      "id": "T047",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": {
+                "data": 4,
+                "prev": {
+                  "data": 3,
+                  "prev": null,
+                  "next": null
+                },
+                "next": null
+              }
+            }
+          }
+        },
+        "result": {
+          "data": 4,
+          "prev": {
+            "data": 3,
+            "prev": {
+              "data": 2,
+              "prev": {
+                "data": 1,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            },
+            "next": null
+          },
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "a fully left-skewed chain of height 4 is not balanced; subtree heights at the root differ by more than one (3 vs 0)",
+      "expected": false
+    },
+    {
+      "id": "T048",
+      "task": "task4",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": {
+              "data": 3,
+              "prev": {
+                "data": 2,
+                "prev": null,
+                "next": null
+              },
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": null,
+            "next": {
+              "data": 3,
+              "prev": null,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "a 3-node tree shaped as a right-leaning chain has subtree heights 0 and 2 at the root, violating the balance property",
+      "expected": false
+    },
+    {
+      "id": "T049",
+      "task": "task5",
+      "input": {
+        "head": {
+          "data": 1,
+          "prev": null,
+          "next": {
+            "data": 2,
+            "prev": {
+              "data": 1,
+              "prev": null,
+              "next": null
+            },
+            "next": null
+          }
+        },
+        "result": null,
+        "terminated": false
+      },
+      "condition": "post",
+      "spec": "termination must hold on a finite 2-node list; reporting that the algorithm did not terminate is incorrect",
+      "expected": false
+    },
+    {
+      "id": "T050",
+      "task": "task6",
+      "input": {
+        "head": {
+          "data": 5,
+          "prev": null,
+          "next": null
+        },
+        "result": null
+      },
+      "condition": "post",
+      "spec": "the iterative size variant must still produce a non-empty tree for a single-node list, not null",
+      "expected": false
+    }
+  ]
+}

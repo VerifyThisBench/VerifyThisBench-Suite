@@ -1,0 +1,785 @@
+{
+  "challenge": "The World's Simplest Lock-Free Hash Set",
+  "description": "Create an empty fixed-capacity hash set, insert keys with linear probing, query membership, and verify key set properties.",
+  "function_signature": "operations: empty(n) -> table, insert(table, key, key_invalid, hash_indices) -> bool, member(table, key, key_invalid, hash_indices) -> bool",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "n": 5,
+        "key_invalid": -1
+      },
+      "condition": "pre",
+      "spec": "capacity n is non-negative and key_invalid is a distinguished placeholder value",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          2,
+          3,
+          4,
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert requires table not null and key is not equal to key_invalid",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          5,
+          -1
+        ],
+        "key": -1,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert requires key to be different from key_invalid",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "table": null,
+        "key": 3,
+        "key_invalid": -1,
+        "hash_indices": [
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "insert requires table not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1
+        ],
+        "key": 4,
+        "key_invalid": -1,
+        "hash_indices": [
+          3,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "each hash index used during probing must be within range [0, table length)",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "table": [],
+        "key": 9,
+        "key_invalid": -1,
+        "hash_indices": []
+      },
+      "condition": "pre",
+      "spec": "operations requiring modular probing need positive table length",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "key": 8,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "insert returns true when a free slot is found during one full linear-probing round",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "table": [
+          4,
+          8,
+          12
+        ],
+        "key": 16,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          0
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "insert returns false when no slot is key_invalid after probing the entire table",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "table": [
+          5,
+          -1,
+          -1,
+          -1
+        ],
+        "key": 5,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "insert returns true if the key is already present in the table",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "table": [
+          4,
+          8,
+          12
+        ],
+        "key": 16,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          0
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "insert must not return true when the table is full and the key is absent",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1
+        ],
+        "key": 0,
+        "key_invalid": -1,
+        "hash_indices": [
+          2,
+          0,
+          1
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "insert succeeds on an empty table with a valid non-invalid key",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "n": 4,
+        "key_invalid": -1,
+        "result_table": [
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      },
+      "condition": "post",
+      "spec": "empty(n) creates a table of length n where every slot equals key_invalid",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "n": 0,
+        "key_invalid": -1,
+        "result_table": []
+      },
+      "condition": "post",
+      "spec": "empty(0) creates an empty table with capacity 0",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "n": 3,
+        "key_invalid": -1,
+        "result_table": [
+          -1,
+          5,
+          -1
+        ]
+      },
+      "condition": "post",
+      "spec": "empty(n) must initialize every slot to key_invalid",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "n": 2,
+        "key_invalid": -1,
+        "result_table": [
+          -1,
+          -1,
+          -1
+        ]
+      },
+      "condition": "post",
+      "spec": "empty(n) must create a table whose length is exactly n",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "table": [
+          -1,
+          7,
+          -1,
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "result": true,
+        "insert_returned_true_before": true
+      },
+      "condition": "post",
+      "spec": "member(k) is true when a prior successful insert(k) has occurred and the key is present",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "table": [
+          10,
+          7,
+          3,
+          -1
+        ],
+        "key": 3,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "result": true,
+        "insert_returned_true_before": true
+      },
+      "condition": "post",
+      "spec": "member(k) stays true after successful insertion even when probing passes occupied slots",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "table": [
+          -1,
+          7,
+          -1,
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "result": false,
+        "insert_returned_true_before": true
+      },
+      "condition": "post",
+      "spec": "member(k) must not be false after a prior successful insert(k)",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task4",
+      "input": {
+        "table": [
+          5,
+          -1,
+          9,
+          -1
+        ],
+        "key": 42,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "result": false,
+        "insert_returned_true_before": false
+      },
+      "condition": "post",
+      "spec": "member(k) is false when no successful insert(k) happened and probing reaches an empty slot",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "table": [
+          5,
+          8,
+          9,
+          11
+        ],
+        "key": 42,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": false,
+        "insert_returned_true_before": false
+      },
+      "condition": "post",
+      "spec": "member(k) is false when no successful insert(k) happened and a full probing round finds no matching key",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "table": [
+          5,
+          -1,
+          9,
+          -1
+        ],
+        "key": 42,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          3,
+          0
+        ],
+        "result": true,
+        "insert_returned_true_before": false
+      },
+      "condition": "post",
+      "spec": "member(k) must not be true when no successful insert(k) can have occurred and the key is absent",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task5",
+      "input": {
+        "table": [
+          5,
+          8,
+          9,
+          11
+        ],
+        "key": 42,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "linear probing terminates after at most one full round over a finite table",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "table": [
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "termination also holds for the single-slot boundary case",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task6",
+      "input": {
+        "table": [
+          5,
+          -1,
+          7,
+          -1
+        ],
+        "key_invalid": -1
+      },
+      "condition": "post",
+      "spec": "every non-invalid key occurs in the table at most once",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task6",
+      "input": {
+        "table": [
+          5,
+          7,
+          5,
+          -1
+        ],
+        "key_invalid": -1
+      },
+      "condition": "post",
+      "spec": "the table must not contain the same key in two different slots",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task6",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1
+        ],
+        "key_invalid": -1
+      },
+      "condition": "post",
+      "spec": "duplicate-placeholder entries do not violate uniqueness because only valid keys count",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task7",
+      "input": {
+        "table": [
+          1,
+          2,
+          3
+        ],
+        "key": 4,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          0
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "if insert returns false, then every slot in the table is occupied by a non-invalid key",
+      "expected": true
+    },
+    {
+      "id": "T028",
+      "task": "task7",
+      "input": {
+        "table": [
+          1,
+          -1,
+          3
+        ],
+        "key": 4,
+        "key_invalid": -1,
+        "hash_indices": [
+          1,
+          2,
+          0
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "insert returning false is impossible when some slot is still key_invalid",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task7",
+      "input": {
+        "table": [
+          1
+        ],
+        "key": 2,
+        "key_invalid": -1,
+        "hash_indices": [
+          0
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "for a single-slot table, false from insert implies that sole slot is occupied",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task1",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1
+        ],
+        "key": 5,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "insert into a table with at least one free slot must return true, not false",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task1",
+      "input": {
+        "table": [
+          7,
+          -1,
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "insert of an already-present key must return true since the key set membership is preserved",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task1",
+      "input": {
+        "table": [
+          3,
+          5,
+          7,
+          9
+        ],
+        "key": 11,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": true
+      },
+      "condition": "post",
+      "spec": "insert into a fully-occupied table with a key not present must return false, not true",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task3",
+      "input": {
+        "table": [
+          5,
+          7,
+          -1,
+          -1
+        ],
+        "key": 5,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": false,
+        "insert_returned_true_before": true
+      },
+      "condition": "post",
+      "spec": "member must report true for a key found at the very first probe after a successful insert",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task4",
+      "input": {
+        "table": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "key": 99,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": true,
+        "insert_returned_true_before": false
+      },
+      "condition": "post",
+      "spec": "member must be false on an empty table with no prior insert of the queried key",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task5",
+      "input": {
+        "table": [
+          1,
+          2,
+          3
+        ],
+        "key": 4,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2
+        ],
+        "terminated": false
+      },
+      "condition": "post",
+      "spec": "linear probing over a finite table with a complete hash_indices permutation must terminate; reporting non-termination is wrong",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task5",
+      "input": {
+        "table": [
+          -1,
+          -1
+        ],
+        "key": 7,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1
+        ],
+        "terminated": false
+      },
+      "condition": "post",
+      "spec": "insertion into an empty finite table must terminate immediately at the first free slot",
+      "expected": false
+    },
+    {
+      "id": "T037",
+      "task": "task6",
+      "input": {
+        "table": [
+          4,
+          4,
+          -1,
+          -1
+        ],
+        "key_invalid": -1,
+        "result": true
+      },
+      "condition": "post",
+      "spec": "table containing the same valid key in two slots violates the at-most-once invariant",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task7",
+      "input": {
+        "table": [
+          1,
+          2,
+          -1
+        ],
+        "key": 4,
+        "key_invalid": -1,
+        "hash_indices": [
+          0,
+          1,
+          2
+        ],
+        "result": false
+      },
+      "condition": "post",
+      "spec": "insert cannot return false here because slot 2 is still key_invalid (table is not full)",
+      "expected": false
+    }
+  ]
+}

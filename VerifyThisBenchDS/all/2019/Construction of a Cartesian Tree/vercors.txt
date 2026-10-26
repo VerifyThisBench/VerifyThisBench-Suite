@@ -1,0 +1,92 @@
+class TreeNode {
+    int value;
+    TreeNode left;
+    TreeNode right;
+    TreeNode parent;
+    
+    /*@
+      resource state(int val) = 
+        Perm(value, 1) ** value == val **
+        Perm(left, 1) ** Perm(right, 1) ** Perm(parent, 1);
+    @*/
+    
+    constructor(int val)
+        ensures state(val);
+        ensures left == null && right == null && parent == null;
+    {
+        value = val;
+        left = null;
+        right = null;
+        parent = null;
+        //@ fold state(val);
+    }
+}
+
+/*@
+  requires sequence != null && sequence.length > 0;
+  requires (\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));
+  requires (\forall int i, j; 0 <= i && i < sequence.length && 0 <= j && j < sequence.length && i != j; sequence[i] != sequence[j]);
+  ensures \result == null || \result.state(?rootValue);
+  ensures (\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));
+@*/
+TreeNode constructCartesianTree(int[] sequence, int start, int end) {
+    if (start >= end) {
+        return null;
+    }
+    
+    if (start + 1 == end) {
+        TreeNode node = new TreeNode(sequence[start]);
+        return node;
+    }
+    
+    // Find minimum element index
+    int minIdx = start;
+    /*@
+      loop_invariant start <= i && i <= end;
+      loop_invariant start <= minIdx && minIdx < end;
+      loop_invariant (\forall int j; start <= j && j < i; sequence[minIdx] <= sequence[j]);
+    @*/
+    for (int i = start + 1; i < end; i++) {
+        if (sequence[i] < sequence[minIdx]) {
+            minIdx = i;
+        }
+    }
+    
+    TreeNode root = new TreeNode(sequence[minIdx]);
+    
+    //@ unfold root.state(sequence[minIdx]);
+    
+    // Construct left subtree
+    if (minIdx > start) {
+        root.left = constructCartesianTree(sequence, start, minIdx);
+        if (root.left != null) {
+            //@ unfold root.left.state(?leftValue);
+            root.left.parent = root;
+            //@ fold root.left.state(leftValue);
+        }
+    }
+    
+    // Construct right subtree
+    if (minIdx + 1 < end) {
+        root.right = constructCartesianTree(sequence, minIdx + 1, end);
+        if (root.right != null) {
+            //@ unfold root.right.state(?rightValue);
+            root.right.parent = root;
+            //@ fold root.right.state(rightValue);
+        }
+    }
+    
+    //@ fold root.state(sequence[minIdx]);
+    return root;
+}
+
+/*@
+  requires sequence != null && sequence.length > 0;
+  requires (\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));
+  requires (\forall int i, j; 0 <= i && i < sequence.length && 0 <= j && j < sequence.length && i != j; sequence[i] != sequence[j]);
+  ensures \result == null || \result.state(?rootValue);
+  ensures (\forall int i; 0 <= i && i < sequence.length; Perm(sequence[i], 1/2));
+@*/
+TreeNode constructCartesianTree(int[] sequence) {
+    return constructCartesianTree(sequence, 0, sequence.length);
+}

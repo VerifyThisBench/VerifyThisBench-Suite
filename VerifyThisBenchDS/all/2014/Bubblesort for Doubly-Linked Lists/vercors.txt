@@ -1,0 +1,28 @@
+class Node {
+    int value;
+    Node next;
+    Node prev;
+    Node nested_next;
+    Node nested_prev;
+    
+    //@ resource state();
+    
+    Node(int v) {
+        value = v;
+        next = null;
+        prev = null;
+        nested_next = this;
+        nested_prev = this;
+    }
+}
+
+class DoublyLinkedList {
+    Node head;
+    
+    //@ seq<int> contents;
+    //@ seq<Node> nodes;
+    
+    DoublyLinkedList() {
+        head = null;
+    }
+}

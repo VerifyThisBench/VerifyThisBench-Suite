@@ -1,0 +1,17 @@
+type interferencenode = {
+  variable: int;
+  interfering_vars: array int;
+  count: int;
+}
+
+type registerassignment = {
+  variable: int;
+  register_or_spill: string;
+}
+
+type registerallocation = {
+  G: array interferencenode;
+  G_size: int;
+  A: array registerassignment;
+  A_size: int;
+}

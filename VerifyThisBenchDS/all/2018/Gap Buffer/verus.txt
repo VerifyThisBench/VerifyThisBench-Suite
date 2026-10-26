@@ -1,0 +1,11 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub struct GapBuffer {
+    pub buffer: Vec<char>,
+    pub l: i32,
+    pub r: i32,
+}
+
+} // verus!

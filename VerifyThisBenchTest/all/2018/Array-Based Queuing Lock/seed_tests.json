@@ -1,0 +1,834 @@
+{
+  "challenge": "Array-Based Queuing Lock",
+  "description": "Verify initialization, mutual exclusion, FIFO fairness, and eventual acquisition properties of an array-based queuing lock.",
+  "function_signature": "abql_step(lock_state, action, thread_id, my_ticket) -> lock_state/result",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        }
+      },
+      "condition": "pre",
+      "spec": "initial lock state has exactly one enabled slot and next is within bounds",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            true,
+            false
+          ],
+          "next": 0
+        }
+      },
+      "condition": "pre",
+      "spec": "at most one pass slot is true to preserve mutual exclusion",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            false
+          ],
+          "next": 0
+        }
+      },
+      "condition": "pre",
+      "spec": "some pass slot must be true so one queue position can proceed",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": null,
+          "next": 0
+        }
+      },
+      "condition": "pre",
+      "spec": "pass array is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            true
+          ],
+          "next": 0
+        },
+        "action": "acquire",
+        "thread_id": 0,
+        "result": {
+          "my_ticket": 0,
+          "holds_lock_threads": [
+            0
+          ],
+          "lock": {
+            "pass": [
+              true
+            ],
+            "next": 1
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "a successful acquire grants the lock to exactly one thread",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "action": "acquire",
+        "thread_id": 0,
+        "result": {
+          "my_ticket": 0,
+          "holds_lock_threads": [
+            0,
+            1
+          ],
+          "lock": {
+            "pass": [
+              true,
+              false,
+              false
+            ],
+            "next": 1
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "after acquire no two threads may hold the lock simultaneously",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            true,
+            false
+          ],
+          "next": 5
+        },
+        "action": "release",
+        "thread_id": 1,
+        "my_ticket": 1,
+        "result": {
+          "holds_lock_threads": [],
+          "lock": {
+            "pass": [
+              false,
+              false,
+              true
+            ],
+            "next": 5
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "release clears the current slot and enables exactly the successor slot, leaving no thread still holding the old lock position",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            true,
+            false
+          ],
+          "next": 5
+        },
+        "action": "release",
+        "thread_id": 1,
+        "my_ticket": 1,
+        "result": {
+          "holds_lock_threads": [
+            1,
+            2
+          ],
+          "lock": {
+            "pass": [
+              false,
+              true,
+              true
+            ],
+            "next": 5
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "release must not leave two enabled slots or two holders of the lock",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            true,
+            false
+          ],
+          "next": 9
+        },
+        "action": "release",
+        "thread_id": 2,
+        "my_ticket": 2,
+        "result": {
+          "holds_lock_threads": [],
+          "lock": {
+            "pass": [
+              false,
+              false,
+              false,
+              true
+            ],
+            "next": 9
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "release transfers permission to the next ticket position modulo N while preserving single ownership",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            false,
+            true
+          ],
+          "next": 12
+        },
+        "action": "release",
+        "thread_id": 3,
+        "my_ticket": 3,
+        "result": {
+          "holds_lock_threads": [],
+          "lock": {
+            "pass": [
+              true,
+              false,
+              false,
+              false
+            ],
+            "next": 12
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "release wraps around from the last slot to slot 0 and still enables exactly one slot",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "pre",
+      "spec": "FIFO fairness reasoning assumes distinct requesting threads and a well-formed queue state with one enabled slot",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            true,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "fairness proof requires a unique current turn; two true pass slots violate queue order",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          0,
+          1
+        ]
+      },
+      "condition": "pre",
+      "spec": "a thread may not request again while already queued or holding the lock",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "tickets": [
+            0,
+            1,
+            2
+          ],
+          "acquire_order": [
+            0,
+            1,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "threads acquire the lock in the same order as their ticket requests",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "tickets": [
+            0,
+            1,
+            2
+          ],
+          "acquire_order": [
+            0,
+            2,
+            1
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "a later requester must not acquire before an earlier requester",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            true
+          ],
+          "next": 5
+        },
+        "requests": [
+          3,
+          4,
+          5
+        ],
+        "result": {
+          "tickets": [
+            2,
+            0,
+            1
+          ],
+          "acquire_order": [
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "FIFO order is preserved even when ticket numbers wrap modulo N",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            true
+          ],
+          "next": 5
+        },
+        "requests": [
+          3,
+          4,
+          5
+        ],
+        "result": {
+          "tickets": [
+            2,
+            0,
+            1
+          ],
+          "acquire_order": [
+            4,
+            3,
+            5
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "wrap-around of ticket indices must not allow overtaking in request order",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true
+          ],
+          "next": 0
+        },
+        "requests": [
+          7
+        ],
+        "result": {
+          "tickets": [
+            0
+          ],
+          "acquire_order": [
+            7
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "with a single slot, the only requester acquires first and fairness is trivial",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requesting_threads": [
+          0,
+          1,
+          2
+        ],
+        "scheduler_fair": true
+      },
+      "condition": "pre",
+      "spec": "liveness requires a fair scheduler and a well-formed lock state",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requesting_threads": [
+          0,
+          1
+        ],
+        "scheduler_fair": false
+      },
+      "condition": "pre",
+      "spec": "without scheduler fairness the eventual-acquire liveness assumption does not hold",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            true,
+            false
+          ],
+          "next": 4
+        },
+        "requesting_threads": [
+          2,
+          3
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": [
+            {
+              "thread_id": 2,
+              "acquired": true
+            },
+            {
+              "thread_id": 3,
+              "acquired": true
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "under a fair scheduler every requesting thread eventually acquires the lock",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            true,
+            false
+          ],
+          "next": 4
+        },
+        "requesting_threads": [
+          2,
+          3
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": [
+            {
+              "thread_id": 2,
+              "acquired": true
+            },
+            {
+              "thread_id": 3,
+              "acquired": false
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "fair scheduling must prevent starvation of any requester",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            true
+          ],
+          "next": 0
+        },
+        "requesting_threads": [
+          5
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": [
+            {
+              "thread_id": 5,
+              "acquired": true
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "for N = 1, a requesting thread eventually acquires immediately under fairness",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            false,
+            true
+          ],
+          "next": 8
+        },
+        "requesting_threads": [
+          6,
+          7,
+          8
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": [
+            {
+              "thread_id": 6,
+              "acquired": true
+            },
+            {
+              "thread_id": 7,
+              "acquired": true
+            },
+            {
+              "thread_id": 8,
+              "acquired": true
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "liveness is preserved across modulo wrap-around when each holder eventually releases",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "action": "acquire",
+        "thread_id": 0,
+        "result": {
+          "my_ticket": 0,
+          "holds_lock_threads": [
+            0
+          ],
+          "lock": {
+            "pass": [
+              true,
+              false,
+              false
+            ],
+            "next": 0
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "after a successful acquire next must be incremented (fetch_and_add); leaving next unchanged is incorrect",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "lock": {
+          "pass": [
+            false,
+            true,
+            false
+          ],
+          "next": 5
+        },
+        "action": "release",
+        "thread_id": 1,
+        "my_ticket": 1,
+        "result": {
+          "holds_lock_threads": [],
+          "lock": {
+            "pass": [
+              false,
+              true,
+              false
+            ],
+            "next": 5
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "release must clear my_ticket's slot and enable the successor; leaving the released slot true means the holder still holds the lock",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task2",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requests": [
+          0,
+          1,
+          2
+        ],
+        "result": {
+          "tickets": [
+            0,
+            1,
+            2
+          ],
+          "acquire_order": [
+            1,
+            0,
+            2
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "thread 1 cannot acquire before thread 0; FIFO requires acquisition order to match ticket order",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requesting_threads": [
+          0,
+          1,
+          2
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": [
+            {
+              "thread_id": 0,
+              "acquired": true
+            },
+            {
+              "thread_id": 1,
+              "acquired": false
+            },
+            {
+              "thread_id": 2,
+              "acquired": true
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "all requesting threads must eventually acquire under fair scheduling; thread 1 starving violates liveness",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task3",
+      "input": {
+        "lock": {
+          "pass": [
+            true,
+            false,
+            false
+          ],
+          "next": 0
+        },
+        "requesting_threads": [
+          0,
+          1,
+          2
+        ],
+        "scheduler_fair": true,
+        "result": {
+          "eventually_acquired": []
+        }
+      },
+      "condition": "post",
+      "spec": "an empty eventually_acquired list with non-empty requesters denies that any thread eventually acquires, violating liveness",
+      "expected": false
+    }
+  ]
+}

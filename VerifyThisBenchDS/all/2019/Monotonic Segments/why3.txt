@@ -1,0 +1,6 @@
+module MonotonicSegments
+  use int.Int
+  use array.Array
+  
+  type mono_array = array int
+end

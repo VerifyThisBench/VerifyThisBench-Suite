@@ -1,0 +1,6 @@
+struct Buffer {
+    int h;
+    int *xs;
+    int xs_len;
+    int *ys;
+};

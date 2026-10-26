@@ -1,0 +1,5 @@
+struct Tree {
+    data: i32,
+    left: Option<Box<Tree>>,
+    right: Option<Box<Tree>>,
+}

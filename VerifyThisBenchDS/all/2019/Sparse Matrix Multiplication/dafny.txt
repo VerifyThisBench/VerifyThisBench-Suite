@@ -1,0 +1,1 @@
+datatype Triplet = Triplet(row: nat, col: nat, value: int)

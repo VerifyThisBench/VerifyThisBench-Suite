@@ -1,0 +1,14 @@
+module NonblockingQueue
+
+  use int.Int
+  use array.Array
+  
+  type queue_element = int  (* -1 represents null *)
+  
+  type nonblocking_queue = {
+    mutable q : array queue_element;  (* Array of elements *)
+    mutable head : int;                (* Head pointer *)
+    mutable tail : int;                (* Tail pointer *)
+  }
+
+end

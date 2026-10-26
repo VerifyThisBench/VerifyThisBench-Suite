@@ -1,0 +1,8 @@
+use vstd::prelude::*;
+
+verus! {
+
+// Two vectors in strictly increasing order
+pub type SortedArray = Vec<i32>;
+
+} // verus!

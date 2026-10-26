@@ -1,0 +1,6 @@
+class Tree {
+	var left: Tree;
+	var right: Tree;
+	var parent: Tree;
+	var mark: bool;
+}

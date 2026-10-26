@@ -1,0 +1,830 @@
+{
+  "challenge": "Sparse Matrix Multiplication",
+  "description": "Multiply an input vector by a sparse matrix in COO format to produce an output vector.",
+  "function_signature": "sparse_vec_mat_mul(x, m, rows, cols) -> y",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "x": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 7
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "value": -1
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "value": 6
+          }
+        ],
+        "rows": 4,
+        "cols": 3
+      },
+      "condition": "pre",
+      "spec": "input vector length equals number of matrix rows and all triplet indices are within 1..rows and 1..cols",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "x": [],
+        "m": [],
+        "rows": 0,
+        "cols": 0
+      },
+      "condition": "pre",
+      "spec": "empty vector and empty sparse matrix are valid when dimensions are zero",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "x": null,
+        "m": [],
+        "rows": 0,
+        "cols": 0
+      },
+      "condition": "pre",
+      "spec": "input vector is not null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "x": [
+          1,
+          2
+        ],
+        "m": null,
+        "rows": 2,
+        "cols": 2
+      },
+      "condition": "pre",
+      "spec": "sparse matrix triplet sequence is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "x": [
+          1,
+          2
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 5
+          }
+        ],
+        "rows": 3,
+        "cols": 2
+      },
+      "condition": "pre",
+      "spec": "input vector length equals number of matrix rows",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "x": [
+          1,
+          2,
+          3
+        ],
+        "m": [
+          {
+            "row": 0,
+            "col": 1,
+            "value": 5
+          }
+        ],
+        "rows": 3,
+        "cols": 2
+      },
+      "condition": "pre",
+      "spec": "triplet row index must be at least 1",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "x": [
+          1,
+          2,
+          3
+        ],
+        "m": [
+          {
+            "row": 2,
+            "col": 3,
+            "value": 5
+          }
+        ],
+        "rows": 3,
+        "cols": 2
+      },
+      "condition": "pre",
+      "spec": "triplet column index must be at most number of columns",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "x": [
+          4,
+          5
+        ],
+        "m": [
+          {
+            "row": 2,
+            "col": 1,
+            "value": 3
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "value": 7
+          }
+        ],
+        "rows": 2,
+        "cols": 2
+      },
+      "condition": "pre",
+      "spec": "triplet sequence must be sorted by row and then by column",
+      "expected": false
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "x": [
+          2,
+          3,
+          5,
+          7
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 3,
+            "value": 1
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "value": 3
+          }
+        ],
+        "rows": 4,
+        "cols": 4,
+        "result": [
+          15,
+          45,
+          2,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result vector equals the accumulation y[c] = sum of x[r] * value over all triplets with column c",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "x": [
+          2,
+          3,
+          5,
+          7
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 3,
+            "value": 1
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "value": 3
+          }
+        ],
+        "rows": 4,
+        "cols": 4,
+        "result": [
+          15,
+          24,
+          2,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result must include contributions from all triplets that target the same output column",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "x": [
+          4,
+          -2,
+          1
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 2,
+            "value": -3
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 5
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "value": 6
+          }
+        ],
+        "rows": 3,
+        "cols": 3,
+        "result": [
+          6,
+          -22,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result correctly handles negative values in the vector and matrix entries",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "x": [
+          9
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 4
+          }
+        ],
+        "rows": 1,
+        "cols": 1,
+        "result": [
+          35
+        ]
+      },
+      "condition": "post",
+      "spec": "single-entry matrix multiplication must compute x[1] * value exactly",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "x": [
+          1,
+          2,
+          3
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 4
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 5
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "value": 6
+          }
+        ],
+        "rows": 3,
+        "cols": 3
+      },
+      "condition": "pre",
+      "spec": "parallel execution is well-formed when dimensions and triplet indices are valid",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "x": [
+          1,
+          2,
+          3
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 4
+          },
+          {
+            "row": 3,
+            "col": 4,
+            "value": 6
+          }
+        ],
+        "rows": 3,
+        "cols": 3
+      },
+      "condition": "pre",
+      "spec": "parallel algorithm requires every triplet column index to be within output vector bounds",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "x": [
+          2,
+          3,
+          5
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 2,
+            "value": 4
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 6
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "value": 7
+          }
+        ],
+        "rows": 3,
+        "cols": 2,
+        "result": [
+          35,
+          26
+        ]
+      },
+      "condition": "post",
+      "spec": "synchronized parallel execution preserves correct accumulated updates to shared output positions",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "x": [
+          2,
+          3,
+          5
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 2,
+            "value": 4
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 6
+          },
+          {
+            "row": 3,
+            "col": 1,
+            "value": 7
+          }
+        ],
+        "rows": 3,
+        "cols": 2,
+        "result": [
+          35,
+          18
+        ]
+      },
+      "condition": "post",
+      "spec": "parallel result is incorrect if one concurrent update to the same output column is lost",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "x": [
+          2,
+          3,
+          5,
+          7
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 3,
+            "value": 1
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "value": 3
+          }
+        ],
+        "rows": 4,
+        "cols": 4,
+        "result": [
+          15,
+          45,
+          2,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "for each output index i, result[i] equals sum over k of x[k] times matrix entry m[k,i]",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "x": [
+          0,
+          4,
+          -1
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 9
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 2
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "value": -5
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "value": 1
+          }
+        ],
+        "rows": 3,
+        "cols": 3,
+        "result": [
+          8,
+          0,
+          -21
+        ]
+      },
+      "condition": "post",
+      "spec": "standard matrix multiplication semantics hold with zero and negative entries",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "x": [
+          0,
+          4,
+          -1
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 9
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 2
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "value": -5
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "value": 1
+          }
+        ],
+        "rows": 3,
+        "cols": 3,
+        "result": [
+          9,
+          0,
+          -21
+        ]
+      },
+      "condition": "post",
+      "spec": "result violates matrix multiplication if any output component uses the wrong row contribution",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "x": [
+          6,
+          7
+        ],
+        "m": [],
+        "rows": 2,
+        "cols": 3,
+        "result": [
+          0,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "multiplication by an all-zero sparse matrix yields the all-zero output vector",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "x": [
+          3,
+          4
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 2
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          }
+        ],
+        "rows": 2,
+        "cols": 1,
+        "result": [
+          26
+        ]
+      },
+      "condition": "post",
+      "spec": "concurrent algorithm is race-free if shared updates behave as an atomic accumulation",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "x": [
+          3,
+          4
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 1,
+            "value": 2
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          }
+        ],
+        "rows": 2,
+        "cols": 1,
+        "result": [
+          20
+        ]
+      },
+      "condition": "post",
+      "spec": "a result missing one of two simultaneous updates indicates a concurrency issue such as a data race",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "x": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 2,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 7
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "value": -1
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "value": 6
+          }
+        ],
+        "rows": 4,
+        "cols": 3,
+        "result": [
+          14,
+          2,
+          24
+        ]
+      },
+      "condition": "post",
+      "spec": "concurrent algorithm computes the same output vector as the sequential algorithm",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "x": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 2,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 7
+          },
+          {
+            "row": 3,
+            "col": 2,
+            "value": -1
+          },
+          {
+            "row": 4,
+            "col": 3,
+            "value": 6
+          }
+        ],
+        "rows": 4,
+        "cols": 3,
+        "result": [
+          14,
+          5,
+          24
+        ]
+      },
+      "condition": "post",
+      "spec": "concurrent algorithm is not equivalent to sequential multiplication if any output component differs",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "x": [
+          6,
+          7
+        ],
+        "m": [],
+        "rows": 2,
+        "cols": 3,
+        "result": [
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result vector length must equal number of columns (3), not the number of rows (2)",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "x": [
+          2,
+          3,
+          5,
+          7
+        ],
+        "m": [
+          {
+            "row": 1,
+            "col": 3,
+            "value": 1
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "value": 5
+          },
+          {
+            "row": 2,
+            "col": 2,
+            "value": 8
+          },
+          {
+            "row": 4,
+            "col": 2,
+            "value": 3
+          }
+        ],
+        "rows": 4,
+        "cols": 4,
+        "result": [
+          15,
+          45,
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result places contributions in the wrong output column: x[1]*1 should target column 3 but appears at column 4",
+      "expected": false
+    }
+  ]
+}

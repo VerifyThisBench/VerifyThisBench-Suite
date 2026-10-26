@@ -1,0 +1,554 @@
+{
+  "challenge": "All Nearest Smaller Values",
+  "description": "Compute for each 1-based position in an integer sequence the index of the nearest smaller value to its left, or 0 if none exists.",
+  "function_signature": "nearest_smaller_left(sequence) -> left_indices",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ]
+      },
+      "condition": "pre",
+      "spec": "input sequence is not null",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          5
+        ]
+      },
+      "condition": "pre",
+      "spec": "input sequence may have minimum non-empty size 1",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "sequence": []
+      },
+      "condition": "pre",
+      "spec": "input sequence may be empty",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "sequence": null
+      },
+      "condition": "pre",
+      "spec": "input sequence is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6,
+          6,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "result is the sequence of nearest smaller indices to the left for a mixed sequence",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result is correct for a strictly increasing sequence",
+      "expected": true
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "result": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result is correct for a strictly decreasing sequence",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          2,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "result is correct when equal values are not smaller and therefore have no left neighbor",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          -3,
+          -1,
+          -2,
+          0
+        ],
+        "result": [
+          0,
+          1,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "result is correct for negative values and zero",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          5
+        ],
+        "result": [
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "single element has no left neighbor so result must be 0",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          2,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "equal previous values are not smaller so positive indices here are incorrect",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          1,
+          3
+        ],
+        "result": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "result must use the nearest smaller value to the left, not any previous index",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6,
+          6,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "for every position i, left[i] is smaller than i or equals 0",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          1,
+          2,
+          3
+        ],
+        "result": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "for every position i, left[i] < i in an increasing sequence",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          2
+        ],
+        "result": [
+          0,
+          0,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "left index must be strictly smaller than its position, so self-reference is forbidden",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "sequence": [
+          3,
+          1,
+          2
+        ],
+        "result": [
+          0,
+          0,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "left index must be smaller than the current position, so an index greater than i violates the property",
+      "expected": false
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6,
+          6,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "if left[i] is a valid index then the value at that index is strictly smaller than the value at i",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          2,
+          2,
+          2
+        ],
+        "result": [
+          0,
+          0,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "property holds vacuously when no valid left neighbor exists",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          5,
+          3,
+          4
+        ],
+        "result": [
+          0,
+          0,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "chosen left neighbor must point to a strictly smaller value, not a larger one",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "sequence": [
+          2,
+          2,
+          3
+        ],
+        "result": [
+          0,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "equal value at left[i] does not satisfy the strictly smaller requirement",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6,
+          6,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "there are no positions between left[i] and i that contain a value smaller than s[i]",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          1,
+          3,
+          2
+        ],
+        "result": [
+          0,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "nearest smaller index may skip larger intervening values while preserving that no smaller value exists after left[i]",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          1,
+          4,
+          2,
+          3
+        ],
+        "result": [
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "a result is invalid if there is a smaller value than s[i] between left[i]+1 and i",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "sequence": [
+          2,
+          5,
+          1,
+          4
+        ],
+        "result": [
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "for i=4, index 3 contains a smaller intervening value, so left[4]=1 is not the nearest smaller position",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          0,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "result length must equal input length, dropping the last element violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task1",
+      "input": {
+        "sequence": [
+          4,
+          7,
+          8,
+          1,
+          2,
+          3,
+          9,
+          5,
+          6
+        ],
+        "result": [
+          1,
+          2,
+          3,
+          1,
+          5,
+          6,
+          7,
+          7,
+          9
+        ]
+      },
+      "condition": "post",
+      "spec": "off-by-one shift produces wrong indices and ignores that the first/minimum elements have no left neighbor (must be 0)",
+      "expected": false
+    }
+  ]
+}

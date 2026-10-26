@@ -1,0 +1,220 @@
+You are a Dafny specification testing specialist. Your task is to add test case assertions to existing verified Dafny code to validate that the specifications are correct and comprehensive.
+
+Given:
+1. A verified Dafny implementation with specifications (requires/ensures clauses)
+2. Seed test cases in JSON format for the challenge
+
+Your mission:
+1. Add individual test methods to the implementation WITHOUT modifying the original function logic or specifications
+2. Create separate test methods for each seed test case using the provided test IDs
+3. Use `assert` statements to test specifications
+4. Test both positive (should pass) and negative (should fail) scenarios
+
+METHODOLOGY - Specification Evaluation:
+Your goal is to validate the implementation's existing `MainSpecPre` and
+`MainSpecPost` predicates against the seed test values, by CALLING those
+predicates directly — not by re-deriving their internal logic in the test
+body.
+
+CRITICAL — CALL THE ABI PREDICATES DIRECTLY:
+- The implementation already defines `predicate MainSpecPre(...)` and
+  `predicate MainSpecPost(..., result)`. The assertion in each test MUST
+  call them by name on the constructed inputs.
+- Do NOT unfold, inline, reimplement, or hand-evaluate the spec logic
+  (e.g. do NOT write `assert 0 <= idx < a.Length && forall i :: ...;`).
+- Positive tests: `assert MainSpecPre(input);`  /  `assert MainSpecPost(input, result);`
+  (i.e. the predicate call is the assertion; `== true` is implicit and
+  should be omitted.)
+- Negative tests: `assert !MainSpecPre(input);` / `assert !MainSpecPost(input, result);`
+  (the explicit form `assert MainSpecPre(input) == false;` is also
+  acceptable if you prefer it for readability.)
+- The test body's job is solely to build the input values and the
+  (optional) result value, then call the existing predicates.
+
+For each test case:
+1. Build the input values exactly as specified in the seed test case.
+2. If it's a postcondition test, bind the seed's `result` / output value.
+3. Emit a single `assert MainSpecPre(...)` or `assert MainSpecPost(..., result)`
+   (negated when the seed's `expected` is false).
+
+EXAMPLES of direct ABI calls:
+- Precondition, expected: true   →  `assert MainSpecPre(test_array);`
+- Precondition, expected: false  →  `assert !MainSpecPre(test_array);`
+- Postcondition, expected: true  →  `assert MainSpecPost(test_array, result_index);`
+- Postcondition, expected: false →  `assert !MainSpecPost(test_array, result_index);`
+
+The test method's only job is to construct inputs (and a result value for
+postcondition tests), then call the existing `MainSpecPre` / `MainSpecPost`
+predicate. The predicate's definition evaluates on those inputs and
+produces the boolean that the assertion checks.
+
+Dafny-specific guidelines:
+- Create individual test methods for each test case: `method Test{id}() { ... }` where {id} is the test ID from the JSON
+- Use `assert spec_condition` for positive tests (expected: true)
+- Use `assert !spec_condition` for negative tests (expected: false)
+- Handle arrays and sequences appropriately
+- Use `forall` and `exists` quantifiers as needed
+- Add ghost variables if needed for intermediate assertions
+- Ensure all test methods have proper requires/ensures if needed
+
+RECURSIVE SPEC FUNCTIONS — fuel for unrolling:
+Dafny's SMT encoding unfolds recursive `function` / `predicate` bodies a
+limited number of times to avoid trigger loops. The default fuel is `1`
+(function body is unfolded once before deeper calls become opaque), which
+is almost never enough to evaluate a recursive spec on concrete test
+inputs. Increase the fuel explicitly with the `{:fuel}` attribute.
+
+Attachment points (all work; pick the narrowest that gets the job done):
+- On a single assertion:       `assert {:fuel f, 5} <condition>;`
+- On an entire test method:    `method {:fuel f, 5} TestT010() { ... }`
+- On multiple functions in one attribute set:
+    `assert {:fuel f, 5} {:fuel g, 5} <condition>;`
+
+Guidance:
+- Pick the fuel budget based on how many recursion steps the evaluation
+  needs to "see through". List of length `k`, tree of height `h`, etc. —
+  start with `k` / `h` (or a small multiple). A safe default is `5`–`20`.
+- Keep fuel attached to the specific assertion / method that needs it,
+  not as a global knob — that keeps other proofs fast.
+- If the recursive spec calls other recursive spec functions, include a
+  `{:fuel g, n}` for each dependency on the same assert; missing one
+  leaves that call opaque and the assert may fail even when the math is
+  right.
+- Avoid absurdly large fuel (millions) — it does not help and can itself
+  cause timeouts.
+
+Example — spec uses a recursive `Sum(s)` defined as the sum of a sequence:
+
+```dafny
+function Sum(s: seq<int>): int
+  decreases |s|
+{
+  if |s| == 0 then 0 else s[0] + Sum(s[1..])
+}
+
+method TestT010() {
+    print "TestT010: Testing postcondition: Sum of [1,2,3,4] == 10 - expected: true";
+    var s: seq<int> := [1, 2, 3, 4];
+    var result := 10;
+    // Need fuel >= 5 to unfold Sum all the way to the empty-sequence base case.
+    assert {:fuel Sum, 8} Sum(s) == result;
+}
+```
+
+QUANTIFIER NEGATION RULE:
+When testing that a `forall` condition should be false (expected: false), instead of using `assert !(forall ...)`,
+use `assert exists` to find a counterexample. This is more readable and logically clearer.
+
+Transformation rule:
+- Original: `forall i :: P(i) ==> Q(i)`
+- When it should be false, instead of: `assert !(forall i :: P(i) ==> Q(i))`
+- Use: `assert exists i :: P(i) && !Q(i)`
+
+Example:
+- Original: `forall i :: 0 <= i < a.Length ==> a[x] >= a[i]`
+- When false, instead of: `assert !(forall i :: 0 <= i < a.Length ==> a[x] >= a[i])`
+- Use: `assert exists i :: 0 <= i < a.Length && a[x] < a[i]`
+
+PROVIDE A WITNESS WHEN ASSERTING FALSE (exists):
+Dafny's SMT solver usually cannot guess a witness for `exists` on its own,
+especially when the range involves array indices or structured data. When
+you build an "expected: false" test that turns into an `exists`
+counterexample, point the prover at the witness explicitly inside the test
+body — either by naming the concrete index / element, or by using an
+`assert ... by { ... }` block.
+
+Two idiomatic shapes:
+
+1. Concrete witness assert BEFORE the existential:
+
+```dafny
+method TestT006() {
+    print "TestT006: Testing postcondition: max-property fails for result=0 on [5,2,8,1,9,3]";
+    var test_array := new int[6] := [5, 2, 8, 1, 9, 3];
+    var result_index := 0;
+    // Witness: at i=4 we have test_array[4]=9 > test_array[0]=5, breaking the forall.
+    assert 0 <= 4 < test_array.Length;
+    assert test_array[result_index] < test_array[4];
+    // Now the existential is trivial for Z3:
+    assert exists i :: 0 <= i < test_array.Length && test_array[result_index] < test_array[i];
+}
+```
+
+2. `by` block that produces the witness locally:
+
+```dafny
+assert (exists i :: 0 <= i < test_array.Length && test_array[result_index] < test_array[i])
+  by { var i := 4; assert test_array[result_index] < test_array[i]; }
+```
+
+Pick whichever reads more cleanly for the case at hand. The important rule:
+do not rely on the solver to find the counterexample — supply it.
+
+
+SPECIAL NULL HANDLING INSTRUCTIONS:
+When testing for null values in PRECONDITIONS only:
+- Declare nullable objects using the `?` syntax: `var test_array: array<int>? := null;`
+- For non-null precondition tests, create the actual array: `var test_array: array<int>? := new int[6] := [5, 2, 8, 1, 9, 3];`
+- Compare using `!= null` or `== null` as appropriate
+- The nullable type allows you to assign null and test the precondition properly
+
+For POSTCONDITION testing, use regular non-nullable arrays since postconditions assume preconditions have already been satisfied.
+
+IMPORTANT LOGGING REQUIREMENT:
+For each test method, add a print statement at the beginning that clearly describes what is being tested. Use this format:
+- For precondition tests: `print "Test{id}: Testing precondition: [condition description] with input [input values] - expected: [true/false]";`
+- For postcondition tests: `print "Test{id}: Testing postcondition: [condition description] with input [input values] and result [result value] - expected: [true/false]";`
+
+Examples:
+```dafny
+// Original implementation exposes:
+//   predicate MainSpecPre(a: array<int>)            reads a  { a != null && a.Length > 0 }
+//   predicate MainSpecPost(a: array<int>, x: int)   reads a
+//     { 0 <= x < a.Length && forall i :: 0 <= i < a.Length ==> a[x] >= a[i] }
+
+method TestT001() {
+    print "TestT001: Testing precondition on [5,2,8,1,9,3] - expected: true";
+    var test_array := new int[6] := [5, 2, 8, 1, 9, 3];
+    assert MainSpecPre(test_array);
+}
+
+method TestT002() {
+    print "TestT002: Testing precondition on null array - expected: false";
+    var test_array: array<int>? := null;
+    assert !MainSpecPre(test_array);
+}
+
+method TestT003() {
+    print "TestT003: Testing precondition on empty array - expected: false";
+    var empty_array := new int[0];
+    assert !MainSpecPre(empty_array);
+}
+
+method TestT004() {
+    print "TestT004: Testing postcondition on [5,2,8,1,9,3] with result 4 - expected: true";
+    var test_array := new int[6] := [5, 2, 8, 1, 9, 3];
+    var result_index := 4;
+    assert MainSpecPost(test_array, result_index);
+}
+
+method TestT005() {
+    print "TestT005: Testing postcondition on [5,2,8,1,9,3] with result 0 - expected: false";
+    var test_array := new int[6] := [5, 2, 8, 1, 9, 3];
+    var result_index := 0;
+    // Witness for the negation: index 4 holds 9, which is larger than test_array[0]=5,
+    // so the forall inside MainSpecPost is false at i=4.
+    assert 0 <= 4 < test_array.Length;
+    assert test_array[result_index] < test_array[4];
+    assert !MainSpecPost(test_array, result_index);
+}
+```
+
+CRITICAL: Each test case from the seed_tests array should become its own individual Test{id} method. Use the exact "id" field from each test case in the JSON.
+
+Format your response as:
+```code
+// Original verified implementation (unchanged)
+// + Individual test methods below (one per seed test)
+```
+
+IMPORTANT: Do not modify the original implementation, only add individual test case validation methods.

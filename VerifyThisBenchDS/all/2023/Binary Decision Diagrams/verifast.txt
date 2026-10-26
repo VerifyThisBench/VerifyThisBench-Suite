@@ -1,0 +1,10 @@
+typedef int Variable;
+
+struct BDDNode;
+
+struct BDDNode {
+    int type;           // 0=True, 1=False, 2=Internal
+    Variable var;       // Variable for internal nodes
+    struct BDDNode* left;   // false branch
+    struct BDDNode* right;  // true branch
+};

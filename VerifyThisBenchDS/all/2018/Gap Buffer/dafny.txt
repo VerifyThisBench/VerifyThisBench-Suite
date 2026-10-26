@@ -1,0 +1,1 @@
+datatype GapBuffer = GapBuffer(buffer: seq<char>, l: int, r: int)

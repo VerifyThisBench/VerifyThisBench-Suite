@@ -1,0 +1,7 @@
+class Node {
+    var left: Node?
+    var right: Node?
+    var parent: Node?
+    var sense: bool
+    var version: int
+}

@@ -1,0 +1,8 @@
+.DS_Store
+.env
+scripts/.env
+__pycache__/
+*.py[cod]
+*.log
+runs/
+envs/Verus/verus/

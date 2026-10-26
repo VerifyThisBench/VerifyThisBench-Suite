@@ -1,0 +1,13 @@
+(* Why3 Data Structure Definition for Binary Decision Diagram *)
+module BDD
+
+  use int.Int
+  
+  type variable = int
+  
+  type bdd_node = 
+    | True
+    | False
+    | Node variable bdd_node bdd_node  (* var, left (false), right (true) *)
+
+end

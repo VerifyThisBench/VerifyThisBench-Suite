@@ -1,0 +1,197 @@
+You are a VeriFast specification testing specialist. Your task is to add test case assertions to existing verified VeriFast code to validate that the specifications are correct and comprehensive.
+
+Given:
+1. A verified VeriFast implementation with specifications (requires/ensures clauses with separation logic)
+2. Seed test cases in JSON format for the challenge
+
+Your mission:
+1. Add individual test functions to the implementation WITHOUT modifying the original function logic or specifications
+2. Create separate test function calls for each seed test case using the provided test IDs
+3. Use VeriFast assertions to test specifications
+4. Test both positive (should pass) and negative (should fail) scenarios
+
+METHODOLOGY - Specification Evaluation:
+Your goal is to extract the current specifications (preconditions and postconditions) from the implementation and evaluate them against the test case values to determine if the specs are correctly defined.
+
+For each test case:
+1. **Extract the relevant specification** (precondition or postcondition) from the original implementation
+2. **Substitute the test case values** into the specification
+3. **Evaluate if the result matches the expected outcome**:
+   - If test case has "expected": true, the specification should evaluate to true with the given values
+   - If test case has "expected": false, the specification should evaluate to false with the given values
+4. **Use assert to validate** that the specification behaves as expected
+
+EXAMPLES of Specification Evaluation:
+- If generated postcondition is `result >= 10` but test case has output = 9 and expected = true, then the spec is wrong (9 >= 10 is false, but we expect true)
+- If precondition is `a != 0` and test case has array = null with expected = false, then we verify the spec correctly rejects null arrays
+- If postcondition is `0 <= result && result < n` and test case has result = 5, n = 6, expected = true, then we verify 0 <= 5 < 6 evaluates to true
+
+The test functions should plug in the test case values and verify that the specification evaluates to the expected boolean result.
+
+VeriFast-specific guidelines:
+- Create individual test functions for each test case: `void test_t001()` where t001 is the test ID from the JSON
+- Call all test functions from a main() function
+- Add contracts to test functions: `//@ requires true; //@ ensures true;`
+- Use `//@ assert(spec_condition);` for positive tests (expected: true)
+- Use `//@ assert(!(spec_condition));` for negative tests (expected: false)
+- Handle memory predicates and separation logic properly
+- Use ghost variables when needed for intermediate assertions
+- Add appropriate predicate open/close statements when working with predicates
+- Include proper memory safety and ownership annotations
+- Use lemma functions if needed for complex proofs
+- For array access, use proper array slice predicates: `ints(a, n, ?values)`
+- Handle pointer arithmetic and memory chunks correctly
+- Use `malloc` and `free` with proper annotations for dynamic allocation
+
+QUANTIFIER NEGATION RULE:
+When testing that a universal condition should be false (expected: false), instead of asserting the negation of the entire condition, find a specific counterexample and assert that the condition fails at that point. This is more readable and logically clearer in VeriFast.
+
+Transformation approach:
+- Original postcondition checks: for all i in [0, n): a[result] >= a[i]
+- When it should be false, find specific index i where a[result] < a[i]
+- Assert the counterexample: `//@ assert(a_values[result_index] < a_values[counter_index]);`
+
+Example:
+- Original: for all i in [0, n): a[result] >= a[i]
+- When false with result_index=0 and array [5,2,8,1,9,3]:
+  Counterexample at index 4: a[0]=5 < a[4]=9
+  `//@ assert(nth(0, values) < nth(4, values));`
+
+SPECIAL NULL HANDLING INSTRUCTIONS:
+When testing for null values in PRECONDITIONS only:
+- Declare nullable pointers: `int *test_array = 0;`
+- For non-null precondition tests, allocate and initialize: `int *test_array = malloc(6 * sizeof(int)); if(test_array == 0) abort(); ...`
+- Compare using `!= 0` or `== 0` (VeriFast uses 0 instead of NULL)
+- Remember proper memory cleanup with `free()` and separation logic annotations
+
+For POSTCONDITION testing, use regular non-null arrays since postconditions assume preconditions have already been satisfied.
+
+IMPORTANT LOGGING REQUIREMENT:
+For each test function, add a comment at the beginning that clearly describes what is being tested. Do not use printf statements. Use this format:
+- For precondition tests: `// TestT001: Testing precondition: [condition description] with input [input values] - expected: [true/false]`
+- For postcondition tests: `// TestT001: Testing postcondition: [condition description] with input [input values] and result [result value] - expected: [true/false]`
+
+Examples:
+```c
+// Original implementation has: requires a != 0 &*& ints(a, n, ?values) &*& n > 0
+// Original implementation has: ensures ints(a, n, values) &*& 0 <= result &*& result < n &*& forall i in [0,n): nth(result, values) >= nth(i, values)
+
+void test_t001()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT001: Testing precondition: array is not null with input [5,2,8,1,9,3] - expected: true
+    int *test_array = malloc(6 * sizeof(int));
+    if(test_array == 0) abort();
+    //@ assert(test_array != 0);
+    test_array[0] = 5; test_array[1] = 2; test_array[2] = 8;
+    test_array[3] = 1; test_array[4] = 9; test_array[5] = 3;
+    // Extract precondition: a != 0
+    // Substitute values: test_array != 0
+    // Expected: true (should pass)
+    //@ assert(test_array != 0); // Should succeed
+    free(test_array);
+}
+
+void test_t002()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT002: Testing precondition: array is not null with null pointer - expected: false
+    int *test_array = 0;
+    // Extract precondition: a != 0
+    // Substitute values: test_array != 0 (which is 0 != 0)
+    // Expected: false (should fail) - so we assert the negation
+    //@ assert(!(test_array != 0)); // Should succeed (proving the condition is false)
+}
+
+void test_t003()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT003: Testing precondition: array length > 0 with n=0 - expected: false
+    int n = 0;
+    // Extract precondition: n > 0
+    // Substitute values: 0 > 0
+    // Expected: false (should fail) - so we assert the negation
+    //@ assert(!(n > 0)); // Should succeed (proving the condition is false)
+}
+
+void test_t004()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT004: Testing postcondition: result index is valid with array [5,2,8,1,9,3] and result 4 - expected: true
+    int test_array[6] = {5, 2, 8, 1, 9, 3}; // Regular array for postcondition
+    int result_index = 4;
+    int n = 6;
+    // Extract postcondition: 0 <= result < n
+    // Substitute values: 0 <= 4 < 6
+    // Expected: true (should pass)
+    //@ assert(0 <= result_index && result_index < n); // Should succeed
+}
+
+void test_t005()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT005: Testing postcondition: maximum element property with array [5,2,8,1,9,3] and result 4 - expected: true
+    int test_array[6] = {5, 2, 8, 1, 9, 3}; // Regular array for postcondition
+    int result_index = 4;
+    int n = 6;
+    // Extract postcondition: forall i in [0,n): a[result] >= a[i]
+    // Substitute values: for all i in [0,6): test_array[4] >= test_array[i]
+    // test_array[4] = 9, and 9 >= all elements [5,2,8,1,9,3]
+    // Expected: true (should pass)
+    // Check each element explicitly
+    //@ assert(test_array[result_index] >= test_array[0]); // 9 >= 5
+    //@ assert(test_array[result_index] >= test_array[1]); // 9 >= 2
+    //@ assert(test_array[result_index] >= test_array[2]); // 9 >= 8
+    //@ assert(test_array[result_index] >= test_array[3]); // 9 >= 1
+    //@ assert(test_array[result_index] >= test_array[4]); // 9 >= 9
+    //@ assert(test_array[result_index] >= test_array[5]); // 9 >= 3
+}
+
+void test_t006()
+    //@ requires true;
+    //@ ensures true;
+{
+    // TestT006: Testing postcondition: maximum element property with array [5,2,8,1,9,3] and result 0 - expected: false
+    int test_array[6] = {5, 2, 8, 1, 9, 3}; // Regular array for postcondition
+    int result_index = 0;
+    int n = 6;
+    // Extract postcondition: forall i in [0,n): a[result] >= a[i]
+    // Substitute values: for all i in [0,6): test_array[0] >= test_array[i]
+    // test_array[0] = 5, but test_array[4] = 9, so 5 >= 9 is false
+    // Expected: false (should fail) - so we find a counterexample
+    // Counterexample: index 4, where test_array[0]=5 < test_array[4]=9
+    //@ assert(test_array[result_index] < test_array[4]); // Should succeed (5 < 9)
+}
+
+int main()
+    //@ requires true;
+    //@ ensures true;
+{
+    test_t001();
+    test_t002();
+    test_t003();
+    test_t004();
+    test_t005();
+    test_t006();
+    // Add more test calls as needed for all seed test cases
+    return 0;
+}
+```
+
+CRITICAL: Each test case from the seed_tests array should become its own individual test_t{id} function. Use the exact "id" field from each test case in the JSON, but convert to lowercase (e.g., "T001" becomes "test_t001").
+
+All test functions should be called from the main() function in sequence.
+
+Format your response as:
+```code
+// Original verified implementation (unchanged)
+// + Individual test functions below (one per seed test)
+// + main() function that calls all tests
+```
+
+IMPORTANT: Do not modify the original implementation, only add individual test case validation functions and a main() function.

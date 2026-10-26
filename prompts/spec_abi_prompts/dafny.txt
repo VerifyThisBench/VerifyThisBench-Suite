@@ -1,0 +1,34 @@
+Specification ABI requirements (must follow exactly):
+- Define exactly one entry method named `MainImpl`.
+- Define `predicate MainSpecPre(<input variables in order>)`.
+- Define `predicate MainSpecPost(<the same input variables in the same order>, <return variable>)`.
+- Define `MainImpl` with Dafny's returns syntax:
+  - `method MainImpl(<input variables in order>) returns (<return_name>: ReturnType)`
+- In `MainImpl`, use:
+  - `requires MainSpecPre(<input variables in order>)`
+  - `ensures MainSpecPost(<the same input variables in the same order>, <return_name>)`
+- Keep the full ABI parameter list exactly as specified, even if some inputs are unused in the body of `MainSpecPre` or `MainSpecPost`.
+- The return variable from `returns (<return_name>: T)` must be used explicitly in `MainSpecPost(...)`.
+- Do not inline the specification logic directly in `requires`/`ensures`; always delegate to `MainSpecPre` and `MainSpecPost`.
+
+Example skeleton:
+```dafny
+predicate MainSpecPre(a: array<int>)
+    reads a
+{
+    a.Length > 0
+}
+
+predicate MainSpecPost(a: array<int>, idx: int)
+    reads a
+{
+    0 <= idx < a.Length && forall i :: 0 <= i < a.Length ==> a[idx] >= a[i]
+}
+
+method MainImpl(a: array<int>) returns (idx: int)
+    requires MainSpecPre(a)
+    ensures MainSpecPost(a, idx)
+{
+    // implementation here
+}
+```

@@ -1,0 +1,5 @@
+pub struct NonblockingQueue {
+    pub Q: Vec<i32>,      // Array of elements, -1 represents null
+    pub Head: u32,        // Head pointer (monotonically increasing)
+    pub Tail: u32,        // Tail pointer (monotonically increasing)
+}

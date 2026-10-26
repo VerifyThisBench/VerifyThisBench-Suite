@@ -1,0 +1,11 @@
+module ListReversal
+
+  use int.Int
+  use option.Option
+  
+  type cell = {
+    value : int;
+    next : option cell;
+  }
+
+end

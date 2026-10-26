@@ -1,0 +1,6 @@
+type Variable = int
+
+datatype BDDNode = 
+    | True
+    | False
+    | Node(var: Variable, left: BDDNode, right: BDDNode)  // left=false branch, right=true branch

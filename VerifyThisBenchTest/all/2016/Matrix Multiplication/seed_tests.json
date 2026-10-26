@@ -1,0 +1,1373 @@
+{
+  "challenge": "Matrix Multiplication",
+  "description": "Multiply square integer matrices and verify correctness, associativity, and equivalence with Strassen-style multiplication.",
+  "function_signature": "matrixMultiply(A, B) -> matrix; associativeCheck(A, B, C) -> matrix_pair_or_equality; strassenEquivalent(A, B) -> matrix_pair_or_equality",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "A and B are not null square matrices of the same non-negative dimension",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            2
+          ]
+        ],
+        "B": [
+          [
+            3
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "single-element square matrices are valid inputs",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "A": null,
+        "B": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "A must not be null",
+      "expected": false
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": null
+      },
+      "condition": "pre",
+      "spec": "B must not be null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "B": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "A must be square",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "A and B must have the same square dimension",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result[i][j] equals the sum over k of A[i][k] * B[k][j]",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            2
+          ]
+        ],
+        "B": [
+          [
+            3
+          ]
+        ],
+        "result": [
+          [
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "1x1 matrix multiplication returns the product of the two entries",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "B": [
+          [
+            5,
+            -1
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "result": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "multiplying a zero matrix by any square matrix yields the zero matrix",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "multiplying by the identity matrix preserves the left matrix",
+      "expected": true
+    },
+    {
+      "id": "T011",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            -1
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "B": [
+          [
+            3,
+            4
+          ],
+          [
+            -2,
+            1
+          ]
+        ],
+        "result": [
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "matrix multiplication handles negative numbers correctly",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            49
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "every entry of the result must equal the corresponding dot product",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result": [
+          [
+            19,
+            22
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result must have the same square dimension as the inputs",
+      "expected": false
+    },
+    {
+      "id": "T014",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "result": [
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "identity multiplication must preserve all entries in their original positions",
+      "expected": false
+    },
+    {
+      "id": "T015",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "C": [
+          [
+            2,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "A, B, and C are non-null square matrices of the same dimension",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1
+          ]
+        ],
+        "B": [
+          [
+            2
+          ]
+        ],
+        "C": [
+          [
+            3
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "associativity check accepts valid 1x1 square matrices",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": null,
+        "C": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "all three matrices must be non-null",
+      "expected": false
+    },
+    {
+      "id": "T018",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "C": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "each input matrix must be square and all dimensions must match",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "C": [
+          [
+            2,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "result_left": [
+          [
+            4,
+            2
+          ],
+          [
+            10,
+            6
+          ]
+        ],
+        "result_right": [
+          [
+            4,
+            2
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "A*(B*C) equals (A*B)*C for valid 2x2 matrices",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1
+          ]
+        ],
+        "B": [
+          [
+            2
+          ]
+        ],
+        "C": [
+          [
+            3
+          ]
+        ],
+        "result_left": [
+          [
+            6
+          ]
+        ],
+        "result_right": [
+          [
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "associativity holds for 1x1 matrices",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "B": [
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "C": [
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "result_left": [
+          [
+            2,
+            5
+          ],
+          [
+            4,
+            9
+          ]
+        ],
+        "result_right": [
+          [
+            2,
+            5
+          ],
+          [
+            4,
+            9
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "associativity still holds when one operand is the identity matrix",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "C": [
+          [
+            2,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "result_left": [
+          [
+            4,
+            2
+          ],
+          [
+            10,
+            6
+          ]
+        ],
+        "result_right": [
+          [
+            4,
+            3
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "the two association orders must produce exactly the same matrix",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "B": [
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "C": [
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "result_left": [
+          [
+            2,
+            5
+          ],
+          [
+            4,
+            9
+          ]
+        ],
+        "result_right": [
+          [
+            2,
+            5
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "both computed matrices must have the same correct dimension as well as equal entries",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "for the restricted Strassen setting, A and B are non-null square matrices of dimension 2^n and equal size",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            2
+          ]
+        ],
+        "B": [
+          [
+            3
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "dimension 1 = 2^0 is allowed for Strassen equivalence",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ],
+        "B": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "condition": "pre",
+      "spec": "Strassen equivalence input size must be a power of two",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": null
+      },
+      "condition": "pre",
+      "spec": "both matrices must be non-null for naive and Strassen comparison",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result_naive": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ],
+        "result_strassen": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "naive multiplication and Strassen multiplication return the same 2x2 result",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            2
+          ]
+        ],
+        "B": [
+          [
+            3
+          ]
+        ],
+        "result_naive": [
+          [
+            6
+          ]
+        ],
+        "result_strassen": [
+          [
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "naive and Strassen multiplication agree on the base case 1x1",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "B": [
+          [
+            9,
+            -2
+          ],
+          [
+            5,
+            7
+          ]
+        ],
+        "result_naive": [
+          [
+            9,
+            -2
+          ],
+          [
+            5,
+            7
+          ]
+        ],
+        "result_strassen": [
+          [
+            9,
+            -2
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "naive and Strassen multiplication agree when multiplying by the identity matrix",
+      "expected": true
+    },
+    {
+      "id": "T031",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            -1
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "B": [
+          [
+            3,
+            4
+          ],
+          [
+            -2,
+            1
+          ]
+        ],
+        "result_naive": [
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "result_strassen": [
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            8
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "naive and Strassen results must match entrywise even with negative numbers",
+      "expected": false
+    },
+    {
+      "id": "T032",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result_naive": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ],
+        "result_strassen": [
+          [
+            19,
+            22
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "naive and Strassen results must have the same square dimension",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result": [
+          [
+            23,
+            34
+          ],
+          [
+            31,
+            46
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result corresponds to B*A rather than A*B; matrix multiplication is not commutative and the operands must not be swapped",
+      "expected": false
+    },
+    {
+      "id": "T034",
+      "task": "task1",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result": [
+          [
+            19,
+            43
+          ],
+          [
+            22,
+            50
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result is the transpose of A*B; entries (1,2) and (2,1) are swapped, violating the dot-product definition of result[i][j]",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task2",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "C": [
+          [
+            2,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "result_left": [
+          [
+            4,
+            2
+          ],
+          [
+            10,
+            5
+          ]
+        ],
+        "result_right": [
+          [
+            4,
+            2
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "result_left has an off-by-one entry at position (2,2); the two associations must agree entrywise",
+      "expected": false
+    },
+    {
+      "id": "T036",
+      "task": "task3",
+      "input": {
+        "A": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "B": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        "result_naive": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ],
+        "result_strassen": [
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      },
+      "condition": "post",
+      "spec": "Strassen result equals B unchanged rather than the product, so it disagrees with the naive product",
+      "expected": false
+    }
+  ]
+}

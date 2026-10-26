@@ -1,0 +1,7 @@
+// Dafny Data Structure Definition for Work-Stealing
+type Task = int
+class WorkStealing {
+    var subtask: array2<Task>    // Maps task ID to child task IDs
+    var executed: array<bool>    // Marks executed tasks
+    var q: array<seq<Task>>      // Double-ended queue per worker
+}

@@ -1,0 +1,731 @@
+{
+  "challenge": "List Reversal",
+  "description": "Reverse a singly linked list in place, handling both null-terminated and lasso-shaped well-formed lists.",
+  "function_signature": "list_reversal(list) -> result",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "list": null
+      },
+      "condition": "pre",
+      "spec": "null is a well-formed empty list",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "a finite null-terminated acyclic list is well-formed",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "a lasso-shaped list with a finite prefix and a cycle is well-formed",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 7,
+              "next": 0
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "a pure cycle of length 1 is a well-formed lasso-shaped list",
+      "expected": true
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 5,
+              "next": 2
+            },
+            {
+              "value": 6,
+              "next": null
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "every next reference in a well-formed heap graph must be null or a valid node index",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "list": {
+          "entry": 2,
+          "nodes": [
+            {
+              "value": 1,
+              "next": null
+            },
+            {
+              "value": 2,
+              "next": null
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "the entry pointer of a well-formed list must be null or a valid node index",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "list": null
+      },
+      "condition": "pre",
+      "spec": "runtime safety holds on the empty list because it is well-formed",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "list": {
+          "value": -1,
+          "next": {
+            "value": 0,
+            "next": {
+              "value": 4,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "runtime safety applies to any finite null-terminated list with arbitrary integer values",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 9,
+              "next": 1
+            },
+            {
+              "value": 8,
+              "next": 2
+            },
+            {
+              "value": 7,
+              "next": 1
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "runtime safety applies to a lasso-shaped list because traversal only follows valid next references",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 5
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "runtime safety fails if a next field may dereference an invalid pointer",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task3",
+      "input": {
+        "list": null
+      },
+      "condition": "pre",
+      "spec": "termination must hold on the empty well-formed list in finite memory",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task3",
+      "input": {
+        "list": {
+          "value": 3,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 1,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "pre",
+      "spec": "termination must hold on any finite null-terminated well-formed list",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 4,
+              "next": 1
+            },
+            {
+              "value": 5,
+              "next": 2
+            },
+            {
+              "value": 6,
+              "next": 3
+            },
+            {
+              "value": 7,
+              "next": 2
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "termination must hold on any finite lasso-shaped well-formed list",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task3",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 10,
+              "next": 0
+            }
+          ]
+        }
+      },
+      "condition": "pre",
+      "spec": "termination must hold even for a one-node cycle",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task4",
+      "input": {
+        "list": null,
+        "result": null
+      },
+      "condition": "post",
+      "spec": "reversing the empty list yields the empty list",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task4",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "value": 3,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 1,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "for a null-terminated list, the result is the full reversal of the original list",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task4",
+      "input": {
+        "list": {
+          "value": 42,
+          "next": null
+        },
+        "result": {
+          "value": 42,
+          "next": null
+        }
+      },
+      "condition": "post",
+      "spec": "a single-element null-terminated list is unchanged by reversal",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task4",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        },
+        "result": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 2
+            },
+            {
+              "value": 2,
+              "next": 1
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "for a lasso-shaped list, the initial segment is unchanged and the cycle is reversed",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task4",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 5,
+              "next": 0
+            }
+          ]
+        },
+        "result": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 5,
+              "next": 0
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "reversing a one-node cycle leaves the cycle unchanged",
+      "expected": true
+    },
+    {
+      "id": "T020",
+      "task": "task4",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "for a null-terminated list, returning the original list instead of its reversal violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "list": {
+          "value": -1,
+          "next": {
+            "value": 0,
+            "next": {
+              "value": -1,
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "value": -1,
+          "next": {
+            "value": -1,
+            "next": {
+              "value": 0,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "the result must reverse positions exactly, even when values are duplicated",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        },
+        "result": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "for a lasso-shaped list, leaving the cycle orientation unchanged violates the reversal postcondition",
+      "expected": false
+    },
+    {
+      "id": "T023",
+      "task": "task5",
+      "input": {
+        "list": null,
+        "result": {
+          "time_steps": 0,
+          "space_cells": 0
+        }
+      },
+      "condition": "post",
+      "spec": "resource usage on the empty list is linear and uses constant auxiliary space",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task5",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 4,
+                "next": null
+              }
+            }
+          }
+        },
+        "result": {
+          "time_steps": 4,
+          "space_cells": 1
+        }
+      },
+      "condition": "post",
+      "spec": "on a list of length 4, processing each node once with constant extra storage satisfies linear time and space bounds",
+      "expected": true
+    },
+    {
+      "id": "T025",
+      "task": "task5",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 3
+            },
+            {
+              "value": 4,
+              "next": 2
+            }
+          ]
+        },
+        "result": {
+          "time_steps": 6,
+          "space_cells": 1
+        }
+      },
+      "condition": "post",
+      "spec": "on a lasso-shaped list, visiting a linear number of nodes overall with constant auxiliary space satisfies the complexity bound",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task5",
+      "input": {
+        "list": {
+          "value": 8,
+          "next": {
+            "value": 9,
+            "next": {
+              "value": 10,
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "time_steps": 9,
+          "space_cells": 1
+        }
+      },
+      "condition": "post",
+      "spec": "quadratic time usage on a list of length 3 violates the linear-time requirement",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task5",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": null
+            }
+          }
+        },
+        "result": {
+          "time_steps": 3,
+          "space_cells": 3
+        }
+      },
+      "condition": "post",
+      "spec": "allocating extra space proportional to the input size violates the constant-space requirement",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task4",
+      "input": {
+        "list": {
+          "value": 1,
+          "next": {
+            "value": 2,
+            "next": {
+              "value": 3,
+              "next": {
+                "value": 4,
+                "next": null
+              }
+            }
+          }
+        },
+        "result": {
+          "value": 4,
+          "next": {
+            "value": 3,
+            "next": {
+              "value": 2,
+              "next": null
+            }
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "reversal must preserve all original elements; dropping the final element of the reversed list violates the postcondition",
+      "expected": false
+    },
+    {
+      "id": "T029",
+      "task": "task4",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        },
+        "result": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 2
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 1
+            }
+          ]
+        }
+      },
+      "condition": "post",
+      "spec": "for a lasso, the cycle must be reversed but the initial-segment node's next must still target the cycle's new entry; this result keeps the cycle's original orientation at node 1",
+      "expected": false
+    },
+    {
+      "id": "T030",
+      "task": "task5",
+      "input": {
+        "list": {
+          "entry": 0,
+          "nodes": [
+            {
+              "value": 1,
+              "next": 1
+            },
+            {
+              "value": 2,
+              "next": 2
+            },
+            {
+              "value": 3,
+              "next": 3
+            },
+            {
+              "value": 4,
+              "next": 2
+            }
+          ]
+        },
+        "result": {
+          "time_steps": 6,
+          "space_cells": 4
+        }
+      },
+      "condition": "post",
+      "spec": "auxiliary space proportional to the lasso length violates the constant-space requirement",
+      "expected": false
+    }
+  ]
+}

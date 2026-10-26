@@ -1,0 +1,12 @@
+use vstd::prelude::*;
+
+verus! {
+
+pub struct Buffer {
+    pub h: i32,
+    pub xs: Vec<i32>,
+    pub xs_len: usize,
+    pub ys: Vec<i32>,
+}
+
+} // verus!

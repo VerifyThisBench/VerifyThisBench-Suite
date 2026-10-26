@@ -1,0 +1,78 @@
+module TreeNode
+  use int.Int
+  
+  type tree_node = {
+    value: int;
+    mutable left: tree_node option;
+    mutable right: tree_node option;
+    mutable parent: tree_node option;
+  }
+  
+  function create_node (value: int) : tree_node =
+    { value = value; left = None; right = None; parent = None }
+end
+
+module CartesianTree
+  use int.Int
+  use array.Array
+  use TreeNode
+  
+  predicate is_cartesian_tree (root: tree_node option) (sequence: array int) (start: int) (end_: int) =
+    match root with
+    | None -> start >= end_
+    | Some node ->
+        start < end_ /\
+        start <= node.value < end_ /\ (* node.value is actually an index *)
+        (forall i. start <= i < end_ -> sequence[node.value] <= sequence[i]) /\
+        (exists k. start <= k < end_ /\ k = node.value /\
+         is_cartesian_tree node.left sequence start k /\
+         is_cartesian_tree node.right sequence (k+1) end_)
+    end
+  
+  let rec find_min_index (sequence: array int) (start: int) (end_: int) : int
+    requires { start < end_ }
+    requires { 0 <= start /\ end_ <= Array.length sequence }
+    ensures { start <= result < end_ }
+    ensures { forall i. start <= i < end_ -> sequence[result] <= sequence[i] }
+    variant { end_ - start }
+  =
+    if start + 1 = end_ then start
+    else
+      let mid_min = find_min_index sequence (start + 1) end_ in
+      if sequence[start] <= sequence[mid_min] then start
+      else mid_min
+  
+  let rec construct_cartesian_tree (sequence: array int) (start: int) (end_: int) : tree_node option
+    requires { 0 <= start <= end_ <= Array.length sequence }
+    requires { forall i j. start <= i < j < end_ -> sequence[i] <> sequence[j] } (* distinct values *)
+    ensures { is_cartesian_tree result sequence start end_ }
+    variant { end_ - start }
+  =
+    if start >= end_ then None
+    else if start + 1 = end_ then
+      Some (create_node start) (* store index, not value *)
+    else
+      let min_idx = find_min_index sequence start end_ in
+      let root = create_node min_idx in
+      
+      let left_subtree = construct_cartesian_tree sequence start min_idx in
+      root.left <- left_subtree;
+      (match left_subtree with
+       | None -> ()
+       | Some left_node -> left_node.parent <- Some root);
+      
+      let right_subtree = construct_cartesian_tree sequence (min_idx + 1) end_ in
+      root.right <- right_subtree;
+      (match right_subtree with
+       | None -> ()
+       | Some right_node -> right_node.parent <- Some root);
+      
+      Some root
+  
+  let construct_cartesian_tree_main (sequence: array int) : tree_node option
+    requires { Array.length sequence > 0 }
+    requires { forall i j. 0 <= i < j < Array.length sequence -> sequence[i] <> sequence[j] }
+    ensures { is_cartesian_tree result sequence 0 (Array.length sequence) }
+  =
+    construct_cartesian_tree sequence 0 (Array.length sequence)
+end

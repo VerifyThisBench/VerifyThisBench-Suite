@@ -1,0 +1,1094 @@
+{
+  "challenge": "Smart Array Copy by Shuffled Subsegments",
+  "description": "Specify permutations and verify smart array copy variants for safety, termination, and functional correctness under shuffled copying.",
+  "function_signature": "smart_copy(src, dest, sigma, tau, segment_order) -> result_dest",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "n": 4,
+        "perm": [
+          2,
+          0,
+          3,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute returns an array of length n containing each index 0..n-1 exactly once",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "n": 4,
+        "perm": [
+          0,
+          1,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute result has no duplicates and is a permutation of 0..n-1",
+      "expected": false
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "n": 5,
+        "perm": [
+          4,
+          3,
+          2,
+          1,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute may return any ordering as long as all values are exactly 0..n-1",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "n": 3,
+        "perm": [
+          0,
+          1,
+          3
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute result values must all be within the range 0..n-1",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task2",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "source and destination arrays are not null and have the same length",
+      "expected": true
+    },
+    {
+      "id": "T006",
+      "task": "task2",
+      "input": {
+        "src": null,
+        "dest": [
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "source array is not null",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task2",
+      "input": {
+        "src": [
+          1,
+          2,
+          3
+        ],
+        "dest": [
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "source and destination arrays have equal length",
+      "expected": false
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "src": [],
+        "dest": [],
+        "sigma": []
+      },
+      "condition": "pre",
+      "spec": "empty arrays of equal length are allowed inputs",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "src": [
+          3,
+          1,
+          4,
+          1
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "result_dest": [
+          3,
+          1,
+          4,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "version 0 SmartCopy copies all source elements into destination in the same order",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "src": [
+          3,
+          1,
+          4,
+          1
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "result_dest": [
+          1,
+          3,
+          4,
+          1
+        ]
+      },
+      "condition": "post",
+      "spec": "destination after version 0 copy must exactly match source order, not just contain same multiset",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task3",
+      "input": {
+        "src": [
+          9,
+          8,
+          7,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "all accesses are within bounds when arrays have equal length and permutation indices are valid",
+      "expected": true
+    },
+    {
+      "id": "T012",
+      "task": "task3",
+      "input": {
+        "src": [
+          9,
+          8,
+          7,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          2,
+          0
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "memory safety requires every permutation index to refer to an existing subsegment",
+      "expected": false
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "src": [
+          1
+        ],
+        "dest": [
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "subsegment_length": 1
+      },
+      "condition": "pre",
+      "spec": "single-element arrays are memory-safe when the only accessed index is 0",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task4",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "termination is guaranteed for finite arrays and finite permutation arrays",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task4",
+      "input": {
+        "src": [],
+        "dest": [],
+        "sigma": []
+      },
+      "condition": "pre",
+      "spec": "termination holds even for the empty-array case",
+      "expected": true
+    },
+    {
+      "id": "T016",
+      "task": "task5",
+      "input": {
+        "src": [
+          7,
+          7,
+          7
+        ],
+        "dest": [
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          7,
+          7,
+          7
+        ],
+        "result_src": [
+          7,
+          7,
+          7
+        ]
+      },
+      "condition": "post",
+      "spec": "on termination destination equals the original source and source remains unchanged",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task5",
+      "input": {
+        "src": [
+          2,
+          -1,
+          0,
+          5
+        ],
+        "dest": [
+          9,
+          9,
+          9,
+          9
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "result_dest": [
+          2,
+          -1,
+          0,
+          5
+        ],
+        "result_src": [
+          2,
+          -1,
+          0,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "correctness includes preserving order and leaving source unchanged for mixed values",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task5",
+      "input": {
+        "src": [
+          2,
+          -1,
+          0,
+          5
+        ],
+        "dest": [
+          9,
+          9,
+          9,
+          9
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "result_dest": [
+          2,
+          0,
+          -1,
+          5
+        ],
+        "result_src": [
+          2,
+          -1,
+          0,
+          5
+        ]
+      },
+      "condition": "post",
+      "spec": "destination must preserve the exact original order of source elements",
+      "expected": false
+    },
+    {
+      "id": "T019",
+      "task": "task5",
+      "input": {
+        "src": [
+          4,
+          3,
+          2
+        ],
+        "dest": [
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          4,
+          3,
+          2
+        ],
+        "result_src": [
+          4,
+          9,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "source array must remain unchanged after copying",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task6",
+      "input": {
+        "n": 3,
+        "perm": [
+          1,
+          2,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute for version 1 also returns a permutation of 0..n-1",
+      "expected": true
+    },
+    {
+      "id": "T021",
+      "task": "task6",
+      "input": {
+        "n": 3,
+        "perm": [
+          1,
+          -1,
+          0
+        ]
+      },
+      "condition": "post",
+      "spec": "Permute result cannot contain negative or out-of-range indices",
+      "expected": false
+    },
+    {
+      "id": "T022",
+      "task": "task7",
+      "input": {
+        "src": [
+          10,
+          20
+        ],
+        "dest": [
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          10,
+          20
+        ]
+      },
+      "condition": "post",
+      "spec": "task7 version 0 implementation still copies source to destination in the same order",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task8",
+      "input": {
+        "src": [
+          10,
+          20
+        ],
+        "dest": [
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "task8 memory safety holds when the single subsegment exactly matches array bounds",
+      "expected": true
+    },
+    {
+      "id": "T024",
+      "task": "task8",
+      "input": {
+        "src": [
+          10,
+          20
+        ],
+        "dest": [
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "memory safety fails if destination is shorter than source",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task9",
+      "input": {
+        "src": [
+          5,
+          4,
+          3
+        ],
+        "dest": [
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ]
+      },
+      "condition": "pre",
+      "spec": "task9 termination holds for finite input arrays",
+      "expected": true
+    },
+    {
+      "id": "T026",
+      "task": "task10",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          3,
+          4,
+          1,
+          2
+        ]
+      },
+      "condition": "post",
+      "spec": "version 1 copies each source subsegment sigma(i) into destination subsegment tau(sigma(i))",
+      "expected": true
+    },
+    {
+      "id": "T027",
+      "task": "task10",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          1,
+          0
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "condition": "post",
+      "spec": "with non-identity tau, destination need not preserve original order and identity output is incorrect here",
+      "expected": false
+    },
+    {
+      "id": "T028",
+      "task": "task11",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          7,
+          8,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "task11 implementation incorporates the additional destination subsegment permutation tau",
+      "expected": true
+    },
+    {
+      "id": "T029",
+      "task": "task12",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "version 1 safety and correctness reasoning requires sigma and tau to be valid permutations over existing subsegments",
+      "expected": true
+    },
+    {
+      "id": "T030",
+      "task": "task12",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          1
+        ],
+        "subsegment_length": 2
+      },
+      "condition": "pre",
+      "spec": "version 1 requires tau to be a permutation with no duplicates",
+      "expected": false
+    },
+    {
+      "id": "T031",
+      "task": "task12",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          7,
+          8,
+          5,
+          6
+        ],
+        "result_src": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "new version preserves source unchanged and places data in destination according to tau after sigma-based source selection",
+      "expected": true
+    },
+    {
+      "id": "T032",
+      "task": "task12",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          7,
+          8,
+          5,
+          6
+        ],
+        "result_src": [
+          5,
+          0,
+          7,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "version 1 must not modify source while performing permuted copy",
+      "expected": false
+    },
+    {
+      "id": "T033",
+      "task": "task13",
+      "input": {
+        "modularity_comment_present": true
+      },
+      "condition": "post",
+      "spec": "a MODULARITY comment exists describing reuse between versions 0 and 1",
+      "expected": true
+    },
+    {
+      "id": "T034",
+      "task": "task13",
+      "input": {
+        "modularity_comment_present": false
+      },
+      "condition": "post",
+      "spec": "task13 requires a textual MODULARITY comment",
+      "expected": false
+    },
+    {
+      "id": "T035",
+      "task": "task14",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "segment_order": [
+          1,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "version 2 may shuffle the order of segment handling while still producing the same final destination for version 0 semantics",
+      "expected": true
+    },
+    {
+      "id": "T036",
+      "task": "task15",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "segment_order": [
+          1,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "result_src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "version 2 preserves correctness despite shuffled segment order: destination matches original source and source is unchanged",
+      "expected": true
+    },
+    {
+      "id": "T037",
+      "task": "task15",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "segment_order": [
+          1,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          1,
+          2,
+          3,
+          4,
+          6,
+          5
+        ],
+        "result_src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "segment-order shuffling must not corrupt the final copied contents",
+      "expected": false
+    },
+    {
+      "id": "T038",
+      "task": "task16",
+      "input": {
+        "modularity_comment_present": true
+      },
+      "condition": "post",
+      "spec": "a MODULARITY comment exists describing reuse across the different versions including version 2",
+      "expected": true
+    },
+    {
+      "id": "T039",
+      "task": "task16",
+      "input": {
+        "modularity_comment_present": false
+      },
+      "condition": "post",
+      "spec": "task16 requires a textual MODULARITY comment for the extended versions",
+      "expected": false
+    },
+    {
+      "id": "T040",
+      "task": "task7",
+      "input": {
+        "src": [
+          10,
+          20
+        ],
+        "dest": [
+          0,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          20,
+          10
+        ]
+      },
+      "condition": "post",
+      "spec": "task7 version 0 must copy source to destination in the same order, not swap adjacent elements",
+      "expected": false
+    },
+    {
+      "id": "T041",
+      "task": "task11",
+      "input": {
+        "src": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sigma": [
+          0,
+          1
+        ],
+        "tau": [
+          1,
+          0
+        ],
+        "result_dest": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "condition": "post",
+      "spec": "with non-identity tau, task11 must apply the destination permutation, not leave dest equal to src",
+      "expected": false
+    },
+    {
+      "id": "T042",
+      "task": "task14",
+      "input": {
+        "src": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dest": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "segment_order": [
+          1,
+          0
+        ],
+        "sigma": [
+          0
+        ],
+        "result_dest": [
+          0,
+          0,
+          0,
+          4,
+          5,
+          6
+        ]
+      },
+      "condition": "post",
+      "spec": "version 2 must process every segment so that final dest equals source; leaving the first segment unwritten violates the postcondition",
+      "expected": false
+    }
+  ]
+}

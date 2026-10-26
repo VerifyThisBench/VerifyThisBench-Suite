@@ -1,0 +1,551 @@
+{
+  "challenge": "Binary Decision Diagrams",
+  "description": "Construct and manipulate ROBDD nodes with mk_if, mk_not, and mk_and while preserving safety, termination, semantic correctness, and ROBDD invariants.",
+  "function_signature": "op(bdd, operation, args) -> node",
+  "seed_tests": [
+    {
+      "id": "T001",
+      "task": "task1",
+      "input": {
+        "operation": "mk_not",
+        "node": "True"
+      },
+      "condition": "pre",
+      "spec": "input node is a valid finite BDD node",
+      "expected": true
+    },
+    {
+      "id": "T002",
+      "task": "task1",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        }
+      },
+      "condition": "pre",
+      "spec": "both inputs are valid finite BDD nodes",
+      "expected": true
+    },
+    {
+      "id": "T003",
+      "task": "task1",
+      "input": {
+        "operation": "mk_if",
+        "var": 1,
+        "left": "False",
+        "right": "True"
+      },
+      "condition": "pre",
+      "spec": "mk_if receives a valid variable and valid child nodes",
+      "expected": true
+    },
+    {
+      "id": "T004",
+      "task": "task1",
+      "input": {
+        "operation": "mk_not",
+        "node": null
+      },
+      "condition": "pre",
+      "spec": "input node is not null",
+      "expected": false
+    },
+    {
+      "id": "T005",
+      "task": "task1",
+      "input": {
+        "operation": "mk_and",
+        "left": null,
+        "right": "True"
+      },
+      "condition": "pre",
+      "spec": "left operand of mk_and is not null",
+      "expected": false
+    },
+    {
+      "id": "T006",
+      "task": "task1",
+      "input": {
+        "operation": "mk_if",
+        "var": 1,
+        "left": null,
+        "right": "False"
+      },
+      "condition": "pre",
+      "spec": "children passed to mk_if are not null",
+      "expected": false
+    },
+    {
+      "id": "T007",
+      "task": "task1",
+      "input": {
+        "operation": "mk_if",
+        "var": 0,
+        "left": "True",
+        "right": "False"
+      },
+      "condition": "pre",
+      "spec": "boundary variable values are allowed for valid nodes",
+      "expected": true
+    },
+    {
+      "id": "T008",
+      "task": "task2",
+      "input": {
+        "operation": "mk_not",
+        "node": {
+          "type": "Node",
+          "var": 1,
+          "left": {
+            "type": "Node",
+            "var": 2,
+            "left": "False",
+            "right": "True"
+          },
+          "right": "True"
+        }
+      },
+      "condition": "pre",
+      "spec": "mk_not is called on a finite acyclic BDD, which should guarantee termination",
+      "expected": true
+    },
+    {
+      "id": "T009",
+      "task": "task2",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": {
+            "type": "Node",
+            "var": 3,
+            "left": "False",
+            "right": "True"
+          }
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        }
+      },
+      "condition": "pre",
+      "spec": "mk_and on finite acyclic BDD inputs should terminate",
+      "expected": true
+    },
+    {
+      "id": "T010",
+      "task": "task2",
+      "input": {
+        "operation": "mk_not",
+        "node": null
+      },
+      "condition": "pre",
+      "spec": "termination argument requires a valid finite input node, so null violates the precondition",
+      "expected": false
+    },
+    {
+      "id": "T011",
+      "task": "task2",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": null
+      },
+      "condition": "pre",
+      "spec": "termination argument requires both mk_and operands to be valid finite nodes",
+      "expected": false
+    },
+    {
+      "id": "T012",
+      "task": "task3",
+      "input": {
+        "operation": "mk_not",
+        "node": "True",
+        "result": "False"
+      },
+      "condition": "post",
+      "spec": "mk_not(True) is equivalent to False",
+      "expected": true
+    },
+    {
+      "id": "T013",
+      "task": "task3",
+      "input": {
+        "operation": "mk_not",
+        "node": "False",
+        "result": "True"
+      },
+      "condition": "post",
+      "spec": "mk_not(False) is equivalent to True",
+      "expected": true
+    },
+    {
+      "id": "T014",
+      "task": "task3",
+      "input": {
+        "operation": "mk_not",
+        "node": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "True",
+          "right": "False"
+        }
+      },
+      "condition": "post",
+      "spec": "mk_not of variable test x1 yields the BDD for not x1",
+      "expected": true
+    },
+    {
+      "id": "T015",
+      "task": "task3",
+      "input": {
+        "operation": "mk_not",
+        "node": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        }
+      },
+      "condition": "post",
+      "spec": "result of mk_not must be equivalent to logical negation, not the original formula",
+      "expected": false
+    },
+    {
+      "id": "T016",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": "True",
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        }
+      },
+      "condition": "post",
+      "spec": "mk_and(True, b) is equivalent to b",
+      "expected": true
+    },
+    {
+      "id": "T017",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": "False",
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": "False"
+      },
+      "condition": "post",
+      "spec": "mk_and(False, b) is equivalent to False",
+      "expected": true
+    },
+    {
+      "id": "T018",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": {
+            "type": "Node",
+            "var": 2,
+            "left": "False",
+            "right": "True"
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "mk_and of x1 and x2 yields a BDD equivalent to x1 and x2",
+      "expected": true
+    },
+    {
+      "id": "T019",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "True",
+          "right": "False"
+        }
+      },
+      "condition": "post",
+      "spec": "mk_and(x1, x1) must be equivalent to x1, so a result equivalent to not x1 is incorrect",
+      "expected": false
+    },
+    {
+      "id": "T020",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": {
+            "type": "Node",
+            "var": 2,
+            "left": "False",
+            "right": "True"
+          },
+          "right": "False"
+        }
+      },
+      "condition": "post",
+      "spec": "result of mk_and must represent conjunction for all valuations; this structure does not",
+      "expected": false
+    },
+    {
+      "id": "T021",
+      "task": "task4",
+      "input": {
+        "operation": "mk_not",
+        "node": {
+          "type": "Node",
+          "var": 1,
+          "left": {
+            "type": "Node",
+            "var": 2,
+            "left": "False",
+            "right": "True"
+          },
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": {
+            "type": "Node",
+            "var": 2,
+            "left": "True",
+            "right": "False"
+          },
+          "right": "False"
+        }
+      },
+      "condition": "post",
+      "spec": "if the input is ordered and reduced, mk_not preserves orderedness and reducedness",
+      "expected": true
+    },
+    {
+      "id": "T022",
+      "task": "task4",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": {
+            "type": "Node",
+            "var": 2,
+            "left": "False",
+            "right": "True"
+          }
+        }
+      },
+      "condition": "post",
+      "spec": "mk_and of ordered reduced inputs preserves ROBDD ordering and reduction",
+      "expected": true
+    },
+    {
+      "id": "T023",
+      "task": "task4",
+      "input": {
+        "operation": "mk_if",
+        "var": 1,
+        "left": "True",
+        "right": "True",
+        "result": {
+          "type": "Node",
+          "var": 1,
+          "left": "True",
+          "right": "True"
+        }
+      },
+      "condition": "post",
+      "spec": "reducedness forbids internal nodes whose left and right children are identical",
+      "expected": false
+    },
+    {
+      "id": "T024",
+      "task": "task4",
+      "input": {
+        "operation": "mk_and",
+        "left": {
+          "type": "Node",
+          "var": 1,
+          "left": "False",
+          "right": "True"
+        },
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 2,
+          "left": {
+            "type": "Node",
+            "var": 1,
+            "left": "False",
+            "right": "True"
+          },
+          "right": "True"
+        }
+      },
+      "condition": "post",
+      "spec": "orderedness requires variables to appear in the same increasing order along every path; this result violates that ordering relative to the conjunction construction",
+      "expected": false
+    },
+    {
+      "id": "T025",
+      "task": "task3",
+      "input": {
+        "operation": "mk_not",
+        "node": "False",
+        "result": "False"
+      },
+      "condition": "post",
+      "spec": "mk_not(False) must equal True, not False",
+      "expected": false
+    },
+    {
+      "id": "T026",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": "True",
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": "True"
+      },
+      "condition": "post",
+      "spec": "mk_and(True, b) must equal b, not the constant True",
+      "expected": false
+    },
+    {
+      "id": "T027",
+      "task": "task3",
+      "input": {
+        "operation": "mk_and",
+        "left": "False",
+        "right": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        },
+        "result": {
+          "type": "Node",
+          "var": 2,
+          "left": "False",
+          "right": "True"
+        }
+      },
+      "condition": "post",
+      "spec": "mk_and(False, b) must equal False, not return the right operand unchanged",
+      "expected": false
+    }
+  ]
+}

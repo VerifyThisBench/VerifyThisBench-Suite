@@ -1,0 +1,4 @@
+pub struct QueueLock {
+    pub pass: Vec<bool>,
+    pub next: i32,
+}

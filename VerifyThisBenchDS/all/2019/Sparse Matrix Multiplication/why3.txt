@@ -1,0 +1,9 @@
+module Triplet
+  use int.Int
+  
+  type triplet = {
+    row: int;
+    col: int;
+    value: int;
+  }
+end

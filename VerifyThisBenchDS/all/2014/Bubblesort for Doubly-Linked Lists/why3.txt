@@ -1,0 +1,13 @@
+type node = {
+  value: int;
+  mutable next: option node;
+  mutable prev: option node;
+  mutable nested_next: option node;
+  mutable nested_prev: option node;
+}
+
+type doubly_linked_list = {
+  mutable head: option node;
+  ghost mutable contents: list int;
+  ghost mutable nodes: list node;
+}
